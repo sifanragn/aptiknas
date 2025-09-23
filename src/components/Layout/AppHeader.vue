@@ -7,7 +7,7 @@
       class="flex items-center justify-between transition-all duration-300"
       :class="
         scrolled
-          ? 'px-6 py-3 rounded-full backdrop-blur-md shadow-lg border border-gray-200'
+          ? 'px-6 py-3 rounded-full backdrop-blur-md shadow-lg border text-current border-gray-200'
           : 'mx-2 my-7'
       "
     >
@@ -88,21 +88,15 @@
             >
               Agenda
             </router-link>
-            <router-link
-              to="/kegiatan"
-              class="block px-4 py-3 hover:bg-green-50 hover:text-green-700 transition-colors"
-              @click="closeDropdown"
-            >
-              Kegiatan
-            </router-link>
           </div>
         </div>
+        <!-- Dropdown Daftar DPD -->
         <div
           class="relative group"
           @mouseenter="openDropdown('daftarDpd')"
           @mouseleave="closeDropdown"
         >
-           <button
+          <button
             class="flex items-center gap-1 px-3 py-1.5 rounded-full transition-all duration-200 hover:bg-gray-100 hover:text-green-600"
           >
             Daftar DPD
@@ -124,49 +118,29 @@
 
           <!-- Dropdown Menu -->
           <div
-            class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50"
+            class="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50 max-h-96 overflow-y-auto"
             :class="{
               hidden: activeDropdown !== 'daftarDpd',
               block: activeDropdown === 'daftarDpd',
             }"
           >
-            <router-link
-              to="/dpd/dki-jakarta"
-              class="block px-4 py-3 hover:bg-green-50 hover:text-green-700 transition-colors text-sm"
-              @click="closeDropdown"
-            >
-              <div class="flex items-center">
-                <svg
-                  class="w-4 h-4 mr-2 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  />
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-                DPD DKI Jakarta
-              </div>
-            </router-link>
+            <!-- Header -->
+            <div class="bg-green-600 text-white px-4 py-3">
+              <h3 class="text-sm font-semibold">Dewan Pengurus Daerah</h3>
+              <p class="text-xs opacity-90">Pilih wilayah DPD</p>
+            </div>
 
+            <!-- DPD List -->
             <router-link
-              to="/dpd/banten"
-              class="block px-4 py-3 hover:bg-green-50 hover:text-green-700 transition-colors text-sm"
+              v-for="dpd in dpdCategories"
+              :key="dpd.id"
+              :to="`/dpd/${generateSlug(dpd.name)}`"
+              class="block px-4 py-3 hover:bg-green-50 hover:text-green-700 transition-colors text-sm border-b border-gray-100 last:border-b-0"
               @click="closeDropdown"
             >
               <div class="flex items-center">
                 <svg
-                  class="w-4 h-4 mr-2 text-green-600"
+                  class="w-4 h-4 mr-3 text-green-600 flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -184,13 +158,14 @@
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                   />
                 </svg>
-                DPD Banten
+                <span class="truncate">DPD {{ dpd.name }}</span>
               </div>
             </router-link>
 
             <!-- Divider -->
             <div class="border-t border-gray-200 my-1"></div>
 
+            <!-- View All -->
             <router-link
               to="/dpd/semua"
               class="block px-4 py-3 hover:bg-green-50 hover:text-green-700 transition-colors text-sm bg-gray-50"
@@ -198,7 +173,7 @@
             >
               <div class="flex items-center">
                 <svg
-                  class="w-4 h-4 mr-2 text-green-600"
+                  class="w-4 h-4 mr-3 text-green-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -215,6 +190,12 @@
             </router-link>
           </div>
         </div>
+        <router-link
+          to="/kegiatan"
+          class="px-3 py-1.5 rounded-full transition-all duration-200 hover:bg-gray-100 hover:text-green-600"
+        >
+          Kegiatan
+        </router-link>
 
         <!-- Dropdown DPD -->
         <div
@@ -269,13 +250,6 @@
             >
               DPD
             </router-link>
-            <router-link
-              to="/dpd-jakarta"
-              class="block px-4 py-3 hover:bg-green-50 hover:text-green-700 transition-colors"
-              @click="closeDropdown"
-            >
-              DPD Jakarta
-            </router-link>
           </div>
         </div>
       </nav>
@@ -290,44 +264,76 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      scrolled: false,
-      activeDropdown: null,
-      dropdownTimeout: null,
-    };
-  },
-  mounted() {
-    window.addEventListener("scroll", this.handleScroll);
-  },
-  beforeUnmount() {
-    window.removeEventListener("scroll", this.handleScroll);
-    if (this.dropdownTimeout) {
-      clearTimeout(this.dropdownTimeout);
-    }
-  },
-  methods: {
-    handleScroll() {
-      this.scrolled = window.scrollY > 20;
-    },
-    openDropdown(dropdownName) {
-      if (this.dropdownTimeout) {
-        clearTimeout(this.dropdownTimeout);
-      }
-      this.activeDropdown = dropdownName;
-    },
-    closeDropdown() {
-      this.dropdownTimeout = setTimeout(() => {
-        this.activeDropdown = null;
-      }, 200);
-    },
-    forceCloseDropdown() {
-      this.activeDropdown = null;
-    },
-  },
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from "vue";
+
+const scrolled = ref(false);
+const activeDropdown = ref(null);
+let dropdownTimeout = null;
+
+// Data dummy untuk DPD
+const dpdCategories = ref([
+  { id: 1, name: "DKI JAKARTA" },
+  { id: 2, name: "JAWA BARAT" },
+  { id: 3, name: "JAWA TENGAH" },
+  { id: 4, name: "JAWA TIMUR" },
+  { id: 5, name: "BANTEN" },
+  { id: 6, name: "BALI" },
+  { id: 7, name: "SUMATERA UTARA" },
+  { id: 8, name: "SUMATERA SELATAN" },
+  { id: 9, name: "SUMATERA BARAT" },
+  { id: 10, name: "RIAU" },
+  { id: 11, name: "KALIMANTAN BARAT" },
+  { id: 12, name: "KALIMANTAN TIMUR" },
+  { id: 13, name: "KALIMANTAN SELATAN" },
+  { id: 14, name: "SULAWESI SELATAN" },
+  { id: 15, name: "SULAWESI UTARA" },
+  { id: 16, name: "NUSA TENGGARA BARAT" },
+  { id: 17, name: "NUSA TENGGARA TIMUR" },
+  { id: 18, name: "PAPUA" },
+  { id: 19, name: "PAPUA BARAT" },
+  { id: 20, name: "LAMPUNG" },
+  { id: 21, name: "ACEH" },
+  { id: 22, name: "JAMBI" },
+  { id: 23, name: "BENGKULU" },
+  { id: 24, name: "GORONTALO" },
+]);
+
+const handleScroll = () => {
+  scrolled.value = window.scrollY > 20;
 };
+
+const openDropdown = (dropdownName) => {
+  if (dropdownTimeout) {
+    clearTimeout(dropdownTimeout);
+  }
+  activeDropdown.value = dropdownName;
+};
+
+const closeDropdown = () => {
+  dropdownTimeout = setTimeout(() => {
+    activeDropdown.value = null;
+  }, 200);
+};
+
+const generateSlug = (name) => {
+  if (!name) return "";
+  return name
+    .toLowerCase()
+    .replace(/[^\w ]+/g, "")
+    .replace(/ +/g, "-");
+};
+
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", handleScroll);
+  if (dropdownTimeout) {
+    clearTimeout(dropdownTimeout);
+  }
+});
 </script>
 
 <style scoped module>

@@ -1,30 +1,36 @@
 <template>
   <!-- Agenda Section -->
   <section class="py-8 sm:py-12 md:py-16 px-4 sm:px-6 md:px-8">
-    <div class="text-center mb-6 sm:mb-8 md:mb-10 flex flex-col items-center gap-2">
-      <Badge text="Agenda"/>
+    <div
+      class="text-center mb-6 sm:mb-8 md:mb-10 flex flex-col items-center gap-2"
+    >
+      <Badge text="Agenda" />
       <h3 class="text-2xl sm:text-3xl md:text-4xl font-semibold">Agenda</h3>
       <p class="text-gray-600 text-base sm:text-lg">
-        Jangan lewatkan agenda penting dan kegiatan yang akan datang dari MGMP BK.
+        Jangan lewatkan agenda penting dan kegiatan yang akan datang dari
+        APTIKNAS.
       </p>
     </div>
 
-    <div class="space-y-4 sm:space-y-6 w-full sm:max-w-2xl md:max-w-3xl mx-auto">
+    <div
+      class="space-y-4 sm:space-y-6 w-full sm:max-w-2xl md:max-w-3xl mx-auto"
+    >
       <!-- Loading state -->
-      <div v-if="loading" class="text-center">
+      <div v-if="agendaStore.loading" class="text-center">
         <p>Memuat agenda...</p>
       </div>
-      
+
       <!-- Error state -->
-      <div v-else-if="error" class="text-center text-red-500">
+      <div v-else-if="agendaStore.error" class="text-center text-red-500">
         <p>Gagal memuat agenda. Silakan coba lagi nanti.</p>
+        <p class="text-sm">{{ agendaStore.error }}</p>
       </div>
-      
+
       <!-- Empty state -->
       <div v-else-if="displayedAgendas.length === 0" class="text-center">
         <p>Belum ada agenda yang tersedia saat ini.</p>
       </div>
-      
+
       <!-- Agenda items with responsive layout -->
       <div
         v-else
@@ -36,40 +42,50 @@
       >
         <!-- Image - centered on mobile -->
         <img
-          :src="agenda.imageUrl"
-          :alt="agenda.altText"
+          :src="getImageUrl(agenda.image)"
+          :alt="agenda.title"
           class="w-full sm:w-38 h-38 object-cover rounded-lg self-center flex-shrink-0"
+          @error="(event) => handleImageError(event, agenda)"
         />
-        
+
         <!-- Content -->
         <div class="flex-1 min-w-0 flex flex-col justify-between py-2">
-          <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+          <div
+            class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2"
+          >
             <h2 class="font-semibold text-lg sm:text-xl truncate">
               {{ agenda.title }}
             </h2>
             <span
-              v-if="agenda.status"
-              class="text-xs bg-[#511378]/50 text-white px-2 py-1 rounded-full flex-shrink-0 self-start sm:self-auto"
-              :class="agenda.status"
+              class="text-xs px-2 py-1 rounded-full flex-shrink-0 self-start sm:self-auto"
+              :class="getStatusClass(agenda)"
             >
-              {{ agenda.status }}
+              {{ getStatusText(agenda) }}
             </span>
           </div>
-          
-          <p class="text-sm text-gray-500 flex items-center gap-2 mt-1 whitespace-nowrap">
-            <span>{{ agenda.date }}</span>
+
+          <p
+            class="text-sm text-gray-500 flex items-center gap-2 mt-1 whitespace-nowrap"
+          >
+            <span>{{ formatDate(agenda.start_datetime) }}</span>
             <span class="w-1 h-1 bg-black rounded-full inline-block"></span>
-            <span class="truncate">{{ agenda.location }}</span>
+            <span class="truncate">{{
+              agenda.location || "Lokasi tidak tersedia"
+            }}</span>
           </p>
 
-          <div class="text-sm text-gray-600 mt-2 line-clamp-2" v-html="agenda.description"></div>
+          <div
+            class="text-sm text-gray-600 mt-2 line-clamp-2"
+            v-html="stripHtmlTags(agenda.description)"
+          ></div>
         </div>
-        
+
         <button
-          :disabled="agenda.buttonDisabled"
-          class="mt-0 md:mt-5 md:mb-12 border-2  border-[#511378] text-[#511378] px-3 py-2 sm:py-3 rounded-full text-xs hover:bg-purple-50 disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-400 self-start sm:self-end"
+          :disabled="getStatusText(agenda) === 'Selesai'"
+          class="mt-0 md:mt-5 md:mb-12 border-2 border-[#511378] text-[#511378] px-3 py-2 sm:py-3 rounded-full text-xs hover:bg-purple-50 disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-400 self-start sm:self-end"
+          @click="handleAgendaClick(agenda)"
         >
-          {{ agenda.buttonText }}
+          {{ getButtonText(agenda) }}
         </button>
       </div>
     </div>
@@ -78,84 +94,169 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
-// import Badge from "@/components/templates/Badge.vue";
-// import AOS from 'aos';
-import 'aos/dist/aos.css';
+import { useAgendaStore } from "@/stores/agenda";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
-// Data dummy untuk agenda
-const dummyAgendas = ref([
-  {
-    id: 1,
-    title: "Workshop Penyusunan Instrumen BK",
-    date: "15 November 2023",
-    location: "Aula Dinas Pendidikan Kota",
-    description: "Workshop ini bertujuan untuk meningkatkan kompetensi guru BK dalam menyusun instrumen yang valid dan reliabel.",
-    imageUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
-    altText: "Workshop Penyusunan Instrumen BK",
-    status: "Akan Datang",
-    buttonText: "Daftar Sekarang",
-    buttonDisabled: false
-  },
-  {
-    id: 2,
-    title: "Seminar Nasional Konseling Keluarga",
-    date: "22 November 2023",
-    location: "Hotel Grand Mercure",
-    description: "Seminar ini menghadirkan pakar konseling keluarga untuk berbagi strategi dalam menangani permasalahan keluarga siswa.",
-    imageUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
-    altText: "Seminar Nasional Konseling Keluarga",
-    status: "Akan Datang",
-    buttonText: "Daftar Sekarang",
-    buttonDisabled: false
-  },
-  {
-    id: 3,
-    title: "Pelatihan Teknologi dalam Layanan BK",
-    date: "5 Desember 2023",
-    location: "Laboratorium Komputer SMPN 1",
-    description: "Pelatihan pemanfaatan teknologi digital untuk mendukung layanan bimbingan dan konseling di era modern.",
-    imageUrl: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
-    altText: "Pelatihan Teknologi dalam Layanan BK",
-    status: "Akan Datang",
-    buttonText: "Daftar Sekarang",
-    buttonDisabled: false
-  },
-  {
-    id: 4,
-    title: "Rapat Koordinasi Triwulan IV",
-    date: "10 Oktober 2023",
-    location: "SMPN 5 Ruang Guru",
-    description: "Rapat koordinasi membahas program kerja triwulan IV dan evaluasi kegiatan sebelumnya.",
-    imageUrl: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
-    altText: "Rapat Koordinasi Triwulan IV",
-    status: "Selesai",
-    buttonText: "Lihat Materi",
-    buttonDisabled: false
-  }
-]);
+const agendaStore = useAgendaStore();
 
-// State management
-const loading = ref(false);
-const error = ref(null);
-const agendas = ref([...dummyAgendas.value]);
+// Mengambil data dari store dengan berbagai kemungkinan struktur
+const agendas = computed(() => {
+  const list = agendaStore.list;
+  console.log("Raw agenda data from store:", list);
+
+  if (!list) return [];
+
+  if (Array.isArray(list)) return list;
+  if (list.data && Array.isArray(list.data.data)) return list.data.data;
+  if (Array.isArray(list.data)) return list.data;
+
+  console.warn("Struktur data agenda tidak dikenali:", list);
+  return [];
+});
 
 // Only show maximum 3 agenda items
 const displayedAgendas = computed(() => {
   return agendas.value.slice(0, 3);
 });
 
-onMounted(() => {
-  // Simulasi loading data
-  loading.value = true;
-  setTimeout(() => {
-    loading.value = false;
-  }, 800);
+// Fungsi untuk mendapatkan URL gambar lengkap
+const getImageUrl = (imagePath) => {
+  if (!imagePath) {
+    return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80";
+  }
+
+  const baseUrl = 'http://127.0.0.1:8000';
   
+  if (imagePath.startsWith('http')) {
+    return imagePath;
+  }
+  
+  if (imagePath.startsWith('agenda/')) {
+    return `${baseUrl}/${imagePath}`;
+  }
+  
+  if (imagePath.startsWith('storage/agenda/')) {
+    return `${baseUrl}/${imagePath.replace('storage/', '')}`;
+  }
+  
+  if (imagePath.startsWith('/agenda/')) {
+    return `${baseUrl}${imagePath}`;
+  }
+  
+  if (!imagePath.includes('/')) {
+    return `${baseUrl}/agenda/${imagePath}`;
+  }
+  
+  return `${baseUrl}/agenda/${imagePath}`;
+};
+
+// Handle error gambar
+const handleImageError = (event, agenda) => {
+  console.error("Gagal memuat gambar untuk agenda:", agenda?.title);
+  
+  // Fallback ke placeholder
+  event.target.src = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80";
+  
+  // Coba gunakan image_url jika tersedia
+  if (agenda?.image_url) {
+    setTimeout(() => {
+      event.target.src = agenda.image_url;
+    }, 1000);
+  }
+};
+
+// Format tanggal untuk ditampilkan
+const formatDate = (dateString) => {
+  if (!dateString) return "Tanggal tidak tersedia";
+  try {
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  } catch (error) {
+    return "Format tanggal tidak valid";
+  }
+};
+
+// Hapus tag HTML dari deskripsi
+const stripHtmlTags = (html) => {
+  if (!html) return "Tidak ada deskripsi";
+  return html.replace(/<[^>]*>/g, "");
+};
+
+// Tentukan status agenda berdasarkan tanggal
+const getStatusText = (agenda) => {
+  if (!agenda.start_datetime) return "Tidak Diketahui";
+  try {
+    const now = new Date();
+    const startDate = new Date(agenda.start_datetime);
+    const endDate = agenda.end_datetime ? new Date(agenda.end_datetime) : null;
+
+    if (endDate && now > endDate) return "Selesai";
+    if (now >= startDate && (!endDate || now <= endDate)) return "Berlangsung";
+    return "Akan Datang";
+  } catch (error) {
+    return "Error";
+  }
+};
+
+// Tentukan class CSS berdasarkan status
+const getStatusClass = (agenda) => {
+  const status = getStatusText(agenda);
+  switch (status) {
+    case "Selesai": return "bg-gray-500 text-white";
+    case "Berlangsung": return "bg-green-500 text-white";
+    case "Akan Datang": return "bg-[#511378] text-white";
+    default: return "bg-gray-400 text-white";
+  }
+};
+
+// Tentukan teks tombol berdasarkan status
+const getButtonText = (agenda) => {
+  const status = getStatusText(agenda);
+  switch (status) {
+    case "Selesai": return "Lihat Materi";
+    case "Berlangsung": return "Ikuti Sekarang";
+    case "Akan Datang": return "Daftar Sekarang";
+    default: return "Lihat Detail";
+  }
+};
+
+// Handle klik tombol agenda
+const handleAgendaClick = (agenda) => {
+  const status = getStatusText(agenda);
+  if (status === "Akan Datang") {
+    console.log("Mendaftar agenda:", agenda.title);
+  } else if (status === "Berlangsung" && agenda.youtube_link) {
+    window.open(agenda.youtube_link, "_blank");
+  } else if (status === "Selesai") {
+    console.log("Melihat materi agenda:", agenda.title);
+  }
+};
+
+onMounted(async () => {
+  try {
+    await agendaStore.fetchAll();
+  } catch (err) {
+    console.error("Gagal memuat data agenda:", err);
+  }
+
   AOS.init({
     once: true,
     duration: 600,
-    easing: 'ease-out-quad',
-    offset: 20
+    easing: "ease-out-quad",
+    offset: 20,
   });
 });
 </script>
+
+<style scoped>
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+</style>

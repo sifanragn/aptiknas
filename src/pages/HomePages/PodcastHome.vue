@@ -1,20 +1,53 @@
 <template>
   <!-- Podcast Section -->
-  <section class="py-16 md:py-20 lg:py-24 bg-white">
+  <section class="py-16 md:py-20 lg:py-24">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header Section -->
       <div class="text-center mb-12 md:mb-16 lg:mb-20" data-aos="fade-up">
-        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+        <h2
+          class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
+        >
           Podcast
         </h2>
-        <p class="text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto">
-          "Podcast APTIKNAS hadir dengan topik menarik seputar teknologi informasi,
-          komunikasi, dan transformasi digital."
+        <p
+          class="text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto"
+        >
+          "Podcast APTIKNAS hadir dengan topik menarik seputar teknologi
+          informasi, komunikasi, dan transformasi digital."
         </p>
       </div>
 
+      <!-- Loading State -->
+      <div v-if="loading" class="text-center py-12">
+        <div
+          class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#511378] mx-auto mb-4"
+        ></div>
+        <p class="text-gray-600">Memuat podcast...</p>
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="error" class="text-center py-12 text-red-500">
+        <p>Gagal memuat podcast. Silakan coba lagi nanti.</p>
+        <p class="text-sm">{{ podcastStore.error }}</p>
+        <button
+          @click="loadPodcasts"
+          class="mt-4 bg-[#511378] text-white px-4 py-2 rounded hover:bg-[#3a0d57] transition-colors"
+        >
+          Coba Lagi
+        </button>
+      </div>
+
+      <!-- Empty State -->
+      <div
+        v-else-if="podcasts.length === 0 && !loading"
+        class="text-center py-12 text-gray-500"
+      >
+        <i class="fas fa-podcast text-4xl mb-4"></i>
+        <p>Belum ada podcast yang tersedia.</p>
+      </div>
+
       <!-- Swiper Container -->
-      <div class="relative" data-aos="fade-up" data-aos-delay="200">
+      <div v-else class="relative" data-aos="fade-up" data-aos-delay="200">
         <!-- Swiper -->
         <swiper
           :modules="modules"
@@ -32,33 +65,45 @@
           <swiper-slide v-for="(podcast, index) in podcasts" :key="podcast.id">
             <div class="group cursor-pointer" @click="setActivePodcast(index)">
               <!-- Podcast Card -->
-              <div class="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+              <div
+                class="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl"
+              >
                 <!-- Image Container -->
                 <div class="relative overflow-hidden">
                   <img
-                    :src="podcast.image"
+                    :src="getThumbnailUrl(podcast.yt_id)"
                     :alt="podcast.title"
                     class="w-full h-48 md:h-56 lg:h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                    @error="handleImageError"
                   />
                   <!-- Play Button -->
-                  <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div
+                    class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  >
                     <div class="bg-white rounded-full p-3">
-                      <svg class="w-8 h-8 text-[#511378]" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
+                      <svg
+                        class="w-8 h-8 text-[#511378]"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M8 5v14l11-7z" />
                       </svg>
                     </div>
                   </div>
                 </div>
-                
+
                 <!-- Title Container -->
                 <div class="p-6">
-                  <h3 class="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">
+                  <h3
+                    class="text-xl font-semibold text-gray-900 mb-2 line-clamp-2"
+                  >
                     {{ podcast.title }}
                   </h3>
                   <p class="text-gray-600 text-sm mb-4">
-                    {{ podcast.date }} • {{ podcast.duration }}
+                    {{ formatDate(podcast.pub_date) }} •
+                    {{ getCategoryName(podcast) }}
                   </p>
-                  
+
                   <!-- Progress Bar Container -->
                   <div class="relative">
                     <!-- Background Line -->
@@ -68,7 +113,7 @@
                       class="absolute top-0 left-0 h-1 bg-gray-900 rounded-full transition-all duration-500 ease-out"
                       :class="{
                         'w-full': activePodcast === index,
-                        'w-0 group-hover:w-full': activePodcast !== index
+                        'w-0 group-hover:w-full': activePodcast !== index,
                       }"
                     ></div>
                   </div>
@@ -83,40 +128,127 @@
 
         <!-- Navigation Buttons -->
         <div class="flex justify-center items-center gap-4 mt-8">
-          <button class="swiper-button-prev bg-white border border-gray-300 rounded-full size-12 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-md">
-            <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          <button
+            class="swiper-button-prev bg-white border border-gray-300 rounded-full size-12 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-md"
+          >
+            <svg
+              class="w-6 h-6 text-gray-700"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
-          
-          <button class="swiper-button-next bg-white border border-gray-300 rounded-full w-12 h-12 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-md">
-            <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+
+          <button
+            class="swiper-button-next bg-white border border-gray-300 rounded-full w-12 h-12 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-md"
+          >
+            <svg
+              class="w-6 h-6 text-gray-700"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </button>
         </div>
       </div>
 
-      <!-- Active Podcast Info (Optional) -->
-      <div v-if="activePodcast !== null" class="mt-12 text-center" data-aos="fade-up" data-aos-delay="400">
+      <!-- Active Podcast Info -->
+      <div
+        v-if="activePodcast !== null && podcasts.length > 0"
+        class="mt-12 text-center"
+        data-aos="fade-up"
+        data-aos-delay="400"
+      >
         <h3 class="text-2xl font-bold text-gray-900 mb-2">
           {{ podcasts[activePodcast].title }}
         </h3>
-        <p class="text-gray-600">
-          Sedang diputar
+        <p class="text-gray-600 mb-4">
+          {{ formatDate(podcasts[activePodcast].pub_date) }}
         </p>
+        <button
+          @click="openYoutube(podcasts[activePodcast].yt_id)"
+          class="bg-[#511378] text-white px-6 py-2 rounded-full hover:bg-[#3a0d57] transition-colors"
+        >
+          Tonton di YouTube
+        </button>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Navigation, Pagination } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+import { ref, computed, onMounted } from "vue";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+
+// Data dummy untuk podcast APTIKNAS
+const dummyPodcasts = ref([
+  {
+    id: 1,
+    title: "Transformasi Digital UMKM di Era 4.0",
+    yt_id: "abc123",
+    pub_date: "2024-09-15T00:00:00.000Z",
+    category: { name: "Digital Transformation" },
+    description: "Podcast tentang strategi transformasi digital untuk UMKM",
+  },
+  {
+    id: 2,
+    title: "Cybersecurity: Tantangan dan Solusi",
+    yt_id: "def456",
+    pub_date: "2024-09-10T00:00:00.000Z",
+    category: { name: "Cybersecurity" },
+    description: "Diskusi tentang keamanan siber untuk pelaku usaha",
+  },
+  {
+    id: 3,
+    title: "AI dan Masa Depan Industri Teknologi",
+    yt_id: "ghi789",
+    pub_date: "2024-09-08T00:00:00.000Z",
+    category: { name: "Artificial Intelligence" },
+    description: "Membahas perkembangan AI dalam industri teknologi",
+  },
+  {
+    id: 4,
+    title: "Cloud Computing untuk Bisnis Modern",
+    yt_id: "jkl012",
+    pub_date: "2024-09-05T00:00:00.000Z",
+    category: { name: "Cloud Computing" },
+    description: "Pemanfaatan cloud computing dalam operasional bisnis",
+  },
+  {
+    id: 5,
+    title: "IoT dalam Smart City Development",
+    yt_id: "mno345",
+    pub_date: "2024-09-03T00:00:00.000Z",
+    category: { name: "Internet of Things" },
+    description: "Peran IoT dalam pengembangan kota pintar",
+  },
+  {
+    id: 6,
+    title: "Blockchain Beyond Cryptocurrency",
+    yt_id: "pqr678",
+    pub_date: "2024-09-01T00:00:00.000Z",
+    category: { name: "Blockchain" },
+    description: "Aplikasi blockchain di luar dunia cryptocurrency",
+  },
+]);
 
 // Swiper modules
 const modules = [Navigation, Pagination];
@@ -125,73 +257,103 @@ const modules = [Navigation, Pagination];
 const breakpoints = {
   640: {
     slidesPerView: 2,
-    spaceBetween: 20
+    spaceBetween: 20,
   },
   1024: {
     slidesPerView: 3,
-    spaceBetween: 30
+    spaceBetween: 30,
   },
   1280: {
     slidesPerView: 4,
-    spaceBetween: 40
+    spaceBetween: 40,
+  },
+};
+
+const activePodcast = ref(0);
+const loading = ref(false);
+const error = ref(null);
+
+const podcasts = computed(() => dummyPodcasts.value);
+
+// Fungsi untuk memuat podcast
+const loadPodcasts = async () => {
+  // Fungsi ini bisa digunakan kembali jika ingin beralih ke API
+};
+
+// Fungsi untuk mendapatkan URL thumbnail YouTube
+const getThumbnailUrl = (ytId) => {
+  if (!ytId)
+    return "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
+
+  return `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+};
+
+// Handle error gambar
+const handleImageError = (event) => {
+  event.target.src =
+    "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
+};
+
+// Format tanggal untuk ditampilkan
+const formatDate = (dateString) => {
+  if (!dateString) return "Tanggal tidak tersedia";
+
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "Format tanggal tidak valid";
   }
 };
 
-// Podcast data
-const podcasts = ref([
-  {
-    id: 1,
-    title: "Transformasi Digital UMKM di Era 4.0",
-    image: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    date: "12 Sept 2024",
-    duration: "45 min"
-  },
-  {
-    id: 2,
-    title: "Cybersecurity: Tantangan dan Solusi",
-    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    date: "10 Sept 2024",
-    duration: "38 min"
-  },
-  {
-    id: 3,
-    title: "AI dan Masa Depan Industri Teknologi",
-    image: "https://images.unsplash.com/photo-1677442135135-416f8aa26a5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    date: "8 Sept 2024",
-    duration: "52 min"
-  },
-  {
-    id: 4,
-    title: "Cloud Computing untuk Bisnis Modern",
-    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    date: "5 Sept 2024",
-    duration: "41 min"
-  },
-  {
-    id: 5,
-    title: "IoT dalam Smart City Development",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    date: "3 Sept 2024",
-    duration: "47 min"
-  },
-  {
-    id: 6,
-    title: "Blockchain Beyond Cryptocurrency",
-    image: "https://images.unsplash.com/photo-1639762681057-408e52192e55?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    date: "1 Sept 2024",
-    duration: "50 min"
+// Dapatkan nama kategori
+const getCategoryName = (podcast) => {
+  if (podcast.category && podcast.category.name) {
+    return podcast.category.name;
   }
-]);
+  if (podcast.category_podcasts_id) {
+    return `Kategori ${podcast.category_podcasts_id}`;
+  }
+  return "Podcast";
+};
 
-const activePodcast = ref(0);
+// Buka video YouTube
+const openYoutube = (ytId) => {
+  if (ytId) {
+    // Karena ini data dummy, kita bisa arahkan ke halaman YouTube umum
+    // atau gunakan ID asli jika ada
+    const isDummyId = ["abc123", "def456"].includes(ytId);
+    const url = isDummyId
+      ? "https://www.youtube.com/"
+      : `https://www.youtube.com/watch?v=${ytId}`;
+    window.open(url, "_blank");
+  }
+};
 
 const setActivePodcast = (index) => {
   activePodcast.value = index;
+  // Buka YouTube ketika podcast diklik
+  if (podcasts.value[index] && podcasts.value[index].yt_id) {
+    openYoutube(podcasts.value[index].yt_id);
+  }
 };
 
 const onSlideChange = (swiper) => {
   activePodcast.value = swiper.activeIndex;
 };
+
+// Simulasi loading data saat komponen dimount
+onMounted(() => {
+  loading.value = true;
+  setTimeout(() => {
+    loading.value = false;
+  }, 1000); // simulasi delay 1 detik
+});
 </script>
 
 <style scoped>
@@ -246,5 +408,19 @@ const onSlideChange = (swiper) => {
 
 .group:hover .group-hover\:w-full {
   width: 100% !important;
+}
+
+/* Loading animation */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

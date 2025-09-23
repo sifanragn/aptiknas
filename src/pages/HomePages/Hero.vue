@@ -37,7 +37,7 @@
             <transition name="carousel" mode="out-in">
               <img
                 :key="filteredSlides[currentSlide].id || currentSlide"
-                :src="getImageUrl(filteredSlides[currentSlide].image)"
+                :src="filteredSlides[currentSlide].image"
                 class="w-full h-full object-cover object-center absolute inset-0"
                 :alt="filteredSlides[currentSlide].title"
               />
@@ -62,24 +62,26 @@
 
         <!-- Button CTA -->
         <router-link
-          v-if="
-            filteredSlides[currentSlide].button_text &&
-            filteredSlides[currentSlide].url_link
-          "
-          :to="filteredSlides[currentSlide].url_link"
-          class="bg-[#511378] text-white rounded-full py-2 px-6 hover:bg-[#3a0d57] transition-colors text-sm md:text-base absolute bottom-5 left-1/2 transform -translate-x-1/2 z-10"
+          to="/daftar"
+          class="bg-green-600 text-white rounded-full py-2 px-6 hover:bg-green-700 transition-colors text-sm md:text-base absolute bottom-0 left-1/2 transform -translate-x-1/2 z-10"
         >
-          {{ filteredSlides[currentSlide].button_text }}
+          Bergabung Sekarang
         </router-link>
       </section>
-      
+
       <!-- Loading state -->
-      <div v-if="loading" class="flex justify-center items-center h-[300px] sm:h-[400px] lg:h-[80vh]">
+      <div
+        v-if="loading"
+        class="flex justify-center items-center h-[300px] sm:h-[400px] lg:h-[80vh]"
+      >
         <p class="text-gray-600">Memuat slider...</p>
       </div>
-      
+
       <!-- Empty state -->
-      <div v-if="!loading && !filteredSlides.length" class="flex justify-center items-center h-[300px] sm:h-[400px] lg:h-[80vh]">
+      <div
+        v-if="!loading && !filteredSlides.length"
+        class="flex justify-center items-center h-[300px] sm:h-[400px] lg:h-[80vh]"
+      >
         <p class="text-gray-600">Tidak ada slider yang ditampilkan</p>
       </div>
     </div>
@@ -90,7 +92,7 @@
         v-for="(slide, index) in filteredSlides"
         :key="index"
         class="w-3 h-3 rounded-full cursor-pointer"
-        :class="currentSlide === index ? 'bg-[#511378]' : 'bg-gray-500'"
+        :class="currentSlide === index ? 'bg-green-600' : 'bg-gray-500'"
         @click.prevent="goToSlide(index)"
       ></span>
     </div>
@@ -99,21 +101,58 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
-import { useSliderStore } from "@/stores/slider";
 
-const sliderStore = useSliderStore();
+// Data dummy untuk slider APTIKNAS
+const dummySlides = ref([
+  {
+    id: 1,
+    title: "APTIKNAS - Asosiasi Pengusaha TIK Nasional",
+    subtitle:
+      "Bersama membangun ekosistem digital Indonesia yang inklusif dan berkelanjutan",
+    image:
+      "https://images.unsplash.com/photo-1516387938699-a93567ec168e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80",
+    button_text: "Bergabung Sekarang",
+    url_link: "/daftar",
+    display_on_home: true,
+  },
+  {
+    id: 2,
+    title: "Transformasi Digital untuk UMKM",
+    subtitle:
+      "Tingkatkan produktivitas dan perluas jangkauan pasar dengan solusi digital",
+    image:
+      "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80",
+    button_text: "Pelajari Lebih Lanjut",
+    url_link: "#learn-more",
+    display_on_home: true,
+  },
+  {
+    id: 3,
+    title: "Networking & Kolaborasi Bisnis",
+    subtitle: "Jejaring luas dengan pelaku usaha TIK seluruh Indonesia",
+    image:
+      "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80",
+    button_text: "Daftar Event",
+    url_link: "#events",
+    display_on_home: true,
+  },
+  {
+    id: 4,
+    title: "Seminar Nasional Teknologi 2024",
+    subtitle:
+      "Diskusi terdepan tentang perkembangan teknologi informasi dan komunikasi di Indonesia",
+    image:
+      "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80",
+    button_text: "Daftar Seminar",
+    url_link: "/seminar",
+    display_on_home: true,
+  },
+]);
+
 const loading = ref(false);
+const sliders = ref(dummySlides.value);
 const currentSlide = ref(0);
 let slideInterval;
-
-// Mengambil data dari store
-const sliders = computed(() => {
-  // Jika store memiliki data, gunakan data tersebut
-  if (sliderStore.list.data && Array.isArray(sliderStore.list.data)) {
-    return sliderStore.list.data;
-  }
-  return [];
-});
 
 // Filter slides yang seharusnya ditampilkan di hero
 const filteredSlides = computed(() => {
@@ -121,21 +160,6 @@ const filteredSlides = computed(() => {
     (slide) => slide.display_on_home === true && slide.image
   );
 });
-
-// Fungsi untuk mendapatkan URL gambar lengkap
-const getImageUrl = (imagePath) => {
-  if (!imagePath) return '';
-  
-  // Jika gambar sudah berupa URL lengkap, langsung kembalikan
-  if (imagePath.startsWith('http')) {
-    return imagePath;
-  }
-  
-  // Jika gambar adalah path relatif, tambahkan base URL
-  // Sesuaikan dengan URL API Anda
-  const baseUrl = 'http://127.0.0.1:8000';
-  return `${baseUrl}/storage/${imagePath}`;
-};
 
 // Navigation functions
 const nextSlide = () => {
@@ -174,22 +198,13 @@ const resetSlideInterval = () => {
 };
 
 // Initialize
-onMounted(async () => {
+onMounted(() => {
+  // Simulasikan loading
   loading.value = true;
-  
-  try {
-    // Ambil data dari store
-    await sliderStore.fetchAll();
-    
-    // Mulai slider jika ada data
-    if (filteredSlides.value.length > 0) {
-      startSlideInterval();
-    }
-  } catch (error) {
-    console.error("Gagal memuat data slider:", error);
-  } finally {
+  setTimeout(() => {
     loading.value = false;
-  }
+    startSlideInterval();
+  }, 1000);
 });
 
 // Cleanup
@@ -202,16 +217,16 @@ onUnmounted(() => {
 .clipth {
   clip-path: polygon(
     0 10%,
-    25% 10%,
-    25% 0%,
-    70% 0%,
-    70% 10%,
+    20.5% 10%,
+    20.5% 0%,
+    75.5% 0%,
+    75.5% 10%,
     100% 10%,
     100% 100%,
-    65% 100%,
-    65% 91%,
-    35% 91%,
-    35% 100%,
+    60% 100%,
+    60% 91%,
+    40% 91%,
+    40% 100%,
     0 100%
   );
 }
@@ -236,5 +251,14 @@ svg {
 
 .img-container {
   filter: url("#goo");
+}
+
+/* Warna green-600 */
+.bg-green-600 {
+  background-color: #16a34a;
+}
+
+.hover\:bg-green-700:hover {
+  background-color: #15803d;
 }
 </style>

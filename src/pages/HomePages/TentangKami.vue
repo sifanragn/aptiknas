@@ -61,7 +61,7 @@
               class="swiper-slide !w-auto"
             >
               <img
-                :src="item.image"
+                :src="getImageUrl(item.image)"
                 class="rounded-xl sm:rounded-2xl md:rounded-3xl mb-10 shadow-lg w-[10rem] h-[14rem] sm:w-[12rem] sm:h-[16rem] md:w-[14rem] md:h-[18rem] ml-4 mt-2 lg:w-[15rem] lg:h-[20rem] object-cover"
                 :alt="item.title"
                 @error="handleImageError(item.id)"
@@ -100,6 +100,11 @@
   <div v-if="error" class="py-12 text-center text-red-500">
     <p>Gagal memuat data: {{ error }}</p>
   </div>
+
+  <!-- Empty State -->
+  <div v-if="!loading && filteredData.length === 0" class="py-12 text-center">
+    <p>Tidak ada data tentang kami yang ditampilkan di beranda.</p>
+  </div>
 </template>
 
 <script setup>
@@ -112,51 +117,37 @@ import InteractiveHoverButton from "@/components/ui/interactive-hover-button/Int
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { useAboutusStore } from "@/stores/aboutus";
 
-// Data dummy untuk menggantikan data dari store
-const dummyData = ref([
-  {
-    id: 1,
-    title: "Inovasi dan Kreativitas",
-    description: "Kami adalah tim yang berdedikasi untuk menciptakan solusi inovatif dan kreatif bagi kebutuhan bisnis Anda. Dengan pengalaman lebih dari 10 tahun, kami telah membantu ratusan perusahaan mencapai tujuan mereka.",
-    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80",
-    display_on_home: true
-  },
-  {
-    id: 2,
-    title: "Komitmen terhadap Kualitas",
-    description: "Kualitas adalah prioritas utama kami. Setiap produk dan layanan yang kami berikan melalui proses penjaminan kualitas yang ketat untuk memastikan kepuasan pelanggan.",
-    image: "https://images.unsplash.com/photo-1568992687947-868a62a9f521?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80",
-    display_on_home: true
-  },
-  {
-    id: 3,
-    title: "Tim Profesional",
-    description: "Didukung oleh tim profesional yang berpengalaman di bidangnya, kami siap memberikan solusi terbaik untuk bisnis Anda. Setiap anggota tim kami memiliki keahlian khusus yang saling melengkapi.",
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80",
-    display_on_home: true
-  },
-  {
-    id: 4,
-    title: "Teknologi Terkini",
-    description: "Kami selalu mengikuti perkembangan teknologi terbaru untuk memberikan solusi yang modern dan efisien. Dengan menggunakan tools dan platform terkini, kami memastikan bisnis Anda tetap kompetitif.",
-    image: "https://images.unsplash.com/photo-1535223289827-42f1e9919769?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80",
-    display_on_home: true
-  }
-]);
-
+const aboutusStore = useAboutusStore();
 const activeIndex = ref(0);
 const swiperInstance = ref(null);
 const initializationError = ref(null);
 const loading = ref(false);
 const error = ref(null);
 
-// Fungsi untuk memuat data (dummy)
+// Fungsi untuk mendapatkan URL gambar lengkap
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80';
+  
+  // Jika gambar sudah berupa URL lengkap, langsung kembalikan
+  if (imagePath.startsWith('http')) {
+    return imagePath;
+  }
+  
+  // Jika gambar adalah path relatif, tambahkan base URL
+  const baseUrl = 'http://127.0.0.1:8000';
+  return `${baseUrl}/${imagePath}`;
+};
+
+// Fungsi untuk memuat data dari store
 const loadData = async () => {
   try {
     loading.value = true;
-    // Simulasi loading data
-    await new Promise(resolve => setTimeout(resolve, 500));
+    error.value = null;
+    
+    // Ambil data dari store
+    await aboutusStore.fetchAll();
     
     if (filteredData.value.length > 0) {
       await nextTick();
@@ -184,14 +175,17 @@ const handleImageError = (itemId) => {
   }
 };
 
-// Filter data dengan null check
+// Filter data dengan null check - hanya tampilkan yang display_on_home = true
 const filteredData = computed(() => {
   try {
-    // Menggunakan data dummy
-    const filtered = dummyData.value.filter(
-      (item) => item.display_on_home === true
-    );
-    return filtered;
+    // Menggunakan data dari store
+    if (aboutusStore.list.data && Array.isArray(aboutusStore.list.data)) {
+      const filtered = aboutusStore.list.data.filter(
+        (item) => item.display_on_home === true
+      );
+      return filtered;
+    }
+    return [];
   } catch (err) {
     console.error("Data filtering error:", err);
     return [];

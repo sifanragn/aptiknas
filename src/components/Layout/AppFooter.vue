@@ -6,7 +6,7 @@
       <!-- Logo dan Kontak -->
       <div>
         <div class="mb-4">
-          <img src="" alt="Logo APTIKNAS" class="w-12 h-12" />
+          <img src="../../assets/logo.png" alt="Logo APTIKNAS" class="w-full h-full" />
         </div>
         <h3 class="font-bold text-gray-800 mb-2">APTIKNAS</h3>
         <p class="text-xs mb-1">Asosiasi Pengusaha TIK Nasional</p>

@@ -19,7 +19,7 @@
         @click="goToPage(page)"
         class="px-3 py-1 rounded"
         :class="{
-          'border-purple-600 border-2 bg-white text-purple-700 font-bold': currentPage === page,
+          'border-green-600 border-2 bg-white text-green-700 font-bold': currentPage === page,
           'bg-white border border-gray-300': currentPage !== page
         }"
       >
@@ -48,7 +48,7 @@ const emit = defineEmits(['page-changed'])
 const props = defineProps<{
   totalItems: number
   itemsPerPage?: number
-  modelValue?: number // bisa pakai v-model:currentPage
+  modelValue?: number 
 }>()
 
 const currentPage = ref(props.modelValue || 1)

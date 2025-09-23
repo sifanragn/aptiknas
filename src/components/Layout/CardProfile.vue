@@ -1,6 +1,8 @@
 <!-- components/ProfileCard.vue -->
 <template>
-  <div class="w-sm rounded-2xl shadow-md bg-white p-4 flex items-center gap-4">
+  <div
+    class="w-sm rounded-2xl shadow-md bg-white p-4 flex items-center gap-4 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:pt-8"
+  >
     <!-- Bagian Kiri -->
     <div class="flex-1">
       <h2 class="text-lg font-semibold text-black">{{ name }}</h2>
@@ -24,12 +26,10 @@
 
     <!-- Bagian Kanan (Foto) -->
     <div class="relative">
-      <div class="absolute inset-0 rounded-full bg-green-200 blur-2xl scale-125"></div>
-      <img
-        :src="image"
-        alt="profile"
-        class="relative size-40 object-cover "
-      />
+      <div
+        class="absolute inset-0 rounded-full bg-green-200 blur-2xl scale-125"
+      ></div>
+      <img :src="image" alt="profile" class="relative size-40 object-cover" />
     </div>
   </div>
 </template>
@@ -42,7 +42,7 @@ defineProps({
   image: { type: String, required: true },
   social: {
     type: Array,
-    default: () => [] // contoh: [{ icon: IconComponent, url: "https://..." }]
-  }
-})
+    default: () => [], // contoh: [{ icon: IconComponent, url: "https://..." }]
+  },
+});
 </script>

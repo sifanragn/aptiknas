@@ -1,5 +1,5 @@
 <script setup>
-import HeroNews from '@/pages/BeritaPages/HeroNews.vue';
+import HeroNews from '@/pages/HomePages/Hero.vue';
 import News from '@/pages/BeritaPages/News.vue';
 import AgendaNews from '@/pages/BeritaPages/AgendaNews.vue';
 import PodcastHome from '@/pages/HomePages/PodcastHome.vue';

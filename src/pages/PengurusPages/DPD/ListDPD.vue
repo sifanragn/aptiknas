@@ -203,88 +203,228 @@ const members = ref([
   // Dewan Pengawas Asosiasi (DPA)
   {
     id: 1,
-    name: "Dr. Suryo Prakoso, M.Kom.",
-    position: "Ketua DPA",
+    name: "Dr. Bambang Sutrisno",
+    position: "Ketua Dewan Pengawas",
     location: "Jakarta",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
-    social: [],
+    region: "DKI Jakarta",
     type: "dpa",
-    region: "Jakarta",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
   },
   {
     id: 2,
-    name: "Ir. Muzakkir, MT.",
-    position: "Wakil Ketua DPA",
-    location: "Bogor",
-    image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
-    social: [],
-    type: "dpa",
+    name: "Ir. Suryo Handono, M.Sc.",
+    position: "Anggota Dewan Pengawas",
+    location: "Bandung",
     region: "Jawa Barat",
+    type: "dpa",
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    id: 3,
+    name: "Diana Pratiwi, S.Kom., M.T.I.",
+    position: "Anggota Dewan Pengawas",
+    location: "Surabaya",
+    region: "Jawa Timur",
+    type: "dpa",
+    image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
   },
 
   // Dewan Pengurus Pusat (DPP)
   {
-    id: 21,
-    name: "Budi Santoso, M.T.I.",
-    position: "Ketua DPP",
-    location: "Jakarta Pusat",
-    image:
-      "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
-    social: [],
+    id: 4,
+    name: "Dr. Rudi Hartono, S.T., M.Kom.",
+    position: "Ketua Umum DPP APTIKNAS",
+    location: "Jakarta",
+    region: "DKI Jakarta",
     type: "dpp",
-    region: "Jakarta",
+    image: "https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    id: 5,
+    name: "Maya Sari, S.E., M.M.",
+    position: "Wakil Ketua DPP - Bidang Keuangan",
+    location: "Jakarta",
+    region: "DKI Jakarta",
+    type: "dpp",
+    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    id: 6,
+    name: "Ahmad Fauzi, S.Kom., M.Sc.",
+    position: "Wakil Ketua DPP - Bidang Teknologi",
+    location: "Bandung",
+    region: "Jawa Barat",
+    type: "dpp",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  },
+
+  // Dewan Pengurus Daerah (DPD) - Contoh beberapa daerah
+  {
+    id: 7,
+    name: "Budi Santoso, S.T.",
+    position: "Ketua DPD Jawa Barat",
+    location: "Bandung",
+    region: "Jawa Barat",
+    type: "dpd",
+    image: "https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    id: 8,
+    name: "Siti Rahayu, S.Kom.",
+    position: "Ketua DPD Jawa Timur",
+    location: "Surabaya",
+    region: "Jawa Timur",
+    type: "dpd",
+    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    id: 9,
+    name: "Joko Widodo, S.E.",
+    position: "Ketua DPD Jawa Tengah",
+    location: "Semarang",
+    region: "Jawa Tengah",
+    type: "dpd",
+    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    id: 10,
+    name: "Dewi Kusuma, M.T.",
+    position: "Ketua DPD Bali",
+    location: "Denpasar",
+    region: "Bali",
+    type: "dpd",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    id: 11,
+    name: "Andi Rahman, S.Kom.",
+    position: "Ketua DPD Sumatra Utara",
+    location: "Medan",
+    region: "Sumatra Utara",
+    type: "dpd",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    id: 12,
+    name: "Rina Wijaya, M.M.",
+    position: "Ketua DPD Sumatra Selatan",
+    location: "Palembang",
+    region: "Sumatra Selatan",
+    type: "dpd",
+    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
   },
 
   // Dewan Penasehat Asosiasi
   {
-    id: 31,
-    name: "Prof. Dr. Ahmad Rizali",
-    position: "Dewan Penasehat",
-    location: "Bandung",
-    image:
-      "https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
-    social: [],
+    id: 13,
+    name: "Prof. Dr. Ir. H. Muhammad Anis, M.M.",
+    position: "Ketua Dewan Penasehat",
+    location: "Jakarta",
+    region: "DKI Jakarta",
     type: "penasehat",
-    region: "Jawa Barat",
+    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    id: 14,
+    name: "Dr. Hj. Siti Fatimah, S.E., M.Si.",
+    position: "Anggota Dewan Penasehat",
+    location: "Yogyakarta",
+    region: "DI Yogyakarta",
+    type: "penasehat",
+    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    id: 15,
+    name: "Ir. H. Bambang Soedarmono, M.T.",
+    position: "Anggota Dewan Penasehat",
+    location: "Surabaya",
+    region: "Jawa Timur",
+    type: "penasehat",
+    image: "https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
   },
 
-  // Dewan Pengurus Daerah (DPD) - 24 DPD
+  // Tambahan anggota lainnya untuk melengkapi
   {
-    id: 101,
-    name: "Dr. Abdullah, M.Kom.",
-    position: "Ketua DPD Aceh",
-    location: "Banda Aceh",
-    image:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
-    social: [],
+    id: 16,
+    name: "Rudi Hermawan, S.Kom.",
+    position: "Sekretaris DPD Jawa Barat",
+    location: "Bandung",
+    region: "Jawa Barat",
     type: "dpd",
-    region: "Aceh",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
   },
   {
-    id: 102,
-    name: "Siti Rahayu, S.T.",
-    position: "Ketua DPD Sumatra Utara",
-    location: "Medan",
-    image:
-      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
-    social: [],
-    type: "dpd",
-    region: "Sumatra Utara",
+    id: 17,
+    name: "Linda Sari, M.Kom.",
+    position: "Bendahara DPP APTIKNAS",
+    location: "Jakarta",
+    region: "DKI Jakarta",
+    type: "dpp",
+    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
   },
-  // ... tambahkan 22 DPD lainnya sesuai region
   {
-    id: 124,
-    name: "Made Wijaya, S.Kom.",
-    position: "Ketua DPD Bali",
-    location: "Denpasar",
-    image:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
-    social: [],
+    id: 18,
+    name: "Hendra Gunawan, S.T.",
+    position: "Koordinator DPD Banten",
+    location: "Serang",
+    region: "Banten",
     type: "dpd",
-    region: "Bali",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
   },
+  {
+    id: 19,
+    name: "Fitri Ayu, S.E.",
+    position: "Koordinator DPD Lampung",
+    location: "Bandar Lampung",
+    region: "Lampung",
+    type: "dpd",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    id: 20,
+    name: "Agus Salim, M.T.",
+    position: "Koordinator DPD Kalimantan Timur",
+    location: "Samarinda",
+    region: "Kalimantan Timur",
+    type: "dpd",
+    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    id: 21,
+    name: "Nina Kurnia, S.Kom.",
+    position: "Koordinator DPD Sulawesi Selatan",
+    location: "Makassar",
+    region: "Sulawesi Selatan",
+    type: "dpd",
+    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    id: 22,
+    name: "Bambang Wijaya, M.M.",
+    position: "Koordinator DPD Nusa Tenggara Barat",
+    location: "Mataram",
+    region: "Nusa Tenggara Barat",
+    type: "dpd",
+    image: "https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    id: 23,
+    name: "Dewi Sartika, S.T.",
+    position: "Koordinator DPD Papua",
+    location: "Jayapura",
+    region: "Papua",
+    type: "dpd",
+    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    id: 24,
+    name: "Rizky Pratama, M.Kom.",
+    position: "Koordinator DPD Riau",
+    location: "Pekanbaru",
+    region: "Riau",
+    type: "dpd",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+  }
 ]);
 
 // Regions data
@@ -349,7 +489,6 @@ onMounted(() => {
   }, 800);
 });
 </script>
-
 <style scoped module>
 .scale-95 {
   transform: scale(0.95);

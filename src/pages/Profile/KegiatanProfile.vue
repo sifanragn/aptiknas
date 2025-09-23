@@ -1,26 +1,29 @@
 <template>
-  <section class="bg-gray-50 dark:bg-neutral-900 py-16 text-center overflow-hidden relative">
+  <section
+    class="dark:bg-neutral-900 py-16 text-center overflow-hidden relative"
+  >
     <div class="px-4 container mx-auto">
-      <h2 
+      <h2
         class="text-3xl font-bold mb-3 text-black dark:text-white"
         data-aos="fade-down"
         data-aos-duration="800"
       >
         Kegiatan APTIKNAS
       </h2>
-      <p 
+      <p
         class="text-gray-500 dark:text-neutral-400 max-w-xl mx-auto mb-12"
         data-aos="fade-down"
         data-aos-duration="800"
         data-aos-delay="200"
       >
-        Berbagai program dan aktivitas yang diselenggarakan untuk memajukan industri TIK nasional dan memberdayakan anggota.
+        Berbagai program dan aktivitas yang diselenggarakan untuk memajukan
+        industri TIK nasional dan memberdayakan anggota.
       </p>
     </div>
 
     <!-- Swiper Container -->
     <div class="relative px-4 container mx-auto" v-if="kegiatanData.length > 0">
-      <div 
+      <div
         class="swiper kegiatan-swiper"
         @mouseenter="pauseSwiper"
         @mouseleave="resumeSwiper"
@@ -28,37 +31,56 @@
         data-aos-duration="800"
       >
         <div class="swiper-wrapper">
-          <div 
-            v-for="(item, index) in kegiatanData" 
-            :key="index" 
+          <div
+            v-for="(item, index) in kegiatanData"
+            :key="index"
             class="swiper-slide"
           >
-            <div class="relative group cursor-pointer h-96">
+            <div
+              class="relative group cursor-pointer h-96 overflow-hidden rounded-2xl"
+            >
               <!-- Text Description (Above Image) -->
-              <div class="absolute top-0 left-0 right-0 bg-white text-black p-4 rounded-t-2xl transition-all duration-500 transform -translate-y-full group-hover:translate-y-0 z-20">
+              <div
+                class="absolute top-0 left-0 right-0 bg-white text-black p-4 rounded-t-2xl transition-all duration-500 transform -translate-y-full group-hover:translate-y-0 z-20"
+              >
                 <h3 class="font-semibold text-lg mb-2">{{ item.title }}</h3>
-                <p class="text-sm text-gray-600 line-clamp-2">{{ item.description }}</p>
-                <span class="inline-block mt-2 text-xs text-green-600 font-medium">{{ item.date }}</span>
+                <p class="text-sm text-gray-600 line-clamp-2">
+                  {{ item.description }}
+                </p>
+                <span
+                  class="inline-block mt-2 text-xs text-green-600 font-medium"
+                  >{{ item.date }}</span
+                >
               </div>
 
               <!-- Image Container (Reduces height on hover) -->
-              <div class="absolute inset-0 overflow-hidden rounded-2xl transition-all duration-500 group-hover:h-1/2 group-hover:top-1/2">
+              <div
+                class="absolute inset-0 overflow-hidden rounded-2xl transition-all duration-500 group-hover:h-1/2 group-hover:top-1/2"
+              >
                 <img
                   :src="item.image"
                   :alt="item.title"
                   class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-500"></div>
-                
+                <div
+                  class="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+                ></div>
+
                 <!-- Title overlay on image -->
                 <div class="absolute bottom-4 left-4 right-4">
-                  <h3 class="text-white font-semibold text-lg drop-shadow-lg">{{ item.title }}</h3>
+                  <h3 class="text-white font-semibold text-lg drop-shadow-lg">
+                    {{ item.title }}
+                  </h3>
                 </div>
               </div>
 
               <!-- Bottom space for content (becomes visible when image shrinks) -->
-              <div class="absolute bottom-0 left-0 right-0 h-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <div class="bg-gradient-to-t from-white to-transparent h-full rounded-b-2xl"></div>
+              <div
+                class="absolute bottom-0 left-0 right-0 h-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              >
+                <div
+                  class="bg-gradient-to-t from-white to-transparent h-full rounded-b-2xl"
+                ></div>
               </div>
             </div>
           </div>
@@ -67,20 +89,46 @@
 
       <!-- Navigation Buttons (Bottom Right) -->
       <div class="flex justify-end items-center gap-3 mt-6">
-        <button class="swiper-button-prev-kegiatan bg-white border border-gray-300 rounded-full w-12 h-12 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-md">
-          <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        <button
+          class="swiper-button-prev-kegiatan bg-white border border-gray-300 rounded-full w-12 h-12 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-md"
+        >
+          <svg
+            class="w-6 h-6 text-gray-700"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
-        <button class="swiper-button-next-kegiatan bg-white border border-gray-300 rounded-full w-12 h-12 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-md">
-          <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        <button
+          class="swiper-button-next-kegiatan bg-white border border-gray-300 rounded-full w-12 h-12 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-md"
+        >
+          <svg
+            class="w-6 h-6 text-gray-700"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </button>
       </div>
 
       <!-- Pagination (Bottom Left) -->
-      <div class="swiper-pagination-kegiatan !relative !justify-start mt-6"></div>
+      <div
+        class="swiper-pagination-kegiatan !relative !justify-start mt-6"
+      ></div>
     </div>
 
     <!-- Data Dummy Loading -->
@@ -88,7 +136,7 @@
       <p>Memuat kegiatan...</p>
     </div>
 
-    <div 
+    <div
       class="mt-10"
       data-aos="fade-up"
       data-aos-delay="300"
@@ -97,79 +145,86 @@
       <interactive-hover-button
         text="Lihat Semua Kegiatan"
         icon="fas fa-arrow-right"
-        @click="$router.push('/kegiatan')"/>
+        @click="$router.push('/kegiatan')"
+      />
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import Swiper from 'swiper'
-import { Navigation, Pagination, Autoplay } from 'swiper/modules'
-import AOS from 'aos'
-import 'aos/dist/aos.css'
-import 'swiper/css'
-import 'swiper/css/navigation'
-import 'swiper/css/pagination'
-import InteractiveHoverButton from '@/components/ui/interactive-hover-button/InteractiveHoverButton.vue'
+import { ref, onMounted, onUnmounted, computed, nextTick } from "vue";
+import Swiper from "swiper";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { useAgendaStore } from "@/stores/agenda";
+import InteractiveHoverButton from "@/components/ui/interactive-hover-button/InteractiveHoverButton.vue";
 
 // Data dummy untuk kegiatan APTIKNAS
-const kegiatanData = ref([
-  {
-    id: 1,
-    title: "Seminar Digital Transformation",
-    description: "Workshop dan seminar tentang transformasi digital untuk UMKM dengan pembicara ahli dari industri teknologi.",
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    date: "15 Sept 2024"
-  },
-  {
-    id: 2,
-    title: "Networking Gathering",
-    description: "Acara networking eksklusif untuk anggota APTIKNAS dengan pelaku industri dan pemerintah.",
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    date: "22 Sept 2024"
-  },
-  {
-    id: 3,
-    title: "Tech Training Bootcamp",
-    description: "Pelatihan intensif untuk pengembangan skill teknologi terkini seperti cloud computing dan cybersecurity.",
-    image: "https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    date: "30 Sept 2024"
-  },
-  {
-    id: 4,
-    title: "Industry 4.0 Conference",
-    description: "Konferensi nasional tentang implementasi Industry 4.0 di berbagai sektor industri Indonesia.",
-    image: "https://images.unsplash.com/photo-1581092921461-eab62e97a780?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    date: "5 Okt 2024"
-  },
-  {
-    id: 5,
-    title: "Startup Pitch Competition",
-    description: "Kompetisi pitch untuk startup teknologi dengan hadiah total ratusan juta rupiah.",
-    image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    date: "12 Okt 2024"
-  }
-])
+const agendaStore = useAgendaStore();
+const swiperInstance = ref(null);
 
-const swiperInstance = ref(null)
+const kegiatanData = computed(() => {
+  const list = agendaStore.list;
+  if (!list || !Array.isArray(list)) return [];
+
+  return list.slice(0, 8).map((item) => ({
+    id: item.id,
+    title: item.title,
+    description: stripHtmlTags(item.description),
+    date: formatDate(item.start_datetime),
+    image: getImageUrl(item.image),
+  }));
+});
+
+// Fungsi untuk mendapatkan URL gambar lengkap
+const getImageUrl = (imagePath) => {
+  if (!imagePath)
+    return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80";
+  if (imagePath.startsWith("http")) return imagePath;
+  const baseUrl = "http://127.0.0.1:8000";
+  return `${baseUrl}/storage/${imagePath}`;
+};
+
+// Format tanggal untuk ditampilkan
+const formatDate = (dateString) => {
+  if (!dateString) return "Tanggal tidak tersedia";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
+
+// Hapus tag HTML dari deskripsi
+const stripHtmlTags = (html) => {
+  if (!html) return "Tidak ada deskripsi";
+  return html.replace(/<[^>]*>/g, "");
+};
 
 // Initialize AOS
-onMounted(() => {
+onMounted(async () => {
   AOS.init({
     once: true,
-    easing: 'ease-out-quad',
-    duration: 800
-  })
+    easing: "ease-out-quad",
+    duration: 800,
+  });
 
-  // Initialize Swiper after component is mounted
-  setTimeout(() => {
-    initSwiper()
-  }, 100)
-})
+  await agendaStore.fetchAll();
+
+  // Initialize Swiper after data is loaded and DOM is updated
+  await nextTick();
+  if (kegiatanData.value.length > 0) {
+    initSwiper();
+  }
+});
 
 const initSwiper = () => {
-  swiperInstance.value = new Swiper('.kegiatan-swiper', {
+  swiperInstance.value = new Swiper(".kegiatan-swiper", {
     modules: [Navigation, Pagination, Autoplay],
     slidesPerView: 1,
     spaceBetween: 20,
@@ -179,11 +234,11 @@ const initSwiper = () => {
       disableOnInteraction: false,
     },
     navigation: {
-      nextEl: '.swiper-button-next-kegiatan',
-      prevEl: '.swiper-button-prev-kegiatan',
+      nextEl: ".swiper-button-next-kegiatan",
+      prevEl: ".swiper-button-prev-kegiatan",
     },
     pagination: {
-      el: '.swiper-pagination-kegiatan',
+      el: ".swiper-pagination-kegiatan",
       clickable: true,
       dynamicBullets: true,
     },
@@ -201,32 +256,32 @@ const initSwiper = () => {
         spaceBetween: 40,
       },
     },
-  })
-}
+  });
+};
 
 const pauseSwiper = () => {
   if (swiperInstance.value) {
-    swiperInstance.value.autoplay.stop()
+    swiperInstance.value.autoplay.stop();
   }
-}
+};
 
 const resumeSwiper = () => {
   if (swiperInstance.value) {
-    swiperInstance.value.autoplay.start()
+    swiperInstance.value.autoplay.start();
   }
-}
+};
 
 onUnmounted(() => {
   if (swiperInstance.value) {
-    swiperInstance.value.destroy()
+    swiperInstance.value.destroy();
   }
-})
+});
 </script>
 
 <style scoped>
-@import 'swiper/css';
-@import 'swiper/css/navigation';
-@import 'swiper/css/pagination';
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
 
 .kegiatan-swiper {
   padding: 20px 10px;

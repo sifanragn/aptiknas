@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-50 dark:bg-neutral-900 flex flex-col items-center py-16">
+  <div class="dark:bg-neutral-900 flex flex-col items-center py-16">
     <!-- Judul -->
     <div class="text-center mb-10">
       <h2 class="text-2xl font-bold">
@@ -18,7 +18,6 @@
         :location="member.location"
         :image="member.image"
         :social="member.social"
-        class="transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
       />
     </div>
 

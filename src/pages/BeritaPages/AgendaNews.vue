@@ -1,21 +1,43 @@
 <template>
   <section class="px-4 sm:px-6 py-12 sm:py-16 text-gray-800">
     <div class="max-w-3xl mx-auto text-center">
-      <h2 class="text-2xl sm:text-3xl font-bold mb-2">Agenda Kegiatan APTIKNAS</h2>
+      <h2 class="text-2xl sm:text-3xl font-bold mb-2">
+        Agenda Kegiatan APTIKNAS
+      </h2>
       <p class="text-gray-600 text-sm sm:text-base mb-8 sm:mb-10">
-        Jadwal kegiatan terbaru Asosiasi Pengusaha TIK Nasional - seminar, workshop, dan event networking untuk pengembangan industri TIK.
+        Jadwal kegiatan terbaru Asosiasi Pengusaha TIK Nasional - seminar,
+        workshop, dan event networking untuk pengembangan industri TIK.
       </p>
     </div>
 
-    <div v-if="loading" class="text-center text-gray-500">
-      Memuat agenda...
+    <!-- Loading State -->
+    <div v-if="agendaStore.loading" class="text-center text-gray-500 py-8">
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"
+      ></div>
+      <p>Memuat agenda...</p>
     </div>
-    
-    <div v-else-if="agendaList && agendaList.length > 0" class="w-full max-w-xl mx-auto space-y-6 sm:space-y-12">
+
+    <!-- Error State -->
+    <div v-else-if="agendaStore.error" class="text-center text-red-500 py-8">
+      <p>Gagal memuat agenda. Silakan coba lagi nanti.</p>
+      <p class="text-sm mb-4">{{ agendaStore.error }}</p>
+      <button
+        @click="loadAgendaData"
+        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
+      >
+        Coba Lagi
+      </button>
+    </div>
+
+    <div
+      v-else-if="agendaList && agendaList.length > 0"
+      class="w-full max-w-xl mx-auto space-y-6 sm:space-y-12"
+    >
       <AgendaCard
         v-for="(item, index) in agendaList"
         :key="item.id"
-        :item="item"
+        :item="formatAgendaItem(item)"
         @card-click="handleCardClick"
         data-aos="fade-up"
         :data-aos-delay="index * 100"
@@ -24,14 +46,17 @@
       />
     </div>
 
-    <div v-else class="text-center text-gray-500">
-      Tidak ada agenda untuk ditampilkan.
+    <div v-else class="text-center text-gray-500 py-12">
+      <i class="far fa-calendar-alt text-4xl mb-4"></i>
+      <p>Tidak ada agenda untuk ditampilkan.</p>
     </div>
 
     <!-- View All Button -->
     <div class="text-center mt-10" data-aos="fade-up" data-aos-delay="300">
-      <button class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 
-                    transition-colors duration-300 font-medium">
+      <button
+        class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors duration-300 font-medium"
+        @click="viewAllAgenda"
+      >
         Lihat Semua Agenda
       </button>
     </div>
@@ -39,83 +64,204 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import AgendaCard from './AgendaCardEXS.vue';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
+import { ref, onMounted, watch, computed } from "vue";
+import { useAgendaStore } from "@/stores/agenda";
+import AgendaCard from "./AgendaCardEXS.vue";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
-// Data dummy untuk agenda APTIKNAS
-const agendaList = ref([
-  {
-    id: 1,
-    title: "Seminar Nasional Digital Transformation 2024",
-    date: "15 September 2024",
-    time: "09:00 - 17:00 WIB",
-    location: "Jakarta Convention Center",
-    description: "Seminar tentang transformasi digital untuk UMKM dengan pembicara ahli dari industri teknologi.",
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    category: "Seminar",
-    status: "upcoming"
-  },
-  {
-    id: 2,
-    title: "Workshop Cybersecurity untuk Pelaku Usaha",
-    date: "22 September 2024",
-    time: "13:00 - 16:00 WIB",
-    location: "Online - Zoom Meeting",
-    description: "Workshop intensif tentang keamanan siber untuk melindungi data bisnis dari ancaman digital.",
-    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    category: "Workshop",
-    status: "upcoming"
-  },
-  {
-    id: 3,
-    title: "APTIKNAS Networking Night 2024",
-    date: "30 September 2024",
-    time: "19:00 - 22:00 WIB",
-    location: "The Ritz-Carlton Jakarta",
-    description: "Acara networking eksklusif untuk anggota APTIKNAS dengan pelaku industri dan pemerintah.",
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    category: "Networking",
-    status: "upcoming"
-  },
-  {
-    id: 4,
-    title: "Tech Training: Cloud Computing Fundamentals",
-    date: "5 Oktober 2024",
-    time: "10:00 - 15:00 WIB",
-    location: "APTIKNAS Training Center",
-    description: "Pelatihan fundamental cloud computing untuk pengusaha TIK yang ingin mengembangkan skill.",
-    image: "https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    category: "Training",
-    status: "upcoming"
+const agendaStore = useAgendaStore();
+
+// Mengambil data dari store
+const agendaList = computed(() => {
+  console.log("Agenda store data:", agendaStore.list);
+
+  // Cek berbagai kemungkinan struktur data
+  if (Array.isArray(agendaStore.list)) {
+    return agendaStore.list;
   }
-]);
+  if (agendaStore.list && Array.isArray(agendaStore.list.data)) {
+    return agendaStore.list.data;
+  }
+  if (
+    agendaStore.list &&
+    agendaStore.list.success &&
+    Array.isArray(agendaStore.list.data)
+  ) {
+    return agendaStore.list.data;
+  }
 
-const loading = ref(false);
+  console.warn("Struktur data agenda tidak dikenali");
+  return [];
+});
 
-const emit = defineEmits(['card-click']);
+const emit = defineEmits(["card-click"]);
+
+// Fungsi untuk memuat data agenda
+const loadAgendaData = async () => {
+  try {
+    await agendaStore.fetchAll();
+    console.log("Agenda data loaded:", agendaList.value);
+  } catch (error) {
+    console.error("Failed to load agenda data:", error);
+  }
+};
+
+// Format agenda item untuk komponen AgendaCard
+const formatAgendaItem = (item) => {
+  return {
+    id: item.id,
+    title: item.title,
+    date: formatDate(item.start_datetime),
+    time: formatTimeRange(item.start_datetime, item.end_datetime),
+    location: item.location || "Lokasi tidak tersedia",
+    description: item.description
+      ? stripHtmlTags(item.description)
+      : "Tidak ada deskripsi",
+    image: getImageUrl(item.image),
+    category: item.type || item.event_organizer || "Agenda",
+    status: getStatus(item),
+    youtube_link: item.youtube_link,
+    start_datetime: item.start_datetime,
+    end_datetime: item.end_datetime,
+  };
+};
+
+// Fungsi untuk mendapatkan URL gambar lengkap
+const getImageUrl = (imagePath) => {
+  if (!imagePath) {
+    return "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
+  }
+
+  // Jika API mengembalikan URL lengkap (baik yang benar maupun yang salah)
+  if (imagePath.startsWith("http")) {
+    // Mengganti duplikasi seperti '.../agenda/agenda/...' menjadi '.../storage/agenda/...'
+    // Ini membuat URL konsisten dengan format yang benar.
+    return imagePath.replace(
+      /^(http:\/\/[^/]+)\/(agenda\/agenda\/)/,
+      "$1/storage/agenda/"
+    );
+  }
+
+  // Jika API mengembalikan path relatif (contoh: 'agenda/image.jpg')
+  const baseUrl = "http://127.0.0.1:8000";
+
+  // Menghindari duplikasi jika `imagePath` sudah diawali dengan 'storage/'
+  if (imagePath.startsWith("storage/")) {
+    return `${baseUrl}/${imagePath}`;
+  }
+
+  return `${baseUrl}/storage/${imagePath.replace(/^agenda\//, "agenda/")}`;
+};
+
+// Hapus tag HTML dari deskripsi
+const stripHtmlTags = (html) => {
+  if (!html) return "Tidak ada deskripsi";
+  return html.replace(/<[^>]*>/g, "").substring(0, 150) + "...";
+};
+
+// Format tanggal untuk ditampilkan
+const formatDate = (dateString) => {
+  if (!dateString) return "Tanggal tidak tersedia";
+
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "Format tanggal tidak valid";
+  }
+};
+
+// Format waktu range
+const formatTimeRange = (startTime, endTime) => {
+  if (!startTime) return "Waktu tidak tersedia";
+
+  try {
+    const start = new Date(startTime);
+    const startFormatted = start.toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    if (!endTime) return `${startFormatted} WIB`;
+
+    const end = new Date(endTime);
+    const endFormatted = end.toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    return `${startFormatted} - ${endFormatted} WIB`;
+  } catch (error) {
+    console.error("Error formatting time:", error);
+    return "Waktu tidak tersedia";
+  }
+};
+
+// Tentukan status agenda berdasarkan tanggal
+const getStatus = (item) => {
+  if (!item.start_datetime) return "upcoming";
+
+  try {
+    const now = new Date();
+    const startDate = new Date(item.start_datetime);
+    const endDate = item.end_datetime ? new Date(item.end_datetime) : null;
+
+    if (endDate && now > endDate) return "completed";
+    if (now >= startDate && (!endDate || now <= endDate)) return "ongoing";
+    return "upcoming";
+  } catch (error) {
+    console.error("Error determining status:", error);
+    return "upcoming";
+  }
+};
 
 const handleCardClick = (item) => {
-  emit('card-click', item);
+  emit("card-click", item);
+
+  // Jika ada link YouTube, buka di tab baru
+  if (item.youtube_link) {
+    window.open(item.youtube_link, "_blank");
+  } else {
+    // Bisa diarahkan ke detail page jika diperlukan
+    console.log("View agenda details:", item.id);
+  }
+};
+
+const viewAllAgenda = () => {
+  // Navigasi ke halaman semua agenda
+  console.log("Navigate to all agenda page");
+  // window.location.href = '/agenda'; // Uncomment jika ada route untuk semua agenda
 };
 
 // Inisialisasi AOS
 onMounted(() => {
   AOS.init({
     duration: 600,
-    easing: 'ease-out-quad',
+    easing: "ease-out-quad",
     once: false,
-    offset: 20
+    offset: 20,
   });
+
+  // Load data agenda
+  loadAgendaData();
 });
 
 // Refresh AOS ketika agendaList berubah
-watch(agendaList, () => {
-  setTimeout(() => {
-    AOS.refresh();
-  }, 100);
-}, { deep: true });
+watch(
+  agendaList,
+  () => {
+    setTimeout(() => {
+      AOS.refresh();
+    }, 100);
+  },
+  { deep: true }
+);
 </script>
 
 <style scoped>
@@ -124,5 +270,19 @@ watch(agendaList, () => {
 }
 .agenda-card:hover {
   transform: translateY(-5px);
+}
+
+/* Loading animation */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

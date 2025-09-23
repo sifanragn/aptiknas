@@ -2,52 +2,86 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
 import { BookIcon, HandshakeIcon, TargetIcon } from 'lucide-vue-next';
 import Badge from '@/components/UI/Badge.vue';
+import { useAboutusStore } from '@/stores/aboutus';
 
-// Data dummy untuk timeline
-const dummyTimelineItems = [
-  {
-    id: 'sejarah',
-    title: 'Sejarah APTIKNAS',
-    description: 'Berdiri sejak tahun 2005, APTIKNAS telah menjadi wadah bagi pengusaha TIK nasional untuk berkembang dan berkontribusi bagi negeri...',
-    content: 'Berdiri sejak tahun 2005, APTIKNAS telah menjadi wadah bagi pengusaha TIK nasional untuk berkembang dan berkontribusi bagi negeri. Dengan semangat kolaborasi dan inovasi, kami terus mendorong transformasi digital di Indonesia.',
-    icon: BookIcon,
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-  },
-  {
-    id: 'visi',
-    title: 'Visi Kami',
-    description: 'Menjadi asosiasi terdepan yang memajukan industri teknologi informasi dan komunikasi nasional...',
-    content: 'Menjadi asosiasi terdepan yang memajukan industri teknologi informasi dan komunikasi nasional, serta menjadi mitra strategis pemerintah dalam perumusan kebijakan TIK yang berkelanjutan dan inklusif.',
-    icon: HandshakeIcon,
-    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-  },
-  {
-    id: 'misi',
-    title: 'Misi Kami',
-    description: 'Mendorong inovasi dan pengembangan ekosistem TIK yang berkelanjutan...',
-    content: 'Mendorong inovasi dan pengembangan ekosistem TIK yang berkelanjutan, memberdayakan anggota melalui berbagai program capacity building, serta menjalin kerjasama strategis dengan berbagai stakeholder.',
-    icon: TargetIcon,
-    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-  }
-];
-
+const aboutusStore = useAboutusStore();
 const selectedItemIndex = ref(0);
 const itemRefs = ref([]);
 const activeLineHeight = ref(0);
 let observer = null;
 
-onMounted(() => {
+// Data mapping untuk icon berdasarkan kategori
+const categoryIcons = {
+  'Sejarah': BookIcon,
+  'Visi': TargetIcon,
+  'Misi': HandshakeIcon,
+  // Tambahkan mapping lainnya sesuai kebutuhan
+};
+
+// Mengambil data dari store
+const aboutusData = computed(() => {
+  if (aboutusStore.list.data && Array.isArray(aboutusStore.list.data)) {
+    return aboutusStore.list.data;
+  }
+  return [];
+});
+
+// Filter data yang display_on_home = false
+const filteredAboutus = computed(() => {
+  return aboutusData.value.filter(item => item.display_on_home === false);
+});
+
+// Format timeline items dari data API
+const timelineItems = computed(() => {
+  if (filteredAboutus.value.length === 0) return [];
+  
+  return filteredAboutus.value.map(item => {
+    // Tentukan icon berdasarkan kategori
+    let icon = BookIcon; // default icon
+    if (item.category && item.category.name) {
+      const categoryName = item.category.name.toLowerCase();
+      if (categoryName.includes('visi')) icon = TargetIcon;
+      else if (categoryName.includes('misi')) icon = HandshakeIcon;
+      else if (categoryName.includes('sejarah')) icon = BookIcon;
+    }
+    
+    return {
+      id: item.id,
+      title: item.title,
+      description: item.description ? item.description.replace(/<[^>]*>/g, '').substring(0, 100) + '...' : '',
+      content: item.description ? item.description.replace(/<[^>]*>/g, '') : '',
+      icon: icon,
+      image: getImageUrl(item.image),
+      category: item.category ? item.category.name : 'Umum'
+    };
+  });
+});
+
+const selectedItem = computed(() => timelineItems.value[selectedItemIndex.value]);
+
+// Fungsi untuk mendapatkan URL gambar lengkap
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
+  
+  // Jika gambar sudah berupa URL lengkap, langsung kembalikan
+  if (imagePath.startsWith('http')) {
+    return imagePath;
+  }
+  
+  // Jika gambar adalah path relatif, tambahkan base URL
+  const baseUrl = 'http://127.0.0.1:8000';
+  return `${baseUrl}/${imagePath}`;
+};
+
+onMounted(async () => {
+  // Ambil data dari store
+  await aboutusStore.fetchAll();
+  
   nextTick(() => {
     updateActiveLine();
     setupIntersectionObserver();
   });
 });
-
-const timelineItems = computed(() => {
-  return dummyTimelineItems;
-});
-
-const selectedItem = computed(() => timelineItems.value[selectedItemIndex.value]);
 
 function selectItem(index) {
   selectedItemIndex.value = index;
@@ -120,6 +154,11 @@ onBeforeUnmount(() => {
             />
           </div>
         </Transition>
+        
+        <!-- Empty state -->
+        <div v-if="timelineItems.length === 0" class="w-full text-center py-10">
+          <p class="text-neutral-500 dark:text-neutral-400">Tidak ada data tentang kami yang tersedia.</p>
+        </div>
       </div>
 
       <!-- Right Timeline -->
