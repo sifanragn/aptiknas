@@ -41,7 +41,7 @@
             >
               <!-- Text Description (Above Image) -->
               <div
-                class="absolute top-0 left-0 right-0 bg-white text-black p-4 rounded-t-2xl transition-all duration-500 transform -translate-y-full group-hover:translate-y-0 z-20"
+                class="absolute top-0 left-0 right-0 h-50 bg-white text-black p-4 rounded-t-2xl transition-all duration-500 transform -translate-y-full group-hover:translate-y-0"
               >
                 <h3 class="font-semibold text-lg mb-2">{{ item.title }}</h3>
                 <p class="text-sm text-gray-600 line-clamp-2">
@@ -87,48 +87,49 @@
         </div>
       </div>
 
-      <!-- Navigation Buttons (Bottom Right) -->
-      <div class="flex justify-end items-center gap-3 mt-6">
-        <button
-          class="swiper-button-prev-kegiatan bg-white border border-gray-300 rounded-full w-12 h-12 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-md"
-        >
-          <svg
-            class="w-6 h-6 text-gray-700"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </button>
-        <button
-          class="swiper-button-next-kegiatan bg-white border border-gray-300 rounded-full w-12 h-12 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-md"
-        >
-          <svg
-            class="w-6 h-6 text-gray-700"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
-      </div>
+      <!-- Controls: Navigation and Pagination -->
+      <div class="flex justify-between items-center mt-6">
+        <!-- Pagination (Bottom Left) -->
+        <div class="swiper-pagination-kegiatan !relative"></div>
 
-      <!-- Pagination (Bottom Left) -->
-      <div
-        class="swiper-pagination-kegiatan !relative !justify-start mt-6"
-      ></div>
+        <!-- Navigation Buttons (Bottom Right) -->
+        <div class="flex items-center gap-3">
+          <button
+            class="swiper-button-prev-kegiatan bg-white border border-gray-300 rounded-full w-12 h-12 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-md"
+          >
+            <svg
+              class="w-6 h-6 text-gray-700"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+          <button
+            class="swiper-button-next-kegiatan bg-white border border-gray-300 rounded-full w-12 h-12 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-md"
+          >
+            <svg
+              class="w-6 h-6 text-gray-700"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Data Dummy Loading -->
@@ -160,18 +161,87 @@ import "aos/dist/aos.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { useAgendaStore } from "@/stores/agenda";
 import InteractiveHoverButton from "@/components/ui/interactive-hover-button/InteractiveHoverButton.vue";
 
 // Data dummy untuk kegiatan APTIKNAS
-const agendaStore = useAgendaStore();
+const dummyKegiatanData = ref([
+  {
+    id: 1,
+    title: "Seminar Nasional Digital Transformation 2024",
+    description:
+      "<p>Seminar akbar yang membahas tren terbaru transformasi digital, AI, dan IoT untuk mendorong daya saing bisnis di Indonesia. Dihadiri oleh para pakar industri dan pemerintah.</p>",
+    start_datetime: "2024-10-20T09:00:00",
+    image:
+      "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=500&q=80",
+  },
+  {
+    id: 2,
+    title: "Workshop Cybersecurity untuk UMKM",
+    description:
+      "<p>Pelatihan praktis bagi pelaku UMKM untuk mengamankan aset digital mereka dari serangan siber. Peserta akan belajar teknik dasar proteksi data dan jaringan.</p>",
+    start_datetime: "2024-11-05T10:00:00",
+    image:
+      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=500&q=80",
+  },
+  {
+    id: 3,
+    title: "APTIKNAS Tech Innovators Networking Night",
+    description:
+      "<p>Acara networking eksklusif yang mempertemukan para inovator, startup, investor, dan pengambil kebijakan di industri TIK untuk berkolaborasi dan menciptakan sinergi.</p>",
+    start_datetime: "2024-11-15T19:00:00",
+    image:
+      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=500&q=80",
+  },
+  {
+    id: 4,
+    title: "Pelatihan Cloud Computing Fundamental",
+    description:
+      "<p>Program pelatihan intensif untuk memahami konsep dasar dan implementasi cloud computing menggunakan platform terkemuka seperti AWS, Google Cloud, dan Azure.</p>",
+    start_datetime: "2024-11-25T09:00:00",
+    image:
+      "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=500&q=80",
+  },
+  {
+    id: 5,
+    title: "Konferensi Industri 4.0 & Smart City",
+    description:
+      "<p>Konferensi yang membahas implementasi teknologi Industri 4.0 dalam pengembangan kota pintar (Smart City) di Indonesia, mencakup studi kasus dan solusi inovatif.</p>",
+    start_datetime: "2024-12-02T09:00:00",
+    image:
+      "https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=500&q=80",
+  },
+  {
+    id: 6,
+    title: "Diskusi Panel: Regulasi TIK Terbaru",
+    description:
+      "<p>Mengupas tuntas dampak regulasi TIK terbaru terhadap industri dan bagaimana para pengusaha dapat beradaptasi.</p>",
+    start_datetime: "2024-12-10T14:00:00",
+    image:
+      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=500&q=80",
+  },
+  {
+    id: 7,
+    title: "Hackathon Nasional APTIKNAS 2024",
+    description:
+      "<p>Ajang kompetisi bagi para developer muda untuk menciptakan solusi inovatif berbasis teknologi untuk tantangan nasional.</p>",
+    start_datetime: "2024-12-18T08:00:00",
+    image:
+      "https://images.unsplash.com/photo-1556740758-90de374c12ad?auto=format&fit=crop&w=500&q=80",
+  },
+  {
+    id: 8,
+    title: "Gala Dinner & Awarding Night",
+    description:
+      "<p>Malam penghargaan bagi para anggota dan mitra APTIKNAS yang telah memberikan kontribusi luar biasa bagi industri TIK.</p>",
+    start_datetime: "2024-12-20T19:00:00",
+    image:
+      "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=500&q=80",
+  },
+]);
 const swiperInstance = ref(null);
 
 const kegiatanData = computed(() => {
-  const list = agendaStore.list;
-  if (!list || !Array.isArray(list)) return [];
-
-  return list.slice(0, 8).map((item) => ({
+  return dummyKegiatanData.value.map((item) => ({
     id: item.id,
     title: item.title,
     description: stripHtmlTags(item.description),
@@ -214,8 +284,6 @@ onMounted(async () => {
     duration: 800,
   });
 
-  await agendaStore.fetchAll();
-
   // Initialize Swiper after data is loaded and DOM is updated
   await nextTick();
   if (kegiatanData.value.length > 0) {
@@ -240,7 +308,6 @@ const initSwiper = () => {
     pagination: {
       el: ".swiper-pagination-kegiatan",
       clickable: true,
-      dynamicBullets: true,
     },
     breakpoints: {
       640: {
@@ -321,7 +388,7 @@ onUnmounted(() => {
 }
 
 .swiper-pagination-kegiatan :deep(.swiper-pagination-bullet-active) {
-  background: #22c55e;
+  background: #16a34a; /* green-600 */
   opacity: 1;
   width: 30px;
   border-radius: 12px;

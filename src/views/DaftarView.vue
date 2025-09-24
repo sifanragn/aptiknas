@@ -6,9 +6,11 @@
  import Formulir from '@/pages/DaftarPages/Formulir.vue';
 </script>
 <template>
+    <div>
     <Hero />
     <Promo />
     <Syarat />
     <Kontak />
     <Formulir />
+    </div>
 </template>

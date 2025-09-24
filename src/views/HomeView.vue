@@ -8,10 +8,13 @@ import Carrer from '@/pages/HomePages/Carrer.vue';
 </script>
 
 <template>
-  <Hero />
+  <div>
+     <Hero />
   <TentangKami />
   <Agenda />
   <PodcastHome />
   <KTA />
   <Carrer />
+  </div>
+ 
 </template>

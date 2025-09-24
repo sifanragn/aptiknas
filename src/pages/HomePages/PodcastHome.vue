@@ -20,7 +20,7 @@
       <!-- Loading State -->
       <div v-if="loading" class="text-center py-12">
         <div
-          class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#511378] mx-auto mb-4"
+          class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"
         ></div>
         <p class="text-gray-600">Memuat podcast...</p>
       </div>
@@ -31,7 +31,7 @@
         <p class="text-sm">{{ podcastStore.error }}</p>
         <button
           @click="loadPodcasts"
-          class="mt-4 bg-[#511378] text-white px-4 py-2 rounded hover:bg-[#3a0d57] transition-colors"
+          class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
         >
           Coba Lagi
         </button>
@@ -80,9 +80,9 @@
                   <div
                     class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   >
-                    <div class="bg-white rounded-full p-3">
+                    <div class="bg-white rounded-full p-3 shadow-lg">
                       <svg
-                        class="w-8 h-8 text-[#511378]"
+                        class="w-8 h-8 text-green-600"
                         fill="currentColor"
                         viewBox="0 0 24 24"
                       >
@@ -181,7 +181,7 @@
         </p>
         <button
           @click="openYoutube(podcasts[activePodcast].yt_id)"
-          class="bg-[#511378] text-white px-6 py-2 rounded-full hover:bg-[#3a0d57] transition-colors"
+          class="bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition-colors"
         >
           Tonton di YouTube
         </button>
@@ -247,6 +247,24 @@ const dummyPodcasts = ref([
     pub_date: "2024-09-01T00:00:00.000Z",
     category: { name: "Blockchain" },
     description: "Aplikasi blockchain di luar dunia cryptocurrency",
+  },
+  {
+    id: 7,
+    title: "Membangun Karir di Industri TIK",
+    yt_id: "stu901",
+    pub_date: "2024-08-28T00:00:00.000Z",
+    category: { name: "Karir" },
+    description:
+      "Tips dan trik dari para profesional untuk membangun karir yang sukses di industri teknologi.",
+  },
+  {
+    id: 8,
+    title: "Pentingnya UI/UX dalam Produk Digital",
+    yt_id: "vwx234",
+    pub_date: "2024-08-25T00:00:00.000Z",
+    category: { name: "Desain" },
+    description:
+      "Mengapa pengalaman pengguna yang baik menjadi kunci keberhasilan produk digital saat ini.",
   },
 ]);
 
@@ -367,7 +385,7 @@ onMounted(() => {
 }
 
 .swiper-pagination-bullet-active {
-  background: #511378;
+  background: #16a34a; /* green-600 */
   opacity: 1;
   width: 30px;
   border-radius: 12px;

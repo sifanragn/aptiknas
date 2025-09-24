@@ -1,18 +1,8 @@
 <template>
   <div class="flex items-center justify-center gap-8 h-[22.5rem] w-full">
-    <!-- Loading State -->
-    <div v-if="careerStore.loading" class="w-full text-center text-gray-500">
-      Memuat lowongan...
-    </div>
-
-    <!-- Error State -->
-    <div v-else-if="careerStore.error" class="w-full text-center text-red-500">
-      Gagal memuat lowongan.
-    </div>
-
     <!-- Empty State -->
     <div
-      v-else-if="contributorData.length === 0"
+      v-if="contributorData.length === 0"
       class="w-full text-center text-gray-500"
     >
       Saat ini tidak ada lowongan.
@@ -35,9 +25,7 @@
 
     <!-- Kontrol Navigasi dan Paginasi -->
     <div
-      v-if="
-        !careerStore.loading && !careerStore.error && contributorData.length > 0
-      "
+      v-if="contributorData.length > 0"
       class="flex flex-col items-center h-full gap-6"
     >
       <!-- Paginasi Vertikal -->
@@ -94,36 +82,44 @@ import { ref, onMounted, computed, nextTick } from "vue";
 import Swiper from "swiper";
 import { Navigation, EffectCards, Pagination } from "swiper/modules";
 import ContributorCard from "./ContributorCard.vue";
-import { useCareerStore } from "@/stores/career";
 // Impor style yang dibutuhkan oleh Swiper
 import "swiper/css";
 import "swiper/css/effect-cards";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-// Data dummy untuk contributor
-const careerStore = useCareerStore();
 const swiperInstance = ref(null);
 
+// Data dummy untuk contributor APTIKNAS
+const dummyContributors = ref([
+  {
+    id: 1,
+    job_type: "Full-time",
+    position_title: "Frontend Developer",
+    description:
+      "Membangun antarmuka pengguna yang responsif dan modern untuk aplikasi web APTIKNAS.",
+  },
+  {
+    id: 2,
+    job_type: "Part-time",
+    position_title: "UI/UX Designer",
+    description:
+      "Merancang pengalaman pengguna yang intuitif dan menarik untuk platform digital kami.",
+  },
+  {
+    id: 3,
+    job_type: "Internship",
+    position_title: "Content Creator",
+    description:
+      "Membuat konten kreatif dan informatif untuk media sosial dan blog APTIKNAS.",
+  },
+]);
+
 const contributorData = computed(() => {
-  const list = careerStore.list;
-  let data = [];
-
-  if (list && list.data && Array.isArray(list.data.data)) {
-    data = list.data.data;
-  } else if (list && Array.isArray(list.data)) {
-    data = list.data;
-  } else if (Array.isArray(list)) {
-    data = list;
-  }
-
-  // Mengambil 4 data terbaru. Diasumsikan data dari API sudah terurut dari yang terbaru.
-  return data.slice(0, 4);
+  return dummyContributors.value;
 });
 
 onMounted(async () => {
-  await careerStore.fetchAll();
-
   await nextTick();
 
   if (contributorData.value.length > 0) {
@@ -159,7 +155,7 @@ onMounted(async () => {
   border-radius: 0.25rem;
 }
 .swiper-pagination-contributor .swiper-pagination-bullet-active {
-  background-color: #22c55e; /* Hijau代替 Ungu */
+  background-color: #16a34a; /* green-600 */
   height: 10rem;
 }
 

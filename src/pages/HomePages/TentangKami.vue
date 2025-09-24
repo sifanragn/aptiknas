@@ -1,10 +1,10 @@
 <template>
   <!-- Tentang Kami -->
   <section
-    class="py-12 md:py-16 lg:py-20 overflow-x-hidden"
+    class="py-12 md:py-16 lg:py-20 w-full overflow-hidden"
     v-if="filteredData.length > 0"
   >
-    <div class="grid lg:grid-cols-2 grid-cols-1 gap-x-12 items-center">
+    <div class="grid lg:grid-cols-2 grid-cols-1 items-center">
       <!-- Konten Teks di Kiri -->
       <div
         class="flex flex-col items-start w-full space-y-6 md:space-y-8 lg:space-y-10 max-w-md justify-self-end px-4 sm:px-6 md:px-8 lg:px-0 order-2 lg:order-1"
@@ -117,49 +117,60 @@ import InteractiveHoverButton from "@/components/ui/interactive-hover-button/Int
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { useAboutusStore } from "@/stores/aboutus";
 
-const aboutusStore = useAboutusStore();
 const activeIndex = ref(0);
 const swiperInstance = ref(null);
 const initializationError = ref(null);
 const loading = ref(false);
 const error = ref(null);
 
+// Data dummy untuk "Tentang Kami"
+const dummyTentangKamiData = ref([
+  {
+    id: 1,
+    title: "Visi & Misi APTIKNAS",
+    description:
+      "<p>Menjadi organisasi TIK terdepan yang inovatif dan berkelanjutan, serta mendorong pertumbuhan industri TIK nasional agar mampu berdaya saing di tingkat global. Kami berkomitmen untuk mengembangkan kompetensi anggota dan menciptakan ekosistem digital yang inklusif.</p>",
+    image:
+      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    display_on_home: true,
+    category: { name: "Visi & Misi" },
+  },
+  {
+    id: 2,
+    title: "Sejarah Singkat APTIKNAS",
+    description:
+      "<p>APTIKNAS merupakan transformasi dari APKOMINDO (didirikan 1991), menjadikannya asosiasi TIK tertua di Indonesia. Dideklarasikan secara resmi pada 24 Februari 2017, APTIKNAS lahir dari semangat untuk menyatukan para pengusaha, praktisi, dan akademisi TIK dalam satu wadah yang solid.</p>",
+    image:
+      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    display_on_home: true,
+    category: { name: "Sejarah" },
+  },
+  {
+    id: 3,
+    title: "Program Unggulan Kami",
+    description:
+      "<p>Kami fokus pada empat pilar utama: pengembangan kompetensi melalui pelatihan dan sertifikasi, mendorong kolaborasi strategis, memfasilitasi akses pasar bagi anggota, dan mengadvokasi kebijakan yang mendukung pertumbuhan ekosistem digital yang sehat dan kompetitif.</p>",
+    image:
+      "https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    display_on_home: true,
+    category: { name: "Program" },
+  },
+]);
+
 // Fungsi untuk mendapatkan URL gambar lengkap
 const getImageUrl = (imagePath) => {
-  if (!imagePath) return 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80';
-  
+  if (!imagePath)
+    return "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80";
+
   // Jika gambar sudah berupa URL lengkap, langsung kembalikan
-  if (imagePath.startsWith('http')) {
+  if (imagePath.startsWith("http")) {
     return imagePath;
   }
-  
-  // Jika gambar adalah path relatif, tambahkan base URL
-  const baseUrl = 'http://127.0.0.1:8000';
-  return `${baseUrl}/${imagePath}`;
-};
 
-// Fungsi untuk memuat data dari store
-const loadData = async () => {
-  try {
-    loading.value = true;
-    error.value = null;
-    
-    // Ambil data dari store
-    await aboutusStore.fetchAll();
-    
-    if (filteredData.value.length > 0) {
-      await nextTick();
-      initSwiper();
-      AOS.refresh();
-    }
-    loading.value = false;
-  } catch (err) {
-    console.error("Failed to load data:", err);
-    error.value = err.message || "Gagal memuat data";
-    loading.value = false;
-  }
+  // Jika gambar adalah path relatif, tambahkan base URL
+  const baseUrl = "http://127.0.0.1:8000";
+  return `${baseUrl}/storage/${imagePath}`;
 };
 
 const handleImageError = (itemId) => {
@@ -167,8 +178,9 @@ const handleImageError = (itemId) => {
   // Ganti dengan placeholder image jika gambar gagal dimuat
   const itemIndex = filteredData.value.findIndex((item) => item.id === itemId);
   if (itemIndex !== -1) {
-    filteredData.value[itemIndex].image = "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80";
-    
+    filteredData.value[itemIndex].image =
+      "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80";
+
     if (swiperInstance.value) {
       swiperInstance.value.update();
     }
@@ -177,19 +189,10 @@ const handleImageError = (itemId) => {
 
 // Filter data dengan null check - hanya tampilkan yang display_on_home = true
 const filteredData = computed(() => {
-  try {
-    // Menggunakan data dari store
-    if (aboutusStore.list.data && Array.isArray(aboutusStore.list.data)) {
-      const filtered = aboutusStore.list.data.filter(
-        (item) => item.display_on_home === true
-      );
-      return filtered;
-    }
-    return [];
-  } catch (err) {
-    console.error("Data filtering error:", err);
-    return [];
-  }
+  // Menggunakan data dummy lokal
+  return dummyTentangKamiData.value.filter(
+    (item) => item.display_on_home === true
+  );
 });
 
 // Initialize swiper dengan error handling
@@ -251,7 +254,12 @@ onMounted(async () => {
     duration: 800,
     easing: "ease-out-cubic",
   });
-  await loadData();
+
+  if (filteredData.value.length > 0) {
+    await nextTick();
+    initSwiper();
+    AOS.refresh();
+  }
 });
 
 onUnmounted(() => {

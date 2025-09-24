@@ -1,33 +1,47 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
-import { useAgendaStore } from "@/stores/agenda";
 import Pagination from "@/components/layout/Pagination.vue";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-const agendaStore = useAgendaStore();
 const currentPage = ref(1);
-const itemsPerPage = 2;
+const itemsPerPage = 6; // Menampilkan lebih banyak item per halaman
 const loading = ref(false);
+const error = ref(null);
 
-// Debug: Log store data untuk memastikan struktur
-watch(
-  () => agendaStore.list,
-  (newVal) => {
-    console.log("Agenda store list updated:", newVal);
-    console.log("Array length:", newVal.length);
+// Data dummy untuk agenda APTIKNAS
+const dummyAgendaData = ref([
+  {
+    id: 1,
+    title: "APTIKNAS Tech Summit 2024",
+    description:
+      "Konferensi tahunan terbesar yang mempertemukan para pemimpin industri TIK, startup inovatif, dan pemerintah untuk membahas masa depan teknologi Indonesia.",
+    start_datetime: "2024-11-12T08:00:00",
+    end_datetime: "2024-11-13T17:00:00",
+    location: "Jakarta Convention Center",
+    image:
+      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=500&q=80",
+    youtube_link: null,
   },
-  { deep: true }
-);
+  {
+    id: 2,
+    title: "Webinar Nasional: AI untuk Transformasi Bisnis",
+    description:
+      "Pelajari bagaimana kecerdasan buatan dapat merevolusi cara Anda berbisnis. Sesi ini akan dibawakan oleh praktisi AI terkemuka di Indonesia.",
+    start_datetime: "2024-10-25T09:00:00",
+    end_datetime: "2024-10-25T12:00:00",
+    location: "Online via Zoom",
+    image:
+      "https://images.unsplash.com/photo-1677442135703-178c33d748be?auto=format&fit=crop&w=500&q=80",
+    youtube_link: "https://youtube.com/watch?v=example",
+  },
+  // ... (item lainnya akan ditambahkan di sini)
+]);
 
 // Mengambil data dari store dengan penanganan struktur yang benar
 const agendaData = computed(() => {
-  const list = agendaStore.list;
-  // Menyesuaikan dengan struktur baru: { data: { data: [...] } }
-  if (list?.data?.data && Array.isArray(list.data.data)) {
-    return list.data.data;
-  }
-  return Array.isArray(list) ? list : [];
+  // Menggunakan data dummy lokal
+  return dummyAgendaData.value;
 });
 
 // Inisialisasi AOS
@@ -46,12 +60,13 @@ onMounted(async () => {
 // Fungsi untuk memuat data agenda
 const loadAgendaData = async () => {
   loading.value = true;
+  error.value = null;
   try {
-    await agendaStore.fetchAll();
-    console.log("Agenda data loaded:", agendaData.value);
-    console.log("Total items:", agendaData.value.length);
-  } catch (error) {
-    console.error("Failed to load agenda data:", error);
+    // Simulasi fetch data
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    // Di sini Anda bisa menambahkan lebih banyak data dummy jika diperlukan
+  } catch (e) {
+    error.value = "Gagal memuat data dummy.";
   } finally {
     loading.value = false;
   }
@@ -193,44 +208,40 @@ const handleAgendaClick = (agenda) => {
       </p>
     </div>
 
-    <!-- Debug Info -->
-    <div class="text-center text-xs text-blue-600 mb-4">
-      Debug: Store data length: {{ agendaStore.list.length }} | Processed data:
-      {{ agendaList.length }}
-    </div>
-
-    <div v-if="agendaStore.loading" class="text-center text-gray-500 py-12">
+    <div v-if="loading" class="text-center text-gray-500 py-12">
       <div
         class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#511378] mx-auto mb-4"
       ></div>
+      _
       <p>Memuat agenda...</p>
     </div>
 
-    <div v-else-if="agendaStore.error" class="text-center text-red-500 py-12">
+    <div v-else-if="error" class="text-center text-red-500 py-12">
       <p>Gagal memuat agenda. Silakan coba lagi nanti.</p>
-      <p class="text-sm mb-4">{{ agendaStore.error }}</p>
+      <p class="text-sm mb-4">{{ error }}</p>
       <button
         @click="loadAgendaData"
-        class="bg-[#511378] text-white px-4 py-2 rounded hover:bg-[#3a0d57] transition-colors"
+        _
+        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
       >
         Coba Lagi
       </button>
     </div>
 
     <div
-      v-else-if="displayedAgendas.length"
-      class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto"
+      v-else-if="displayedAgendas.length > 0"
+      class="grid md:grid-cols-2 gap-6 max-w-7xl mx-auto"
     >
       <div
         v-for="(item, index) in displayedAgendas"
         :key="item.id"
-        class="p-4 rounded-2xl hover:shadow-lg border border-gray-100 flex w-full gap-4 transition-all cursor-pointer"
+        class="bg-white p-4 rounded-2xl hover:shadow-lg border border-gray-200 flex flex-col sm:flex-row w-full gap-5 transition-all cursor-pointer"
         data-aos="fade-up"
         :data-aos-delay="index * 100"
         @click="handleAgendaClick(item)"
       >
         <div
-          class="relative h-48 w-full overflow-hidden rounded-xl"
+          class="relative h-48 sm:h-auto sm:w-48 flex-shrink-0 overflow-hidden rounded-xl"
           data-aos="zoom-in"
           data-aos-delay="150"
         >
@@ -246,7 +257,7 @@ const handleAgendaClick = (agenda) => {
           />
         </div>
 
-        <div class="flex flex-col gap-3 flex-grow">
+        <div class="flex flex-col gap-2 flex-grow">
           <span
             class="text-xs font-medium w-fit px-3 py-1 rounded-full"
             :class="getStatusClass(item.status)"
@@ -257,7 +268,7 @@ const handleAgendaClick = (agenda) => {
           </span>
 
           <h3
-            class="text-lg font-semibold line-clamp-2"
+            class="text-lg font-semibold line-clamp-2 text-gray-900"
             data-aos="fade-up"
             data-aos-delay="250"
           >
@@ -265,7 +276,7 @@ const handleAgendaClick = (agenda) => {
           </h3>
 
           <p
-            class="text-sm text-gray-600 flex items-center gap-1"
+            class="text-sm text-gray-600 flex items-center gap-2"
             data-aos="fade-up"
             data-aos-delay="300"
           >
@@ -274,7 +285,7 @@ const handleAgendaClick = (agenda) => {
           </p>
 
           <p
-            class="text-sm text-gray-500 line-clamp-3 flex-grow"
+            class="text-sm text-gray-500 line-clamp-3 flex-grow mt-1"
             data-aos="fade-up"
             data-aos-delay="350"
           >
@@ -296,10 +307,6 @@ const handleAgendaClick = (agenda) => {
     <div v-else class="text-center text-gray-500 py-12">
       <i class="far fa-calendar-times text-4xl mb-4"></i>
       <p>Tidak ada agenda untuk ditampilkan.</p>
-      <p class="text-sm mt-2">
-        Data store: {{ agendaStore.list.length }} items | Data processed:
-        {{ agendaList.length }} items
-      </p>
     </div>
 
     <Pagination

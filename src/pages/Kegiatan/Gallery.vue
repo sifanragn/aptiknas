@@ -60,7 +60,7 @@
             @click="viewDetails(item)"
           >
             <svg
-              class="w-6 h-6 text-white group-hover:text-green-600 transition-colors"
+              class="w-6 h-6 text-white transition-all duration-1000 group-hover:text-green-600 group-hover:-rotate-45"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -108,47 +108,67 @@ const dummyKegiatan = ref([
     id: 1,
     title: "Seminar Digital Transformation 2024",
     category: "Seminar",
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description: "Seminar tentang transformasi digital untuk UMKM dengan pembicara ahli dari industri teknologi."
+    image:
+      "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+    description:
+      "Seminar tentang transformasi digital untuk UMKM dengan pembicara ahli dari industri teknologi.",
   },
   {
     id: 2,
     title: "Workshop Cybersecurity",
     category: "Workshop",
-    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description: "Workshop intensif tentang keamanan siber untuk melindungi data bisnis dari ancaman digital."
+    image:
+      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+    description:
+      "Workshop intensif tentang keamanan siber untuk melindungi data bisnis dari ancaman digital.",
   },
   {
     id: 3,
     title: "Networking Night 2024",
     category: "Networking",
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description: "Acara networking eksklusif untuk anggota APTIKNAS dengan pelaku industri dan pemerintah."
+    image:
+      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+    description:
+      "Acara networking eksklusif untuk anggota APTIKNAS dengan pelaku industri dan pemerintah.",
   },
   {
     id: 4,
     title: "Tech Training: Cloud Computing",
     category: "Pelatihan",
-    image: "https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description: "Pelatihan fundamental cloud computing untuk pengusaha TIK yang ingin mengembangkan skill."
+    image:
+      "https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+    description:
+      "Pelatihan fundamental cloud computing untuk pengusaha TIK yang ingin mengembangkan skill.",
   },
   {
     id: 5,
     title: "APTIKNAS Tech Awards 2024",
     category: "Awards",
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description: "Penghargaan tahunan untuk inovator dan pengusaha teknologi yang berkontribusi bagi perkembangan TIK nasional."
+    image:
+      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+    description:
+      "Penghargaan tahunan untuk inovator dan pengusaha teknologi yang berkontribusi bagi perkembangan TIK nasional.",
   },
   {
     id: 6,
     title: "Konferensi Industry 4.0",
     category: "Konferensi",
-    image: "https://images.unsplash.com/photo-1581092921461-eab62e97a780?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description: "Konferensi membahas implementasi Industry 4.0 di berbagai sektor industri Indonesia."
-  }
+    image:
+      "https://images.unsplash.com/photo-1581092921461-eab62e97a780?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+    description:
+      "Konferensi membahas implementasi Industry 4.0 di berbagai sektor industri Indonesia.",
+  },
 ]);
 
-const filters = ref(["All", "Seminar", "Workshop", "Pelatihan", "Networking", "Awards", "Konferensi"]);
+const filters = ref([
+  "All",
+  "Seminar",
+  "Workshop",
+  "Pelatihan",
+  "Networking",
+  "Awards",
+  "Konferensi",
+]);
 const selectedFilter = ref("All");
 
 // Inisialisasi AOS dengan konfigurasi natural
@@ -172,7 +192,9 @@ const filteredGallery = computed(() => {
   if (selectedFilter.value === "All") {
     return dummyKegiatan.value;
   }
-  return dummyKegiatan.value.filter(item => item.category === selectedFilter.value);
+  return dummyKegiatan.value.filter(
+    (item) => item.category === selectedFilter.value
+  );
 });
 
 // Fungsi untuk melihat detail
@@ -190,18 +212,22 @@ const fetchMoreKegiatan = () => {
       id: dummyKegiatan.value.length + 1,
       title: "Webinar AI untuk Bisnis",
       category: "Webinar",
-      image: "https://images.unsplash.com/photo-1677442135135-416f8aa26a5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      description: "Webinar tentang pemanfaatan AI dalam mengoptimalkan proses bisnis."
+      image:
+        "https://images.unsplash.com/photo-1677442135135-416f8aa26a5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      description:
+        "Webinar tentang pemanfaatan AI dalam mengoptimalkan proses bisnis.",
     },
     {
       id: dummyKegiatan.value.length + 2,
       title: "Bootcamp Startup Digital",
       category: "Bootcamp",
-      image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      description: "Bootcamp intensif untuk calon founder startup di bidang teknologi."
-    }
+      image:
+        "https://images.unsplash.com/photo-1551836022-d5d88e9218df?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      description:
+        "Bootcamp intensif untuk calon founder startup di bidang teknologi.",
+    },
   ];
-  
+
   dummyKegiatan.value = [...dummyKegiatan.value, ...newItems];
 };
 </script>
@@ -240,7 +266,8 @@ const fetchMoreKegiatan = () => {
 
 .via-green-600\/10 {
   --tw-gradient-to: rgb(22 163 74 / 0);
-  --tw-gradient-stops: var(--tw-gradient-from), rgb(22 163 74 / 0.1), var(--tw-gradient-to);
+  --tw-gradient-stops: var(--tw-gradient-from), rgb(22 163 74 / 0.1),
+    var(--tw-gradient-to);
 }
 
 .from-green-600\/90 {
@@ -251,6 +278,7 @@ const fetchMoreKegiatan = () => {
 
 .via-green-600\/40 {
   --tw-gradient-to: rgb(22 163 74 / 0);
-  --tw-gradient-stops: var(--tw-gradient-from), rgb(22 163 74 / 0.4), var(--tw-gradient-to);
+  --tw-gradient-stops: var(--tw-gradient-from), rgb(22 163 74 / 0.4),
+    var(--tw-gradient-to);
 }
 </style>

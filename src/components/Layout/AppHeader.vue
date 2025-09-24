@@ -167,7 +167,7 @@
 
             <!-- View All -->
             <router-link
-              to="/dpd/semua"
+              to="/dpd/"
               class="block px-4 py-3 hover:bg-green-50 hover:text-green-700 transition-colors text-sm bg-gray-50"
               @click="closeDropdown"
             >
@@ -256,10 +256,25 @@
 
       <!-- Button -->
       <button
-        class="hidden md:block bg-green-500 text-white px-5 py-2 rounded-full font-medium hover:bg-green-600 transition-all duration-200 border-1 border-gray-100"
-      >
-        Daftar Sekarang
-      </button>
+  class="hidden md:block relative overflow-hidden 
+         bg-gradient-to-r from-green-500 to-emerald-500 
+         text-white px-6 py-3 rounded-full font-semibold tracking-wide
+         shadow-md border border-green-400
+         transition-all duration-500 ease-out
+         hover:scale-105 hover:shadow-green-400/60 group"
+>
+  <!-- Shine effect -->
+  <span
+    class="absolute inset-0  
+           bg-gradient-to-r from-transparent via-white/30 to-transparent 
+           -translate-x-[150%] skew-x-12 
+           group-hover:translate-x-[150%] 
+           transition-transform duration-700 ease-in-out"
+  ></span>
+
+  <span class="relative z-10">Daftar Sekarang</span>
+</button>
+
     </header>
   </div>
 </template>

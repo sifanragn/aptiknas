@@ -1,13 +1,13 @@
 <template>
-  <section ref="timelineContainerRef" class="w-full font-sans py-16">
+  <section ref="timelineContainerRef" class="w-full font-sans py-16 relative">
     <div
       class="mx-auto max-w-7xl px-4 lg:px-10 md:px-8 text-center"
       data-aos="fade-up"
       data-aos-duration="500"
     >
       <Badge>Bagaimana</Badge>
-      <h2 class="text-3xl font-bold text-gray-900 mt-4 mb-2" v-if="title">
-        {{ title }}
+      <h2 class="text-3xl font-bold text-gray-900 mt-4 mb-2">
+        {{ title || "Proses Keanggotaan APTIKNAS" }}
       </h2>
       <p class="text-gray-600 max-w-2xl mx-auto mb-12" v-if="description">
         {{ description }}
@@ -26,7 +26,7 @@
             height: heightTransform,
             opacity: opacityTransform,
           }"
-          class="absolute top-0 w-[2px] bg-green-500"
+          class="absolute top-0 w-[2px] bg-green-600"
         ></Motion>
       </div>
 
@@ -45,7 +45,7 @@
           :data-aos-delay="150 * index"
         >
           <div
-            class="hidden md:flex size-12 border-4 border-green-200 items-center justify-center rounded-full bg-green-500 text-white font-bold"
+            class="hidden md:flex size-12 border-4 border-green-200 items-center justify-center rounded-full bg-green-600 text-white font-bold"
           >
             {{ index + 1 }}
           </div>
@@ -62,12 +62,12 @@
             <img
               :src="item.imageUrl"
               :alt="item.label"
-              class="w-70 max-w-md rounded-lg shadow-lg mx-auto"
+              class="w-full max-w-md rounded-lg shadow-lg mx-auto"
               data-aos="zoom-in"
               :data-aos-delay="250 + 100 * index"
             />
             <div
-              class="absolute translate-x-1/2 -bottom-5 right-1/2 md:hidden flex size-12 items-center justify-center rounded-full bg-green-500 text-white font-bold"
+              class="absolute translate-x-1/2 -bottom-5 right-1/2 md:hidden flex size-12 items-center justify-center rounded-full bg-green-600 text-white font-bold"
             >
               {{ index + 1 }}
             </div>
@@ -87,6 +87,9 @@
             <h3 class="text-xl font-bold text-gray-900 mb-3">
               {{ item.label }}
             </h3>
+            <p v-if="item.description" class="text-gray-600">
+              {{ item.description }}
+            </p>
             <slot :name="item.id"></slot>
           </div>
         </div>
@@ -103,15 +106,37 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 
 const props = defineProps({
-  items: {
-    type: Array,
-    default: () => [],
-  },
   title: String,
   description: String,
 });
-const loading = ref(false);
-const error = ref(null);
+
+// Data dummy untuk timeline, digunakan jika tidak ada props yang diberikan
+const items = ref([
+  {
+    id: "pendaftaran",
+    label: "Daftar Online",
+    description:
+      "Isi formulir pendaftaran online dengan data diri yang lengkap dan valid. Proses ini hanya membutuhkan waktu 5 menit.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=500&q=80",
+  },
+  {
+    id: "verifikasi",
+    label: "Verifikasi Data",
+    description:
+      "Tim kami akan memverifikasi data yang Anda submit. Proses ini biasanya memakan waktu 1-2 hari kerja.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=500&q=80",
+  },
+  {
+    id: "pembayaran",
+    label: "Pembayaran",
+    description:
+      "Lakukan pembayaran biaya keanggotaan melalui berbagai channel pembayaran yang tersedia.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=500&q=80",
+  },
+]);
 
 const timelineContainerRef = ref<HTMLElement | null>(null);
 const timelineRef = ref<HTMLElement | null>(null);

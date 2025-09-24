@@ -11,7 +11,7 @@
     </div>
 
     <!-- Loading State -->
-    <div v-if="agendaStore.loading" class="text-center text-gray-500 py-8">
+    <div v-if="loading" class="text-center text-gray-500 py-8">
       <div
         class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"
       ></div>
@@ -19,9 +19,9 @@
     </div>
 
     <!-- Error State -->
-    <div v-else-if="agendaStore.error" class="text-center text-red-500 py-8">
+    <div v-else-if="error" class="text-center text-red-500 py-8">
       <p>Gagal memuat agenda. Silakan coba lagi nanti.</p>
-      <p class="text-sm mb-4">{{ agendaStore.error }}</p>
+      <p class="text-sm mb-4">{{ error }}</p>
       <button
         @click="loadAgendaData"
         class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
@@ -65,46 +65,68 @@
 
 <script setup>
 import { ref, onMounted, watch, computed } from "vue";
-import { useAgendaStore } from "@/stores/agenda";
 import AgendaCard from "./AgendaCardEXS.vue";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-const agendaStore = useAgendaStore();
+const loading = ref(false);
+const error = ref(null);
+
+// Data dummy untuk agenda
+const dummyAgendaData = ref([
+  {
+    id: 1,
+    title: "Webinar: AI dalam Industri Kreatif",
+    description:
+      "Jelajahi bagaimana Kecerdasan Buatan (AI) mengubah lanskap industri kreatif, dari desain grafis hingga produksi musik. Sesi ini akan menampilkan studi kasus nyata dan demo langsung.",
+    start_datetime: "2024-11-05T10:00:00",
+    end_datetime: "2024-11-05T12:00:00",
+    location: "Online via Zoom",
+    image:
+      "https://images.unsplash.com/photo-1677442135703-178c33d748be?auto=format&fit=crop&w=500&q=80",
+    youtube_link: "https://youtube.com",
+  },
+  {
+    id: 2,
+    title: "Workshop: Dasar-dasar Keamanan Siber untuk Startup",
+    description:
+      "Amankan startup Anda dari ancaman siber. Workshop praktis ini akan membahas teknik-teknik esensial untuk melindungi data, jaringan, dan aplikasi Anda sejak dini.",
+    start_datetime: "2024-11-18T09:00:00",
+    end_datetime: "2024-11-18T16:00:00",
+    location: "APTIKNAS Innovation Hub",
+    image:
+      "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&w=500&q=80",
+    youtube_link: null,
+  },
+  {
+    id: 3,
+    title: "Networking Night: Kolaborasi Teknologi Masa Depan",
+    description:
+      "Bertemu dan berjejaring dengan para pemimpin industri, investor, dan inovator teknologi dalam acara malam yang santai dan produktif. Temukan mitra strategis Anda berikutnya.",
+    start_datetime: "2024-11-29T19:00:00",
+    end_datetime: "2024-11-29T22:00:00",
+    location: "Rooftop Bar, Jakarta",
+    image:
+      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=500&q=80",
+    youtube_link: null,
+  },
+]);
 
 // Mengambil data dari store
 const agendaList = computed(() => {
-  console.log("Agenda store data:", agendaStore.list);
-
-  // Cek berbagai kemungkinan struktur data
-  if (Array.isArray(agendaStore.list)) {
-    return agendaStore.list;
-  }
-  if (agendaStore.list && Array.isArray(agendaStore.list.data)) {
-    return agendaStore.list.data;
-  }
-  if (
-    agendaStore.list &&
-    agendaStore.list.success &&
-    Array.isArray(agendaStore.list.data)
-  ) {
-    return agendaStore.list.data;
-  }
-
-  console.warn("Struktur data agenda tidak dikenali");
-  return [];
+  return dummyAgendaData.value;
 });
 
 const emit = defineEmits(["card-click"]);
 
 // Fungsi untuk memuat data agenda
 const loadAgendaData = async () => {
-  try {
-    await agendaStore.fetchAll();
-    console.log("Agenda data loaded:", agendaList.value);
-  } catch (error) {
-    console.error("Failed to load agenda data:", error);
-  }
+  loading.value = true;
+  error.value = null;
+  // Simulasi fetch data
+  setTimeout(() => {
+    loading.value = false;
+  }, 800);
 };
 
 // Format agenda item untuk komponen AgendaCard

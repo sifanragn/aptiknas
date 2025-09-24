@@ -57,7 +57,7 @@
         <ul class="space-y-2">
           <li class="hover:text-green-600 transition-colors cursor-pointer">Kebijakan Privasi</li>
           <li class="hover:text-green-600 transition-colors cursor-pointer">Syarat & Ketentuan</li>
-          <li class="hover:text-green-600 transition-colors cursor-pointer">Hubungi Kami</li>
+          <li class="hover:text-green-600 transition-colors cursor-pointer"><a href="/hubungi-kami">Hubungi Kami</a></li>
           <li class="hover:text-green-600 transition-colors cursor-pointer">Bantuan</li>
           <li class="hover:text-green-600 transition-colors cursor-pointer">Partner</li>
         </ul>
@@ -69,8 +69,8 @@
       <div class="w-full">
         <hr class="w-full border-gray-300 mb-2" />
         <div class="flex justify-between items-center text-xs">
-          <span><a href="https://www.instagram.com/mgbk_indonesia/" target="_blank">Instagram</a></span>
-          <span><a href="https://www.instagram.com/mgbk_indonesia/" target="_blank"><i class="fa-brands fa-instagram text-lg"></i></a></span>
+          <span><a href="https://www.instagram.com/dppaptiknas/" target="_blank">Instagram</a></span>
+          <span><a href="https://www.instagram.com/dppaptiknas/" target="_blank"><i class="fa-brands fa-instagram text-lg"></i></a></span>
         </div>
       </div>
       <!-- Kolom Whatsapp -->

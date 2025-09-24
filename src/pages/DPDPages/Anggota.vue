@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import CardProfile from "@/components/Layout/CardProfile.vue";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import { members as allMembers } from "@/pages/DPDPages/data.ts";
 
 const props = defineProps({
@@ -44,6 +46,12 @@ onMounted(() => {
   setTimeout(() => {
     loading.value = false;
   }, 500);
+  AOS.init({
+    duration: 600,
+    easing: "ease-out-quad",
+    once: false,
+    offset: 50,
+  });
 });
 </script>
 <template>
@@ -77,13 +85,15 @@ onMounted(() => {
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
       >
         <CardProfile
-          v-for="member in filteredMembers"
+          v-for="(member, index) in filteredMembers"
           :key="member.id"
           :name="member.name"
           :position="member.position"
           :location="member.location"
           :image="member.image"
           :social="member.social"
+          data-aos="fade-up"
+          :data-aos-delay="index * 100"
           class="transition-transform duration-200 hover:scale-105"
         />
       </div>

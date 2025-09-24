@@ -3,6 +3,10 @@ import Hero from "@/pages/HomePages/Hero.vue";
 import ListDPP from "@/pages/PengurusPages/DPP/ListDPP.vue";
 </script>
 <template>
-  <Hero />
+  <div>
+     <Hero />
   <ListDPP />
+  </div>
+ 
+
 </template>

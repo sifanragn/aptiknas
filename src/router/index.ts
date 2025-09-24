@@ -10,6 +10,7 @@ import NewsDetailView from "@/views/NewsDetailView.vue";
 import DPDaerahView from "@/views/DPDaerahView.vue";
 import KegiatanView from "@/views/KegiatanView.vue";
 import DaftarView from "@/views/DaftarView.vue";
+import HubungiKamiView from "@/views/HubungiKamiView.vue";
 
 const routes = [
   {
@@ -69,6 +70,11 @@ const routes = [
     name: "Daftar",
     component: DaftarView,
   },
+  {
+    path: "/hubungi-kami",
+    name: "HubungiKami",
+    component: HubungiKamiView, 
+  }
 ];
 
 const router = createRouter({

@@ -1,5 +1,6 @@
 <template>
   <!-- Agenda Section -->
+  <!-- TODO: Tambahkan link ke halaman semua agenda -->
   <section class="py-8 sm:py-12 md:py-16 px-4 sm:px-6 md:px-8">
     <div
       class="text-center mb-6 sm:mb-8 md:mb-10 flex flex-col items-center gap-2"
@@ -16,12 +17,12 @@
       class="space-y-4 sm:space-y-6 w-full sm:max-w-2xl md:max-w-3xl mx-auto"
     >
       <!-- Loading state -->
-      <div v-if="agendaStore.loading" class="text-center">
+      <div v-if="loading" class="text-center">
         <p>Memuat agenda...</p>
       </div>
 
       <!-- Error state -->
-      <div v-else-if="agendaStore.error" class="text-center text-red-500">
+      <div v-else-if="error" class="text-center text-red-500">
         <p>Gagal memuat agenda. Silakan coba lagi nanti.</p>
         <p class="text-sm">{{ agendaStore.error }}</p>
       </div>
@@ -82,7 +83,7 @@
 
         <button
           :disabled="getStatusText(agenda) === 'Selesai'"
-          class="mt-0 md:mt-5 md:mb-12 border-2 border-[#511378] text-[#511378] px-3 py-2 sm:py-3 rounded-full text-xs hover:bg-purple-50 disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-400 self-start sm:self-end"
+          class="mt-0 md:mt-5 md:mb-12 border-2 border-green-600 text-green-600 px-3 py-2 sm:py-3 rounded-full text-xs hover:bg-green-50 disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-400 self-start sm:self-end"
           @click="handleAgendaClick(agenda)"
         >
           {{ getButtonText(agenda) }}
@@ -94,25 +95,56 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import { useAgendaStore } from "@/stores/agenda";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import Badge from "@/components/UI/Badge.vue";
 
-const agendaStore = useAgendaStore();
+const loading = ref(false);
+const error = ref(null);
+
+// Data dummy untuk agenda APTIKNAS
+const dummyAgendas = ref([
+  {
+    id: 1,
+    title: "Webinar Nasional: AI untuk Transformasi Bisnis",
+    description:
+      "Pelajari bagaimana kecerdasan buatan dapat merevolusi cara Anda berbisnis. Sesi ini akan dibawakan oleh praktisi AI terkemuka di Indonesia.",
+    start_datetime: "2024-10-25T09:00:00",
+    end_datetime: "2024-10-25T12:00:00",
+    location: "Online via Zoom",
+    image:
+      "https://images.unsplash.com/photo-1677442135703-178c33d748be?auto=format&fit=crop&w=400&q=80",
+    youtube_link: "https://youtube.com",
+  },
+  {
+    id: 2,
+    title: "APTIKNAS Tech Summit 2024",
+    description:
+      "Konferensi tahunan terbesar yang mempertemukan para pemimpin industri TIK, startup inovatif, dan pemerintah untuk membahas masa depan teknologi Indonesia.",
+    start_datetime: "2024-11-12T08:00:00",
+    end_datetime: "2024-11-13T17:00:00",
+    location: "Jakarta Convention Center",
+    image:
+      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80",
+    youtube_link: null,
+  },
+  {
+    id: 3,
+    title: "Workshop Keamanan Siber untuk UMKM",
+    description:
+      "Tingkatkan keamanan digital bisnis Anda dengan workshop praktis ini. Pelajari cara melindungi data pelanggan dan aset perusahaan dari serangan siber.",
+    start_datetime: "2024-11-20T10:00:00",
+    end_datetime: "2024-11-20T15:00:00",
+    location: "APTIKNAS Training Center, Bandung",
+    image:
+      "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&w=400&q=80",
+    youtube_link: null,
+  },
+]);
 
 // Mengambil data dari store dengan berbagai kemungkinan struktur
 const agendas = computed(() => {
-  const list = agendaStore.list;
-  console.log("Raw agenda data from store:", list);
-
-  if (!list) return [];
-
-  if (Array.isArray(list)) return list;
-  if (list.data && Array.isArray(list.data.data)) return list.data.data;
-  if (Array.isArray(list.data)) return list.data;
-
-  console.warn("Struktur data agenda tidak dikenali:", list);
-  return [];
+  return dummyAgendas.value;
 });
 
 // Only show maximum 3 agenda items
@@ -126,38 +158,39 @@ const getImageUrl = (imagePath) => {
     return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80";
   }
 
-  const baseUrl = 'http://127.0.0.1:8000';
-  
-  if (imagePath.startsWith('http')) {
+  const baseUrl = "http://127.0.0.1:8000";
+
+  if (imagePath.startsWith("http")) {
     return imagePath;
   }
-  
-  if (imagePath.startsWith('agenda/')) {
+
+  if (imagePath.startsWith("agenda/")) {
     return `${baseUrl}/${imagePath}`;
   }
-  
-  if (imagePath.startsWith('storage/agenda/')) {
-    return `${baseUrl}/${imagePath.replace('storage/', '')}`;
+
+  if (imagePath.startsWith("storage/agenda/")) {
+    return `${baseUrl}/${imagePath.replace("storage/", "")}`;
   }
-  
-  if (imagePath.startsWith('/agenda/')) {
+
+  if (imagePath.startsWith("/agenda/")) {
     return `${baseUrl}${imagePath}`;
   }
-  
-  if (!imagePath.includes('/')) {
+
+  if (!imagePath.includes("/")) {
     return `${baseUrl}/agenda/${imagePath}`;
   }
-  
+
   return `${baseUrl}/agenda/${imagePath}`;
 };
 
 // Handle error gambar
 const handleImageError = (event, agenda) => {
   console.error("Gagal memuat gambar untuk agenda:", agenda?.title);
-  
+
   // Fallback ke placeholder
-  event.target.src = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80";
-  
+  event.target.src =
+    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80";
+
   // Coba gunakan image_url jika tersedia
   if (agenda?.image_url) {
     setTimeout(() => {
@@ -206,10 +239,14 @@ const getStatusText = (agenda) => {
 const getStatusClass = (agenda) => {
   const status = getStatusText(agenda);
   switch (status) {
-    case "Selesai": return "bg-gray-500 text-white";
-    case "Berlangsung": return "bg-green-500 text-white";
-    case "Akan Datang": return "bg-[#511378] text-white";
-    default: return "bg-gray-400 text-white";
+    case "Selesai":
+      return "bg-gray-500 text-white";
+    case "Berlangsung":
+      return "bg-green-500 text-white";
+    case "Akan Datang":
+      return "bg-green-600 text-white";
+    default:
+      return "bg-gray-400 text-white";
   }
 };
 
@@ -217,10 +254,14 @@ const getStatusClass = (agenda) => {
 const getButtonText = (agenda) => {
   const status = getStatusText(agenda);
   switch (status) {
-    case "Selesai": return "Lihat Materi";
-    case "Berlangsung": return "Ikuti Sekarang";
-    case "Akan Datang": return "Daftar Sekarang";
-    default: return "Lihat Detail";
+    case "Selesai":
+      return "Lihat Materi";
+    case "Berlangsung":
+      return "Ikuti Sekarang";
+    case "Akan Datang":
+      return "Daftar Sekarang";
+    default:
+      return "Lihat Detail";
   }
 };
 
@@ -237,12 +278,6 @@ const handleAgendaClick = (agenda) => {
 };
 
 onMounted(async () => {
-  try {
-    await agendaStore.fetchAll();
-  } catch (err) {
-    console.error("Gagal memuat data agenda:", err);
-  }
-
   AOS.init({
     once: true,
     duration: 600,
