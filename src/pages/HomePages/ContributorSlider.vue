@@ -30,7 +30,7 @@
     >
       <!-- Paginasi Vertikal -->
       <div
-        class="swiper-pagination-contributor flex flex-col items-center justify-center h-45"
+        class="swiper-pagination-contributor flex flex-col items-center bottom-0 justify-center h-35 gap-4"
       >
         <!-- Swiper akan memasukkan bullets di sini -->
       </div>

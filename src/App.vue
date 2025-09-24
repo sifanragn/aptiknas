@@ -11,7 +11,7 @@ watch(
   () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth", // animasi scroll halus
+      behavior: "smooth", 
     });
   }
 );

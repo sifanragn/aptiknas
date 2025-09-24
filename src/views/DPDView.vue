@@ -5,7 +5,7 @@ import ListDPD from "@/pages/PengurusPages/DPD/ListDPD.vue";
 <template>
   <div>
     <Hero />
-  <ListDPD />
+  <ListDPD /> 
   </div>
   
 </template>

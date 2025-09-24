@@ -83,7 +83,7 @@ const dummyAgendaData = ref([
     end_datetime: "2024-11-05T12:00:00",
     location: "Online via Zoom",
     image:
-      "https://images.unsplash.com/photo-1677442135703-178c33d748be?auto=format&fit=crop&w=500&q=80",
+      "https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?auto=format&fit=crop&w=500&q=80",
     youtube_link: "https://youtube.com",
   },
   {

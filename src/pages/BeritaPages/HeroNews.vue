@@ -1,6 +1,6 @@
 <template>
   <!-- Header -->
-  <div class="grid md:grid-cols-2 gap-8 items-center mb-16">
+  <div class="grid md:grid-cols-2 gap-8 items-center mb-16 mt-15">
     <!-- Konten Teks -->
     <div>
       <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">

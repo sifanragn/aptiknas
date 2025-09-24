@@ -1,6 +1,6 @@
 <template>
   <!-- Header -->
-  <div class="grid md:grid-cols-2 gap-8 items-center mb-16">
+  <div class="grid md:grid-cols-2 gap-8 items-center mb-16 mt-15">
     <!-- Gambar (pindah ke kiri) -->
     <div class="relative">
       <!-- Tambahkan relative pada parent div -->

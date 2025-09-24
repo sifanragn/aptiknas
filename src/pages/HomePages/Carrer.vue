@@ -18,7 +18,7 @@
         data-aos="fade-up"
         data-aos-delay="200"
       >
-        Kembangkan potensi, perluas jaringan, dan jadilah inspirasi bagi sesama guru BK.
+        Kembangkan potensi, perluas jaringan, dan jadilah inspirasi bagi sesama anggota Aptiknas.
       </h3>
       <button 
         class="mt-4 px-5 py-2 bg-[#22c55e] text-white rounded-full hover:bg-green-700 text-sm transition-all duration-300 hover:scale-105"

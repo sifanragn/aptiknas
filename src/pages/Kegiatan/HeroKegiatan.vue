@@ -1,5 +1,5 @@
 <template>
-  <div class="hero-section -mt-30">
+  <div class="hero-section">
     <!-- Hero -->
     <div class="text-center relative">
       <div class="relative">
@@ -10,10 +10,10 @@
         </h1>
 
         <div
-          class="absolute hidden xl:block bottom-0 left-45 h-28 w-[43rem] bg-gradient-to-r from-green-600/19 to-transparent z-0"
+          class="absolute hidden xl:block bottom-0 left-1/2 -translate-x-1/2 h-28 w-[43rem] bg-gradient-to-r from-green-600/19 to-transparent z-0"
         ></div>
         <div
-          class="absolute hidden xl:block bottom-0 left-45 h-26 border-l-2 border-green-600 z-0"
+          class="absolute hidden xl:block bottom-0 left-3/14 -translate-x-1/2 h-26 border-l-2 border-green-600 z-0"
         ></div>
       </div>
 
@@ -47,39 +47,51 @@ const dummyAgenda = ref([
   {
     id: 1,
     title: "Seminar Nasional Digital Transformation 2024",
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description: "Seminar tentang transformasi digital untuk UMKM dengan pembicara ahli dari industri teknologi."
+    image:
+      "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+    description:
+      "Seminar tentang transformasi digital untuk UMKM dengan pembicara ahli dari industri teknologi.",
   },
   {
     id: 2,
     title: "Workshop Cybersecurity untuk Pelaku Usaha",
-    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description: "Workshop intensif tentang keamanan siber untuk melindungi data bisnis dari ancaman digital."
+    image:
+      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+    description:
+      "Workshop intensif tentang keamanan siber untuk melindungi data bisnis dari ancaman digital.",
   },
   {
     id: 3,
     title: "APTIKNAS Networking Night 2024",
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description: "Acara networking eksklusif untuk anggota APTIKNAS dengan pelaku industri dan pemerintah."
+    image:
+      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+    description:
+      "Acara networking eksklusif untuk anggota APTIKNAS dengan pelaku industri dan pemerintah.",
   },
   {
     id: 4,
     title: "Tech Training: Cloud Computing Fundamentals",
-    image: "https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description: "Pelatihan fundamental cloud computing untuk pengusaha TIK yang ingin mengembangkan skill."
+    image:
+      "https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+    description:
+      "Pelatihan fundamental cloud computing untuk pengusaha TIK yang ingin mengembangkan skill.",
   },
   {
     id: 5,
     title: "Pameran Teknologi Indonesia 2024",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description: "Ajang pameran teknologi terbesar yang menampilkan produk dan solusi dari perusahaan anggota APTIKNAS."
+    image:
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+    description:
+      "Ajang pameran teknologi terbesar yang menampilkan produk dan solusi dari perusahaan anggota APTIKNAS.",
   },
   {
     id: 6,
     title: "Konferensi Blockchain untuk Bisnis",
-    image: "https://images.unsplash.com/photo-1639762681057-408e52192e55?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description: "Konferensi tentang implementasi teknologi blockchain dalam berbagai sektor bisnis."
-  }
+    image:
+      "https://images.unsplash.com/photo-1639762681057-408e52192e55?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+    description:
+      "Konferensi tentang implementasi teknologi blockchain dalam berbagai sektor bisnis.",
+  },
 ]);
 
 const loading = ref(false);
@@ -97,7 +109,7 @@ const galleryItems = computed(() => {
   return dummyAgenda.value.map((item) => ({
     image: item.image,
     text: item.title,
-    id: item.id
+    id: item.id,
   }));
 });
 </script>
