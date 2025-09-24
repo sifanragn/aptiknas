@@ -161,7 +161,7 @@ import "aos/dist/aos.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import InteractiveHoverButton from "@/components/ui/interactive-hover-button/InteractiveHoverButton.vue";
+import InteractiveHoverButton from "@/components/UI/interactive-hover-button/InteractiveHoverButton.vue";
 
 // Data dummy untuk kegiatan APTIKNAS
 const dummyKegiatanData = ref([

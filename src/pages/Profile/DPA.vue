@@ -71,7 +71,7 @@
 <script setup>
 import CardProfile from "@/components/Layout/CardProfile.vue";
 import PatrickImage from "../../assets/patrick.png";
-import InteractiveHoverButton from "@/components/ui/interactive-hover-button/InteractiveHoverButton.vue";
+import InteractiveHoverButton from "@/components/UI/interactive-hover-button/InteractiveHoverButton.vue";
 
 const members = [
   {

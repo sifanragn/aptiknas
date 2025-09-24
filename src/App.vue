@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { RouterView, useRoute } from "vue-router";
 import { watch } from "vue";
-import AppHeader from "./components/Layout/AppHeader.vue";
-import AppFooter from "./components/Layout/AppFooter.vue";
+import AppHeader from "@/components/Layout/AppHeader.vue";
+import AppFooter from "@/components/Layout/AppFooter.vue";
 
 // Scroll ke atas saat route berubah
 const route = useRoute();

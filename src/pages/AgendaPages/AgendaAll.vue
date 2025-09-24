@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
-import Pagination from "@/components/layout/Pagination.vue";
+import Pagination from "@/components/Layout/Pagination.vue";
 import AOS from "aos";
 import "aos/dist/aos.css";
 

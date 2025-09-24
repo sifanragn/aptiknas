@@ -113,7 +113,7 @@ import Swiper from "swiper";
 import { Navigation, Pagination } from "swiper/modules";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import InteractiveHoverButton from "@/components/ui/interactive-hover-button/InteractiveHoverButton.vue";
+import InteractiveHoverButton from "@/components/UI/interactive-hover-button/InteractiveHoverButton.vue";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
