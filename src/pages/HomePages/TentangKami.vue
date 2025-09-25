@@ -1,13 +1,13 @@
 <template>
   <!-- Tentang Kami -->
   <section
-    class="py-12 md:py-16 lg:py-20 w-full overflow-hidden"
+    class="py-12 md:py-16 lg:py-20 w-screen overflow-hidden"
     v-if="filteredData.length > 0"
   >
     <div class="grid lg:grid-cols-2 grid-cols-1 items-center">
       <!-- Konten Teks di Kiri -->
       <div
-        class="flex flex-col items-start w-full space-y-6 md:space-y-8 lg:space-y-10 max-w-md justify-self-end px-4 sm:px-6 md:px-8 lg:px-0 order-2 lg:order-1"
+        class="flex flex-col items-start w-full mr-20 space-y-6 md:space-y-8 lg:space-y-10 max-w-md justify-self-end px-4 sm:px-6 md:px-8 lg:px-0 order-2 lg:order-1"
         data-aos="fade-right"
       >
         <span
@@ -53,7 +53,7 @@
         </div>
 
         <!-- Swiper Container -->
-        <div class="swiper mySwiper pl-3 sm:pl-4 md:pl-6 md:rou">
+        <div class="swiper mySwiper pl-3 sm:pl-4 md:pl-6 md:rouded-lg -10">
           <div class="swiper-wrapper">
             <div
               v-for="(item, index) in filteredData"
@@ -62,8 +62,9 @@
             >
               <img
                 :src="getImageUrl(item.image)"
-                class="rounded-xl sm:rounded-2xl md:rounded-3xl mb-10 shadow-lg w-[10rem] h-[14rem] sm:w-[12rem] sm:h-[16rem] md:w-[14rem] md:h-[18rem] ml-4 mt-2 lg:w-[15rem] lg:h-[20rem] object-cover"
+                class="rounded-xl sm:rounded-2xl md:rounded-3xl mb-10 shadow-lg w-[10rem] h-[14rem] sm:w-[12rem] sm:h-[16rem] md:w-[14rem] md:h-[18rem] ml-4 mt-2 lg:w-[15rem] lg:h-[20rem] object-cover transition-transform duration-500 ease-in-out"
                 :alt="item.title"
+                :class="{ 'scale-110 shadow-2xl': activeIndex === index }"
                 @error="handleImageError(item.id)"
               />
             </div>

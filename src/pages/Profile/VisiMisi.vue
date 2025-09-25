@@ -185,7 +185,7 @@ onBeforeUnmount(() => {
     >
       <!-- Left Image and Title -->
       <div
-        class="md:w-1/2 flex flex-col items-start"
+        class="md:w-1/2 flex flex-col items-start "
         data-aos="fade-right"
         data-aos-delay="100"
       >

@@ -203,7 +203,7 @@ const dummyPodcasts = ref([
   {
     id: 1,
     title: "Transformasi Digital UMKM di Era 4.0",
-    yt_id: "abc123",
+    yt_id: "T9Cbl0vUf7k",
     pub_date: "2024-09-15T00:00:00.000Z",
     category: { name: "Digital Transformation" },
     description: "Podcast tentang strategi transformasi digital untuk UMKM",
@@ -211,7 +211,7 @@ const dummyPodcasts = ref([
   {
     id: 2,
     title: "Cybersecurity: Tantangan dan Solusi",
-    yt_id: "def456",
+    yt_id: "lcknOxOR__c",
     pub_date: "2024-09-10T00:00:00.000Z",
     category: { name: "Cybersecurity" },
     description: "Diskusi tentang keamanan siber untuk pelaku usaha",
@@ -219,7 +219,7 @@ const dummyPodcasts = ref([
   {
     id: 3,
     title: "AI dan Masa Depan Industri Teknologi",
-    yt_id: "ghi789",
+    yt_id: "yD6dfHYgJm4",
     pub_date: "2024-09-08T00:00:00.000Z",
     category: { name: "Artificial Intelligence" },
     description: "Membahas perkembangan AI dalam industri teknologi",
@@ -227,7 +227,7 @@ const dummyPodcasts = ref([
   {
     id: 4,
     title: "Cloud Computing untuk Bisnis Modern",
-    yt_id: "jkl012",
+    yt_id: "Z39JfG4T2jg",
     pub_date: "2024-09-05T00:00:00.000Z",
     category: { name: "Cloud Computing" },
     description: "Pemanfaatan cloud computing dalam operasional bisnis",
@@ -235,7 +235,7 @@ const dummyPodcasts = ref([
   {
     id: 5,
     title: "IoT dalam Smart City Development",
-    yt_id: "mno345",
+    yt_id: "uCRCvQyZHtI",
     pub_date: "2024-09-03T00:00:00.000Z",
     category: { name: "Internet of Things" },
     description: "Peran IoT dalam pengembangan kota pintar",
@@ -243,7 +243,7 @@ const dummyPodcasts = ref([
   {
     id: 6,
     title: "Blockchain Beyond Cryptocurrency",
-    yt_id: "pqr678",
+    yt_id: "uCRCvQyZHtI",
     pub_date: "2024-09-01T00:00:00.000Z",
     category: { name: "Blockchain" },
     description: "Aplikasi blockchain di luar dunia cryptocurrency",
@@ -251,7 +251,7 @@ const dummyPodcasts = ref([
   {
     id: 7,
     title: "Membangun Karir di Industri TIK",
-    yt_id: "stu901",
+    yt_id: "HlGwtSQW_eE",
     pub_date: "2024-08-28T00:00:00.000Z",
     category: { name: "Karir" },
     description:
@@ -260,7 +260,7 @@ const dummyPodcasts = ref([
   {
     id: 8,
     title: "Pentingnya UI/UX dalam Produk Digital",
-    yt_id: "vwx234",
+    yt_id: "Q6t3tkAIfZk",
     pub_date: "2024-08-25T00:00:00.000Z",
     category: { name: "Desain" },
     description:

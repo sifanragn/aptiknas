@@ -22,7 +22,7 @@
 
       <!-- Nav -->
       <nav
-        class="hidden md:flex items-center gap-6 lg:gap-10"
+        class="hidden md:flex items-center gap-6 lg:gap-5"
         :class="
           scrolled
             ? 'text-md'
@@ -31,13 +31,13 @@
       >
         <router-link
           to="/"
-          class="px-3 py-1.5 rounded-full transition-all duration-200 hover:bg-gray-100 hover:text-green-600"
+          class="px-3 py-1.5 rounded-full transition-all duration-200 hover:border-2 border-2 border-transparent hover:border-green-600 hover:text-green-600"
         >
           Home
         </router-link>
         <router-link
           to="/profile"
-          class="px-3 py-1.5 rounded-full transition-all duration-200 hover:bg-gray-100 hover:text-green-600"
+          class="px-3 py-1.5 rounded-full transition-all duration-200 hover:border-2 border-2 border-transparent hover:border-green-600 hover:text-green-600"
         >
           Profile
         </router-link>
@@ -49,7 +49,11 @@
           @mouseleave="closeDropdown"
         >
           <button
-            class="flex items-center gap-1 px-3 py-1.5 rounded-full transition-all duration-200 hover:bg-gray-100 hover:text-green-600"
+            class="flex items-center gap-1 px-3 py-1.5 rounded-full transition-all duration-200 border-2 border-transparent hover:border-green-600 hover:text-green-600"
+            :class="{
+              'border-green-600 text-green-600': isInformasiActive,
+              'border-transparent': !isInformasiActive,
+            }"
           >
             Informasi
             <svg
@@ -96,8 +100,13 @@
           @mouseenter="openDropdown('daftarDpd')"
           @mouseleave="closeDropdown"
         >
+          
           <button
-            class="flex items-center gap-1 px-3 py-1.5 rounded-full transition-all duration-200 hover:bg-gray-100 hover:text-green-600"
+            class="flex items-center gap-1 px-3 py-1.5 rounded-full transition-all duration-200 border-2 border-transparent hover:border-green-600 hover:text-green-600"
+            :class="{
+              'border-green-600 text-green-600': isDaftarDpdActive,
+              'border-transparent': !isDaftarDpdActive,
+            }"
           >
             Daftar DPD
             <svg
@@ -192,7 +201,7 @@
         </div>
         <router-link
           to="/kegiatan"
-          class="px-3 py-1.5 rounded-full transition-all duration-200 hover:bg-gray-100 hover:text-green-600"
+          class="px-3 py-1.5 rounded-full transition-all duration-200 hover:border-2 border-2 border-transparent hover:border-green-600 hover:text-green-600"
         >
           Kegiatan
         </router-link>
@@ -204,7 +213,11 @@
           @mouseleave="closeDropdown"
         >
           <button
-            class="flex items-center gap-1 px-3 py-1.5 rounded-full transition-all duration-200 hover:bg-gray-100 hover:text-green-600"
+            class="flex items-center gap-1 px-3 py-1.5 rounded-full transition-all duration-200 border-2 border-transparent hover:border-green-600 hover:text-green-600"
+            :class="{
+              'border-green-600 text-green-600': isKepengurusanActive,
+              'border-transparent': !isKepengurusanActive,
+            }"
           >
             Kepengurusan
             <svg
@@ -256,35 +269,42 @@
 
       <!-- Button -->
       <button
-  class="hidden md:block relative overflow-hidden 
-         bg-gradient-to-r from-green-500 to-emerald-500 
-         text-white px-6 py-3 rounded-full font-semibold tracking-wide
-         shadow-md border border-green-400
-         transition-all duration-500 ease-out
-         hover:scale-105 hover:shadow-green-400/60 group"
->
-  <!-- Shine effect -->
-  <span
-    class="absolute inset-0  
-           bg-gradient-to-r from-transparent via-white/30 to-transparent 
-           -translate-x-[150%] skew-x-12 
-           group-hover:translate-x-[150%] 
-           transition-transform duration-700 ease-in-out"
-  ></span>
+        class="hidden md:block relative overflow-hidden bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-2.5 rounded-full font-semibold tracking-wide shadow-md border border-green-400 transition-all duration-500 ease-out hover:scale-105 hover:shadow-green-400/60 group"
+      >
+        <!-- Shine effect -->
+        <span
+          class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-[150%] skew-x-12 group-hover:translate-x-[150%] transition-transform duration-700 ease-in-out"
+        ></span>
 
-  <span class="relative z-10">Daftar Sekarang</span>
-</button>
-
+        <span class="relative z-10">Daftar Sekarang</span>
+      </button>
     </header>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
+import { useRoute } from "vue-router";
 
 const scrolled = ref(false);
 const activeDropdown = ref(null);
 let dropdownTimeout = null;
+
+const route = useRoute();
+
+const isInformasiActive = computed(() => {
+  return route.path.startsWith("/news") || route.path.startsWith("/agenda");
+});
+
+const isDaftarDpdActive = computed(() => {
+  // Aktif jika path adalah /dpd atau sub-path dari /dpd
+  return route.path.startsWith("/dpd");
+});
+
+const isKepengurusanActive = computed(() => {
+  // Aktif jika path adalah /dpa atau /dpp. /dpd ditangani oleh dropdown "Daftar DPD".
+  return ["/dpa", "/dpp"].some((path) => route.path.startsWith(path));
+});
 
 // Data dummy untuk DPD
 const dpdCategories = ref([
@@ -351,9 +371,10 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style scoped module>
-.router-link-active {
-  @apply bg-green-100 text-green-700;
+<style scoped>
+:deep(.router-link-active) {
+  border-color: #16a34a; /* Corresponds to border-green-600 */
+  color: #16a34a; /* Corresponds to text-green-600 */
 }
 
 .group:hover .group-hover\:block {

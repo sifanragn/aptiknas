@@ -1,7 +1,7 @@
 <template>
   <!-- Hero Carousel Container -->
   <div
-    class="w-full lg:w-screen h-full justify-center flex flex-col items-center mx-auto relative px-10"
+    class="w-full lg:w-screen h-full justify-center flex flex-col items-center -mx-4 relative px-3"
   >
     <!-- SVG Filter -->
     <svg
@@ -45,7 +45,7 @@
 
             <!-- Overlay -->
             <div
-              class="absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 md:p-8 text-center"
+              class="absolute inset-0 bg-black/30 flex flex-col items-center justify-center text-center"
             >
               <h2
                 class="text-white text-2xl sm:text-3xl lg:text-4xl font-semibold mb-2 md:mb-4 max-w-xs sm:max-w-sm md:max-w-xl"
@@ -63,9 +63,14 @@
         <!-- Button CTA -->
         <router-link
           to="/daftar"
-          class="bg-green-600 text-white rounded-full py-2 px-6 hover:bg-green-700 transition-colors text-sm md:text-base absolute bottom-0 left-1/2 transform -translate-x-1/2 z-10"
+          class="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-10"
         >
-          Bergabung Sekarang
+          <ShimmerButton
+            background="#16a34a"
+            class="text-sm md:text-base px-6 py-2 z-50" 
+          >
+            Bergabung Sekarang
+          </ShimmerButton>
         </router-link>
       </section>
 
@@ -101,6 +106,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
+import ShimmerButton from "@/components/UI/shimmer-button/ShimmerButton.vue";
 
 // Data dummy untuk slider APTIKNAS
 const dummySlides = ref([

@@ -41,7 +41,7 @@ const dpaMembers = ref([
   {
     id: 1,
     name: "Dr. Bambang Sutrisno",
-    position: "Ketua Dewan Pengawas",
+    position: "Ketua DPP",
     location: "Jakarta",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
     social: [
@@ -52,7 +52,7 @@ const dpaMembers = ref([
   {
     id: 2,
     name: "Ir. Suryo Handono, M.Sc.",
-    position: "Anggota Dewan Pengawas",
+    position: "Anggota DPP",
     location: "Bandung",
     image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
     social: [
@@ -62,7 +62,7 @@ const dpaMembers = ref([
   {
     id: 3,
     name: "Diana Pratiwi, S.Kom., M.T.I.",
-    position: "Anggota Dewan Pengawas",
+    position: "Anggota DPD",
     location: "Surabaya",
     image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
     social: [

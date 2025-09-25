@@ -1,7 +1,7 @@
 <template>
   <div class="dark:bg-neutral-900 flex flex-col items-center py-16">
     <!-- Judul -->
-    <div class="text-center mb-10">
+    <div class="text-center mb-10" data-aos="fade-down">
       <h2 class="text-2xl font-bold">
         Dewan Pengawas Asosiasi (DPA) DPP APTIKNAS
       </h2>
@@ -14,6 +14,8 @@
         v-for="(member, index) in members"
         :key="index"
         :name="member.name"
+        data-aos="fade-up"
+        :data-aos-delay="index * 100"
         :position="member.role"
         :location="member.location"
         :image="member.image"
@@ -22,12 +24,12 @@
     </div>
 
     <!-- Selengkapnya -->
-    <div class="mt-10">
+    <div class="mt-10" data-aos="fade-up" data-aos-delay="300">
       <InteractiveHoverButton text="Selengkapnya" />
     </div>
 
     <!-- Pagination -->
-    <div class="mt-6 flex gap-3">
+    <div class="mt-6 flex gap-3" data-aos="fade-up" data-aos-delay="400">
       <button
         class="w-8 h-8 flex items-center justify-center rounded-full border hover:bg-gray-100"
       >
@@ -69,9 +71,20 @@
 </template>
 
 <script setup>
+import { onMounted } from "vue";
 import CardProfile from "@/components/Layout/CardProfile.vue";
 import PatrickImage from "../../assets/user.png";
 import InteractiveHoverButton from "@/components/UI/interactive-hover-button/InteractiveHoverButton.vue";
+import AOS from "aos";
+import "aos/dist/aos.css";
+
+onMounted(() => {
+  AOS.init({
+    duration: 800,
+    easing: "ease-out-cubic",
+    once: true,
+  });
+});
 
 const members = [
   {
