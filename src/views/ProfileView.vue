@@ -6,7 +6,7 @@ import DPA from "@/pages/Profile/DPA.vue";
 import KTA from "@/pages/HomePages/KTA.vue";
 </script>
 <template>
-  <div>
+  <div class="flex flex-col items-center justify-center">
     <HeroProfile />
     <VisiMisi />
     <KegiatanProfile />

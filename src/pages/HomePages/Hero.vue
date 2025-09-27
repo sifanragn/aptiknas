@@ -1,7 +1,7 @@
 <template>
   <!-- Hero Carousel Container -->
   <div
-    class="w-full lg:w-screen h-full justify-center flex flex-col items-center -mx-4 relative px-3"
+    class="w-full lg:w-screen h-full justify-center flex flex-col items-center -mx-4 relative px-3 "
   >
     <!-- SVG Filter -->
     <svg
@@ -25,7 +25,7 @@
       </defs>
     </svg>
     <!-- Container -->
-    <div class="container px-1 mr-4 relative">
+    <div class="container px-1 relative">
       <section
         v-if="!loading && filteredSlides.length"
         class="relative w-full mx-auto px-4 sm:px-6 lg:px-10 h-[300px] sm:h-[400px] lg:h-[80vh] overflow-hidden"
@@ -222,12 +222,12 @@ onUnmounted(() => {
 <style scoped>
 .clipth {
   clip-path: polygon(
-    0 10%,
-    20.5% 10%,
-    20.5% 0%,
-    75.5% 0%,
-    75.5% 10%,
-    100% 10%,
+    0 11%,
+    23% 11%,
+    23% 0%,
+    75% 0%,
+    75% 11%,
+    100% 11%,
     100% 100%,
     60% 100%,
     60% 91%,

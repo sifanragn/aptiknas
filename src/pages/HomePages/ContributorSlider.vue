@@ -94,7 +94,7 @@
       <!-- Wrapper untuk menjaga jarak yang konsisten -->
       <div class="flex flex-col items-center gap-4 h-32 justify-between">
         <!-- Paginasi -->
-        <div class="swiper-pagination-contributor flex flex-col items-center justify-end h-20 gap-2  rounded-full">
+        <div class="swiper-pagination-contributor flex flex-col items-center justify-end px-5 h-20 gap-2  rounded-full">
           <!-- Swiper bullets -->
         </div>
 
@@ -120,8 +120,7 @@
   </div>
 </template>
 
-<style >
-/* Style yang lebih presisi */
+<style scoped>
 .swiper-pagination-contributor {
   display: flex;
   flex-direction: column;
@@ -141,22 +140,10 @@
 .swiper-pagination-contributor .swiper-pagination-bullet-active {
   background-color: #16a34a;
   height: 2.5rem;
+  padding-top: 10px;
+  padding-bottom: 10px;
+
 }
 
-.h-16 {
-  height: 4rem;
-}
-
-.h-32 {
-  height: 8rem;
-}
-
-.h-80 {
-  height: 20rem;
-}
-
-.gap-4 {
-  gap: 1rem;
-}
 </style>
 

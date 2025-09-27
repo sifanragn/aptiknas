@@ -1,5 +1,5 @@
 <template>
-  <div class="hero-section">
+  <div class="hero-section -mt-10">
     <!-- Hero -->
     <div class="text-center relative">
       <div class="relative">

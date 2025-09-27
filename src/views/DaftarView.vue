@@ -6,7 +6,7 @@
  import Formulir from '@/pages/DaftarPages/Formulir.vue';
 </script>
 <template>
-    <div>
+    <div class="flex flex-col items-center justify-center">
     <Hero />
     <Promo />
     <Syarat />

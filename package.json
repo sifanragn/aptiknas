@@ -12,6 +12,7 @@
     "@motionone/vue": "^10.16.4",
     "@tailwindcss/vite": "^4.1.12",
     "@vueuse/core": "^13.9.0",
+    "@wxperia/liquid-glass-vue": "^1.0.9",
     "aos": "^2.3.4",
     "axios": "^1.11.0",
     "lucide-vue-next": "^0.542.0",

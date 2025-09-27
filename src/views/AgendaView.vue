@@ -5,7 +5,7 @@ import News from '@/pages/BeritaPages/News.vue';
 import PodcastHome from '@/pages/HomePages/PodcastHome.vue';
 </script>
 <template>
-  <div class="container mx-auto px-4 py-8">
+  <div class="flex flex-col items-center justify-center">
     <HeroAgenda />
     <AgendaAll />
     <News />

@@ -17,7 +17,7 @@ const currentContent = computed(() => {
 });
 </script>
 <template>
-  <div>
+  <div class="flex flex-col items-center justify-center">
     <Hero />
     <Content :sections="currentContent" />
     <Anggota :daerah="daerah" />

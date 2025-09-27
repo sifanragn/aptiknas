@@ -3,10 +3,10 @@
     <!-- Main Card -->
     <div class="bg-green-600 text-white h-52 p-6 rounded-3xl relative overflow-hidden z-10">
       <!-- Overlay untuk efek redup, dikontrol oleh CSS di ContributorSlider.vue -->
-      <div class="dim-overlay absolute inset-0 bg-green-800/60 transition-opacity duration-500 ease-in-out"></div>
+      <div class="dim-overlay absolute inset-0 transition-opacity duration-500 ease-in-out"></div>
       <span class="text-xs mb-1 block">{{ contributor.job_type || 'Lowongan' }}</span>
       <h3 class="text-lg font-semibold">{{ contributor.position_title || 'Judul Posisi' }}</h3>
-      <p class="text-sm mt-2">{{ contributorDescription }}</p>
+      <p class="text-sm text-white mt-2">{{ contributorDescription }}</p>
       <div class="absolute right-4 bottom-4 bg-white/20 p-3 rounded-full">
         <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
           <path d="M10 12l-4-4h8l-4 4z" />

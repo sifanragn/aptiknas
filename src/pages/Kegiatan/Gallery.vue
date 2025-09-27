@@ -43,7 +43,7 @@
 
           <!-- Overlay Gradient + Text -->
           <div
-            class="absolute inset-0 bg-gradient-to-t from-green-600/90 via-green-600/10 to-transparent flex flex-col justify-end items-start p-4 text-white transition-opacity duration-500 group-hover:opacity-0"
+            class="absolute inset-0 bg-gradient-to-b from-green-600/90 via-green-600/10 to-transparent flex flex-col justify-end items-start p-4 text-white transition-opacity duration-500 group-hover:opacity-0"
           >
             <h3 class="text-lg font-semibold">{{ item.title }}</h3>
             <p class="text-sm mt-1">{{ item.category }}</p>
@@ -52,7 +52,7 @@
 
         <!-- Detail gambar dengan animasi fade-in -->
         <div
-          class="absolute inset-0 bg-gradient-to-t from-green-600/90 via-green-600/40 to-transparent flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] transform translate-y-6 group-hover:translate-y-0"
+          class="absolute inset-0 bg-gradient-to-b from-green-600/90 via-green-600/40 to-transparent flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] transform translate-y-6 group-hover:translate-y-0"
         >
           <!-- Tombol Lingkaran dengan Panah -->
           <button
@@ -87,12 +87,13 @@
 
     <!-- Load More Button -->
     <div v-if="filteredGallery.length > 0" class="flex justify-center mt-10">
-      <button
-        class="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition shadow-md"
+      <ShimmerButton
+        background="#16a34a"
+        class="px-6 py-3"
         @click="fetchMoreKegiatan"
       >
         Muat Lebih Banyak
-      </button>
+      </ShimmerButton>
     </div>
   </div>
 </template>
@@ -100,6 +101,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import AOS from "aos";
+import ShimmerButton from "@/components/UI/shimmer-button/ShimmerButton.vue";
 import "aos/dist/aos.css";
 
 // Data dummy untuk kegiatan APTIKNAS

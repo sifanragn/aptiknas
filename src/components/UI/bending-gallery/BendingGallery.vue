@@ -468,7 +468,7 @@ class Media {
     }
     this.scale = this.screen.height / 1500;
     this.baseScale = {
-      x: (this.viewport.width * (700 * this.scale)) / this.screen.width,
+      x: (this.viewport.width * (900 * this.scale)) / this.screen.width,
       y: (this.viewport.height * (900 * this.scale)) / this.screen.height,
     };
     this.plane.scale.y = this.baseScale.y;

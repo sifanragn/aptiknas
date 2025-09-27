@@ -5,10 +5,11 @@ import Agenda from '../pages/HomePages/Agenda.vue';
 import PodcastHome from '@/pages/HomePages/PodcastHome.vue';
 import KTA from '@/pages/HomePages/KTA.vue';
 import Carrer from '@/pages/HomePages/Carrer.vue';
+
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col items-center justify-center">
      <Hero />
   <TentangKami />
   <Agenda />

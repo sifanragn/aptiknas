@@ -55,7 +55,7 @@
 
               <!-- Image Container (Reduces height on hover) -->
               <div
-                class="absolute inset-0 overflow-hidden rounded-2xl transition-all duration-500 group-hover:h-1/2 group-hover:top-1/2"
+                class="absolute inset-0 overflow-hidden rounded-2xl transition-all duration-500 h-full group-hover:h-1/2 group-hover:top-1/2"
               >
                 <img
                   :src="item.image"

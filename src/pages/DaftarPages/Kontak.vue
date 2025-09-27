@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-wrap justify-center gap-8">
+  <div class="flex flex-wrap justify-center gap-8 mt-20">
     <!-- Card Loop -->
     <div
       v-for="card in contactCards"
@@ -10,7 +10,7 @@
     >
       <!-- Card Default -->
       <div
-        class="absolute inset-0 bg-gradient-to-br from-green-300 to-green-700 text-white p-6 flex flex-col justify-between transition-all duration-700 ease-in-out"
+        class="absolute inset-0 bg-gradient-to-br from-green-300 to-green-700 text-white p-6 flex flex-col justify-between transition-all duration-700 ease-in-out rounded-2xl "
         :class="
           card.hover
             ? 'opacity-0 scale-90 translate-y-6 rotate-1'
