@@ -8,19 +8,23 @@ use Illuminate\Http\Request;
 
 class ApiCategoryDaftarDPDController extends Controller
 {
-    // GET semua kategori
+    /**
+     * 🔹 Tampilkan semua kategori
+     */
     public function index()
     {
         $categories = CategoryDaftar::latest()->get();
 
         return response()->json([
             'success' => true,
-            'message' => 'List kategori DPD',
-            'data'    => $categories
-        ], 200);
+            'message' => 'Data kategori berhasil diambil',
+            'data' => $categories
+        ]);
     }
 
-    // GET detail kategori by ID
+    /**
+     * 🔹 Tampilkan detail kategori berdasarkan ID
+     */
     public function show($id)
     {
         $category = CategoryDaftar::find($id);
@@ -34,14 +38,17 @@ class ApiCategoryDaftarDPDController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $category
-        ], 200);
+            'message' => 'Detail kategori berhasil diambil',
+            'data' => $category
+        ]);
     }
 
-    // GET kategori by nama
-    public function getByCategoryName($name)
+    /**
+     * 🔹 Tampilkan kategori berdasarkan nama (custom endpoint)
+     */
+    public function getByCategoryName($categoryName)
     {
-        $category = CategoryDaftar::where('name', $name)->first();
+        $category = CategoryDaftar::where('name', $categoryName)->first();
 
         if (!$category) {
             return response()->json([
@@ -50,9 +57,15 @@ class ApiCategoryDaftarDPDController extends Controller
             ], 404);
         }
 
+        // Jika nanti ada tabel daftar relasi, bisa diganti ke relasi
+        $daftar = CategoryDaftar::where('id', $category->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return response()->json([
             'success' => true,
-            'data'    => $category
-        ], 200);
+            'category' => $category->name,
+            'data' => $daftar
+        ]);
     }
 }

@@ -69,11 +69,11 @@ Route::get('/about/{id}', [ApiAboutController::class, 'show']);
 Route::get('/podcast', [ApiPodcastsController::class, 'index']);
 Route::get('/podcast/{id}', [ApiPodcastsController::class, 'show']);
 Route::get('/report', [ApiReportController::class, 'index']);
-Route::get('/{id}', [ApiReportController::class, 'show']);
+Route::get('/report{id}', [ApiReportController::class, 'show']);
 Route::post('/', [ApiReportController::class, 'store']);
-Route::get('/categories', [ApiCategoryDaftarDPDController::class, 'index']);
-Route::get('/categories/{id}', [ApiCategoryDaftarDPDController::class, 'show']);
-Route::get('/categories/name/{name}', [ApiCategoryDaftarDPDController::class, 'getByCategoryName']);
+Route::get('/category-dpd', [ApiCategoryDaftarDPDController::class, 'index']);
+Route::get('/category-dpd/{id}', [ApiCategoryDaftarDPDController::class, 'show']);
+Route::get('/category-dpd/name/{categoryName}', [ApiCategoryDaftarDPDController::class, 'getByCategoryName']);
 
 
 
