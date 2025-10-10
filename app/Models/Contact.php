@@ -12,12 +12,6 @@ class Contact extends Model
         'email_dpd',
         'alamat',
         'notlp',
-        'url_ig',
-        'url_yt',
-        'url_fb',
-        'url_in',
-        'url_twit',
-        'url_tiktok',
         'start_datetime',
         'end_datetime',
 

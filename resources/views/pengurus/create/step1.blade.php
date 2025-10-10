@@ -44,13 +44,22 @@
                             class="mt-1 block w-full rounded-lg border py-2 px-3 border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 text-sm">
                     </div>
 
-                    <!-- Address -->
+                    <!-- Jabatan -->
                     <div>
-                        <label for="address" class="block text-sm font-medium text-gray-700">Alamat <span
-                                class="text-red-500">*</span></label>
-                        <textarea id="address" name="address" rows="2"
-                            class="mt-1 block w-full rounded-lg border py-2 px-3 border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 text-sm">{{ old('address', $pengurus->address ?? '') }}</textarea>
+                        <label for="jabatan" class="block text-sm font-medium text-gray-700">Jabatan</label>
+                        <input type="text" id="jabatan" name="jabatan"
+                            value="{{ old('jabatan', $pengurus->jabatan ?? '') }}"
+                            class="mt-1 block w-full rounded-lg border py-2 px-3 border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+                            placeholder="Contoh: Ketua, Sekretaris, Bendahara">
                     </div>
+                </div>
+
+                <!-- Address (full width) -->
+                <div>
+                    <label for="address" class="block text-sm font-medium text-gray-700">Alamat <span
+                            class="text-red-500">*</span></label>
+                    <textarea id="address" name="address" rows="2"
+                        class="mt-1 block w-full rounded-lg border py-2 px-3 border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 text-sm">{{ old('address', $pengurus->address ?? '') }}</textarea>
                 </div>
 
                 <!-- Description (full width) -->
@@ -182,8 +191,7 @@
                     @enderror
                 </div>
 
-
-
+                <!-- Social Media -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <input type="url" name="fb" placeholder="Facebook URL"
                         value="{{ old('fb', $pengurus->fb ?? '') }}"
@@ -230,12 +238,11 @@
                 },
                 handleFile(file) {
                     if (!file) return;
-                    // simple size/type checks (adjust as needed)
                     if (!file.type.startsWith('image/')) {
                         alert('File harus gambar.');
                         return;
                     }
-                    if (file.size > 2 * 1024 * 1024) { // 2MB
+                    if (file.size > 2 * 1024 * 1024) {
                         alert('Ukuran file maksimal 2MB.');
                         return;
                     }
@@ -246,8 +253,6 @@
                     };
                     reader.readAsDataURL(file);
 
-                    // assign file to the hidden input (for browsers that preserve file input when replaced)
-                    // We already have input[name="image"]; setting value via DataTransfer for form submit:
                     const dataTransfer = new DataTransfer();
                     dataTransfer.items.add(file);
                     this.$refs.file.files = dataTransfer.files;
@@ -255,7 +260,6 @@
                 removeFile() {
                     this.previewUrl = null;
                     this.fileName = '';
-                    // clear file input
                     this.$refs.file.value = null;
                 }
             }

@@ -80,57 +80,6 @@
                         @enderror
                     </div>
 
-                    <!-- Heading Sosial Media -->
-                    <h2 class="text-sm sm:text-md font-semibold text-gray-700 col-span-1 md:col-span-2 mt-2">Sosial Media</h2>
-
-                    <!-- Instagram -->
-                    <div>
-                        <label for="url_ig" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Instagram URL</label>
-                        <input type="url" name="url_ig" id="url_ig" value="{{ old('url_ig') }}"
-                            placeholder="https://instagram.com/username"
-                            class="w-full rounded-lg px-3 py-2 text-sm border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500">
-                    </div>
-
-                    <!-- Twitter -->
-                    <div>
-                        <label for="url_twit" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Twitter URL</label>
-                        <input type="url" name="url_twit" id="url_twit" value="{{ old('url_twit') }}"
-                            placeholder="https://twitter.com/username"
-                            class="w-full rounded-lg px-3 py-2 text-sm border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500">
-                    </div>
-
-                    <!-- YouTube -->
-                    <div>
-                        <label for="url_yt" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">YouTube URL</label>
-                        <input type="url" name="url_yt" id="url_yt" value="{{ old('url_yt') }}"
-                            placeholder="https://youtube.com/channel/"
-                            class="w-full rounded-lg px-3 py-2 text-sm border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500">
-                    </div>
-
-                    <!-- Facebook -->
-                    <div>
-                        <label for="url_fb" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Facebook URL</label>
-                        <input type="url" name="url_fb" id="url_fb" value="{{ old('url_fb') }}"
-                            placeholder="https://facebook.com/username"
-                            class="w-full rounded-lg px-3 py-2 text-sm border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500">
-                    </div>
-
-                    <!-- LinkedIn -->
-                    <div>
-                        <label for="url_in" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">LinkedIn URL</label>
-                        <input type="url" name="url_in" id="url_in" value="{{ old('url_in') }}"
-                            placeholder="https://linkedin.com/in/username"
-                            class="w-full rounded-lg px-3 py-2 text-sm border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500">
-                    </div>
-
-                    <!-- TikTok -->
-                    <div>
-                        <label for="url_tiktok" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">TikTok URL</label>
-                        <input type="url" name="url_tiktok" id="url_tiktok" value="{{ old('url_tiktok') }}"
-                            placeholder="https://tiktok.com/@username"
-                            class="w-full rounded-lg px-3 py-2 text-sm border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500">
-                    </div>
-
                     <!-- Start DateTime -->
                     <div>
                         <label for="start_datetime" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Start DateTime *</label>

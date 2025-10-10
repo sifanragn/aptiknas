@@ -65,56 +65,6 @@
                     class="w-full rounded-lg px-3 py-2 text-sm border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500">
             </div>
 
-            <!-- Social Media -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Instagram -->
-                <div>
-                    <label for="url_ig" class="block text-sm font-medium text-gray-700 mb-1">Instagram URL</label>
-                    <input type="url" name="url_ig" id="url_ig"
-                        value="{{ old('url_ig', $contact->url_ig) }}"
-                        placeholder="https://instagram.com/username"
-                        class="w-full rounded-lg px-3 py-2 text-sm border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500">
-                </div>
-
-                <!-- Twitter -->
-                <div>
-                    <label for="url_twit" class="block text-sm font-medium text-gray-700 mb-1">Twitter URL</label>
-                    <input type="url" name="url_twit" id="url_twit"
-                        value="{{ old('url_twit', $contact->url_twit) }}"
-                        placeholder="https://twitter.com/username"
-                        class="w-full rounded-lg px-3 py-2 text-sm border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- YouTube -->
-                <div>
-                    <label for="url_yt" class="block text-sm font-medium text-gray-700 mb-1">YouTube URL</label>
-                    <input type="url" name="url_yt" id="url_yt"
-                        value="{{ old('url_yt', $contact->url_yt) }}"
-                        placeholder="https://youtube.com/channel/"
-                        class="w-full rounded-lg px-3 py-2 text-sm border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500">
-                </div>
-
-                <!-- Facebook -->
-                <div>
-                    <label for="url_fb" class="block text-sm font-medium text-gray-700 mb-1">Facebook URL</label>
-                    <input type="url" name="url_fb" id="url_fb"
-                        value="{{ old('url_fb', $contact->url_fb) }}"
-                        placeholder="https://facebook.com/username"
-                        class="w-full rounded-lg px-3 py-2 text-sm border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500">
-                </div>
-            </div>
-
-            <!-- LinkedIn -->
-            <div>
-                <label for="url_linkedin" class="block text-sm font-medium text-gray-700 mb-1">LinkedIn URL</label>
-                <input type="url" name="url_linkedin" id="url_linkedin"
-                    value="{{ old('url_linkedin', $contact->url_linkedin) }}"
-                    placeholder="https://linkedin.com/in/username"
-                    class="w-full rounded-lg px-3 py-2 text-sm border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500">
-            </div>
-
              <!-- Start & End Time -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>

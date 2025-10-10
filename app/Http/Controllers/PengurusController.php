@@ -40,8 +40,8 @@ class PengurusController extends Controller
     public function storeStep1(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'descroption' => 'nullable|string|max:255', // Fix typo: should be 'description'
+            'title' => 'nullable|string|max:255',
+            'descroption' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -63,16 +63,11 @@ class PengurusController extends Controller
 
         $data = $request->except('image');
 
-        // Handle image upload
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('pengurus', 'public');
             $data['image'] = $imagePath;
         }
 
-        // Add step completion marker
-        $data['step1_completed'] = true; // Add this field to track completion
-
-        // Create pengurus record
         $pengurus = Pengurus::create($data);
 
         return redirect()->route('pengurus.create.step2', $pengurus->id)
@@ -82,13 +77,6 @@ class PengurusController extends Controller
     public function createStep2($id)
     {
         $pengurus = Pengurus::findOrFail($id);
-
-        // Simplified validation - just check if step1 data exists and is completed
-        if (!$this->isStep1Valid($pengurus)) {
-            return redirect()->route('pengurus.create')
-                ->with('error', 'Silakan selesaikan Step 1 terlebih dahulu!');
-        }
-
         return view('pengurus.create.step2', compact('pengurus'));
     }
 
@@ -97,10 +85,10 @@ class PengurusController extends Controller
         $pengurus = Pengurus::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'title2' => 'required|string|max:255',
-            'title3' => 'required|string|max:255',
-            'description2' => 'required|string',
-            'description3' => 'required|string',
+            'title2' => 'nullable|string|max:255',
+            'title3' => 'nullable|string|max:255',
+            'description2' => 'nullable|string',
+            'description3' => 'nullable|string',
             'image2' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:750',
             'image3' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:750',
         ]);
@@ -113,20 +101,15 @@ class PengurusController extends Controller
 
         $data = $request->except(['image2', 'image3']);
 
-        // Handle image2 upload
         if ($request->hasFile('image2')) {
             $image2Path = $request->file('image2')->store('pengurus', 'public');
             $data['image2'] = $image2Path;
         }
 
-        // Handle image3 upload
         if ($request->hasFile('image3')) {
             $image3Path = $request->file('image3')->store('pengurus', 'public');
             $data['image3'] = $image3Path;
         }
-
-        // Add step completion marker
-        $data['step2_completed'] = true;
 
         $pengurus->update($data);
 
@@ -137,12 +120,6 @@ class PengurusController extends Controller
     public function createStep3($id)
     {
         $pengurus = Pengurus::findOrFail($id);
-
-        if (!$this->isStep1Valid($pengurus) || !$this->isStep2Valid($pengurus)) {
-            return redirect()->route('pengurus.create')
-                ->with('error', 'Silakan selesaikan step sebelumnya terlebih dahulu!');
-        }
-
         return view('pengurus.create.step3', compact('pengurus'));
     }
 
@@ -151,8 +128,8 @@ class PengurusController extends Controller
         $pengurus = Pengurus::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'title4' => 'required|string|max:255',
-            'description4' => 'required|string',
+            'title4' => 'nullable|string|max:255',
+            'description4' => 'nullable|string',
             'image4' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:750',
         ]);
 
@@ -164,23 +141,18 @@ class PengurusController extends Controller
 
         $data = $request->except('image4');
 
-        // Handle image4 upload
         if ($request->hasFile('image4')) {
             $image4Path = $request->file('image4')->store('pengurus', 'public');
             $data['image4'] = $image4Path;
         }
 
-        // Mark as fully completed
-        $data['step3_completed'] = true;
-        $data['completed'] = true;
-
         $pengurus->update($data);
 
         return redirect()->route('pengurus.index')
-            ->with('success', 'Data pengurus berhasil dibuat lengkap!');
+            ->with('success', 'Data pengurus berhasil dibuat!');
     }
 
-    // EDIT METHODS (unchanged but updated validation methods)
+    // EDIT METHODS
     public function edit($id)
     {
         $pengurus = Pengurus::findOrFail($id);
@@ -195,11 +167,11 @@ class PengurusController extends Controller
         $pengurus = Pengurus::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'descroption' => 'required|string|max:255', // Fix typo in your database
-            'address' => 'required|string|max:255',
-            'phone' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'title' => 'nullable|string|max:255',
+            'descroption' => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:750',
             'fb' => 'nullable|string|max:255',
             'ig' => 'nullable|string|max:255',
@@ -218,9 +190,7 @@ class PengurusController extends Controller
 
         $data = $request->except('image');
 
-        // Handle image upload
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($pengurus->image) {
                 Storage::disk('public')->delete($pengurus->image);
             }
@@ -245,10 +215,10 @@ class PengurusController extends Controller
         $pengurus = Pengurus::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'title2' => 'required|string|max:255',
-            'title3' => 'required|string|max:255',
-            'description2' => 'required|string',
-            'description3' => 'required|string',
+            'title2' => 'nullable|string|max:255',
+            'title3' => 'nullable|string|max:255',
+            'description2' => 'nullable|string',
+            'description3' => 'nullable|string',
             'image2' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:750',
             'image3' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:750',
         ]);
@@ -261,7 +231,6 @@ class PengurusController extends Controller
 
         $data = $request->except(['image2', 'image3']);
 
-        // Handle image2 upload
         if ($request->hasFile('image2')) {
             if ($pengurus->image2) {
                 Storage::disk('public')->delete($pengurus->image2);
@@ -270,7 +239,6 @@ class PengurusController extends Controller
             $data['image2'] = $image2Path;
         }
 
-        // Handle image3 upload
         if ($request->hasFile('image3')) {
             if ($pengurus->image3) {
                 Storage::disk('public')->delete($pengurus->image3);
@@ -296,8 +264,8 @@ class PengurusController extends Controller
         $pengurus = Pengurus::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'title4' => 'required|string|max:255',
-            'description4' => 'required|string',
+            'title4' => 'nullable|string|max:255',
+            'description4' => 'nullable|string',
             'image4' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:750',
         ]);
 
@@ -309,7 +277,6 @@ class PengurusController extends Controller
 
         $data = $request->except('image4');
 
-        // Handle image4 upload
         if ($request->hasFile('image4')) {
             if ($pengurus->image4) {
                 Storage::disk('public')->delete($pengurus->image4);
@@ -321,57 +288,21 @@ class PengurusController extends Controller
         $pengurus->update($data);
 
         return redirect()->route('pengurus.index')
-            ->with('success', 'Data pengurus berhasil diupdate lengkap!');
+            ->with('success', 'Data pengurus berhasil diupdate!');
     }
 
     public function destroy($id)
     {
         $pengurus = Pengurus::findOrFail($id);
 
-        // Delete associated images
-        if ($pengurus->image) {
-            Storage::disk('public')->delete($pengurus->image);
-        }
-        if ($pengurus->image2) {
-            Storage::disk('public')->delete($pengurus->image2);
-        }
-        if ($pengurus->image3) {
-            Storage::disk('public')->delete($pengurus->image3);
-        }
-        if ($pengurus->image4) {
-            Storage::disk('public')->delete($pengurus->image4);
-        }
+        if ($pengurus->image) Storage::disk('public')->delete($pengurus->image);
+        if ($pengurus->image2) Storage::disk('public')->delete($pengurus->image2);
+        if ($pengurus->image3) Storage::disk('public')->delete($pengurus->image3);
+        if ($pengurus->image4) Storage::disk('public')->delete($pengurus->image4);
 
         $pengurus->delete();
 
         return redirect()->route('pengurus.index')
             ->with('success', 'Data pengurus berhasil dihapus!');
-    }
-
-    // PRIVATE HELPER METHODS
-    private function isStep1Valid($pengurus)
-    {
-        // Check only required fields from step 1
-        return !empty($pengurus->title) &&
-            !empty($pengurus->descroption) && // Fix typo in your database
-            !empty($pengurus->address) &&
-            !empty($pengurus->phone) &&
-            !empty($pengurus->email);
-    }
-
-    private function isStep2Valid($pengurus)
-    {
-        // Check only required fields from step 2
-        return !empty($pengurus->title2) &&
-            !empty($pengurus->title3) &&
-            !empty($pengurus->description2) &&
-            !empty($pengurus->description3);
-    }
-
-    private function isStep3Valid($pengurus)
-    {
-        // Check only required fields from step 3
-        return !empty($pengurus->title4) &&
-            !empty($pengurus->description4);
     }
 }
