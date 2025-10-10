@@ -4,26 +4,25 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Podcast;
+use App\Models\CategoryPodcasts;
 use Illuminate\Http\Request;
 
 class ApiPodcastsController extends Controller
 {
     /**
-     * Ambil semua podcast
+     * 🔹 GET: Ambil semua podcast (dengan kategori)
      */
     public function index()
     {
         $podcasts = Podcast::with('category')->latest()->get();
-
         return response()->json([
-            'status' => true,
-            'message' => 'Daftar podcast berhasil diambil',
+            'success' => true,
             'data' => $podcasts
         ]);
     }
 
     /**
-     * Ambil detail podcast berdasarkan id
+     * 🔹 GET: Ambil detail podcast berdasarkan ID
      */
     public function show($id)
     {
@@ -31,15 +30,15 @@ class ApiPodcastsController extends Controller
 
         if (!$podcast) {
             return response()->json([
-                'status' => false,
+                'success' => false,
                 'message' => 'Podcast tidak ditemukan'
             ], 404);
         }
 
         return response()->json([
-            'status' => true,
-            'message' => 'Detail podcast berhasil diambil',
+            'success' => true,
             'data' => $podcast
         ]);
     }
+
 }

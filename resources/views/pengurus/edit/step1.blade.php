@@ -38,16 +38,28 @@
                 @csrf
                 @method('PUT')
 
-                <!-- Nama -->
-                <div>
-                    <label for="title" class="block text-sm font-medium text-gray-700">Nama <span
-                            class="text-red-500">*</span></label>
-                    <input type="text" id="title" name="title" value="{{ old('title', $pengurus->title) }}"
-                        class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-400 focus:border-emerald-500 @error('title') border-red-500 @enderror"
-                        required>
-                    @error('title')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
+                <!-- Nama & Jabatan -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-700">Nama <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="title" name="title" value="{{ old('title', $pengurus->title) }}"
+                            class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-400 focus:border-emerald-500 @error('title') border-red-500 @enderror"
+                            required>
+                        @error('title')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="jabatan" class="block text-sm font-medium text-gray-700">Jabatan</label>
+                        <input type="text" id="jabatan" name="jabatan" value="{{ old('jabatan', $pengurus->jabatan) }}"
+                            class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-400 focus:border-emerald-500 @error('jabatan') border-red-500 @enderror"
+                            placeholder="Contoh: Ketua, Sekretaris, Bendahara">
+                        @error('jabatan')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
                 <!-- Alamat & Deskripsi -->
