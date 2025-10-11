@@ -46,7 +46,7 @@ class AgendaController extends Controller
         $imageName = null;
         if ($request->hasFile('image')) {
             $imageName = time() . '-' . Str::slug($request->title) . '.' . $request->image->getClientOriginalExtension();
-            $request->image->storeAs('agenda', $imageName, 'public');
+            $request->image->storeAs('kegiatan', $imageName, 'public');
         }
 
         Agenda::create([
@@ -101,12 +101,12 @@ class AgendaController extends Controller
         $imageName = $agenda->image;
         if ($request->hasFile('image')) {
             // hapus file lama
-            if ($agenda->image && Storage::disk('public')->exists('agenda/' . $agenda->image)) {
-                Storage::disk('public')->delete('agenda/' . $agenda->image);
+            if ($agenda->image && Storage::disk('public')->exists('kegiatan/' . $agenda->image)) {
+                Storage::disk('public')->delete('kegiatan/' . $agenda->image);
             }
             // upload baru
             $imageName = time() . '-' . Str::slug($request->title) . '.' . $request->image->getClientOriginalExtension();
-            $request->image->storeAs('agenda', $imageName, 'public');
+            $request->image->storeAs('kegiatan', $imageName, 'public');
         }
 
         $agenda->update([
@@ -129,8 +129,8 @@ class AgendaController extends Controller
      */
     public function destroy(Agenda $agenda)
     {
-        if ($agenda->image && Storage::disk('public')->exists('agenda/' . $agenda->image)) {
-            Storage::disk('public')->delete('agenda/' . $agenda->image);
+        if ($agenda->image && Storage::disk('public')->exists('kegiatan/' . $agenda->image)) {
+            Storage::disk('public')->delete('kegiatan/' . $agenda->image);
         }
 
         $agenda->delete();

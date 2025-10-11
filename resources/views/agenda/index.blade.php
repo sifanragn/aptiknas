@@ -66,7 +66,7 @@
                             <td class="px-4 py-2 text-center">{{ $agendas->firstItem() + $index }}</td>
                             <td class="px-4 py-2 text-center">
                                 @if ($agenda->image)
-                                    <img src="{{ asset('storage/agenda/' . $agenda->image) }}" alt="Agenda Image"
+                                    <img src="{{ asset('storage/kegiatan/' . $agenda->image) }}" alt="Agenda Image"
                                         class="w-16 h-16 object-cover rounded">
                                 @else
                                     <span class="text-gray-400">-</span>
@@ -124,7 +124,7 @@
                 <div class="agenda-row p-4 border border-gray-200 rounded-lg shadow-sm"
                     data-location="{{ $agenda->location }}">
                     @if ($agenda->image)
-                        <img src="{{ asset('storage/agenda/' . $agenda->image) }}" alt="Agenda Image"
+                        <img src="{{ asset('storage/kegiatan/' . $agenda->image) }}" alt="Agenda Image"
                             class="w-full h-40 object-cover rounded mb-2">
                     @endif
 
@@ -193,7 +193,6 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Submit form berdasarkan device (desktop atau mobile)
                     document.getElementById('delete-form-' + device + '-' + id).submit();
                 }
             });
@@ -217,7 +216,6 @@
             });
         @endif
 
-        // Filter functionality
         document.getElementById('agendaFilter').addEventListener('change', function() {
             let selected = this.value;
             document.querySelectorAll('.agenda-row').forEach(row => {
