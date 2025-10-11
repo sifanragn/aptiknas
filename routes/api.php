@@ -143,7 +143,7 @@ Route::get('/category-dpd/name/{categoryName}', [ApiCategoryDaftarDPDController:
 
     Route::prefix('aboutus')->name('aboutus.')->group(function () {
         Route::post('/store', [AboutusController::class, 'store'])->name('store');
-        Route::post('/update/{id}', [AboutusController::class, 'update'])->name('update');
+        Route::put('/update/{id}', [AboutusController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [AboutusController::class, 'destroy'])->name('destroy');
     });
 
