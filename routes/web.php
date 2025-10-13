@@ -173,7 +173,7 @@ Route::prefix('agenda')->name('agenda.')->group(function () {
     Route::get('/index', [AgendaController::class, 'index'])->name('index');
     Route::get('/create', [AgendaController::class, 'create'])->name('create');
     Route::post('/store', [AgendaController::class, 'store'])->name('store');
-    Route::get('/edit/{id}', [AgendaController::class, 'edit'])->name('edit');
+    Route::get('/edit/{agenda}', [AgendaController::class, 'edit'])->name('edit');
     Route::put('/update/{agenda}', [AgendaController::class, 'update'])->name('update');
     Route::delete('/delete/{agenda}', [AgendaController::class, 'destroy'])->name('destroy');
 });

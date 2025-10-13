@@ -75,9 +75,8 @@ class AgendaController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit(Agenda $agenda)
     {
-        $agenda = Agenda::findOrFail($id);
         return view('agenda.edit', compact('agenda'));
     }
 
