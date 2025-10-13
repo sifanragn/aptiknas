@@ -11,13 +11,13 @@ class Agenda extends Model
 
     protected $fillable = [
         'title',
+        'type',
         'description',
         'start_datetime',
         'end_datetime',
-        'event_organizer',
         'location',
+        'event_organizer',
         'youtube_link',
-        'type',
         'image',
     ];
 }
