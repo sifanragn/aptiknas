@@ -31,7 +31,7 @@ class AgendaController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'title'          => 'required|string|max:255',
             'description'    => 'required|string',
             'start_datetime' => 'required|date',
@@ -85,7 +85,7 @@ class AgendaController extends Controller
      */
     public function update(Request $request, Agenda $agenda)
     {
-        $request->validate([
+        $validated = $request->validate([
             'title'          => 'required|string|max:255',
             'description'    => 'required|string',
             'start_datetime' => 'required|date',
@@ -97,18 +97,8 @@ class AgendaController extends Controller
             'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048'
         ]);
 
-        $imageName = $agenda->image;
-        if ($request->hasFile('image')) {
-            // hapus file lama
-            if ($agenda->image && Storage::disk('public')->exists('kegiatan/' . $agenda->image)) {
-                Storage::disk('public')->delete('kegiatan/' . $agenda->image);
-            }
-            // upload baru
-            $imageName = time() . '-' . Str::slug($request->title) . '.' . $request->image->getClientOriginalExtension();
-            $request->image->storeAs('kegiatan', $imageName, 'public');
-        }
-
-        $agenda->update([
+        // Prepare data for update
+        $data = [
             'title'          => $request->title,
             'description'    => $request->description,
             'start_datetime' => $request->start_datetime,
@@ -117,8 +107,23 @@ class AgendaController extends Controller
             'location'       => $request->location,
             'youtube_link'   => $request->youtube_link,
             'type'           => $request->type,
-            'image'          => $imageName
-        ]);
+        ];
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($agenda->image && Storage::disk('public')->exists('kegiatan/' . $agenda->image)) {
+                Storage::disk('public')->delete('kegiatan/' . $agenda->image);
+            }
+
+            // Upload new image
+            $imageName = time() . '-' . Str::slug($request->title) . '.' . $request->image->getClientOriginalExtension();
+            $request->image->storeAs('kegiatan', $imageName, 'public');
+            $data['image'] = $imageName;
+        }
+
+        // Update agenda
+        $agenda->update($data);
 
         return redirect()->route('agenda.index')->with('success', 'Agenda berhasil diperbarui!');
     }
@@ -128,6 +133,7 @@ class AgendaController extends Controller
      */
     public function destroy(Agenda $agenda)
     {
+        // Delete image if exists
         if ($agenda->image && Storage::disk('public')->exists('kegiatan/' . $agenda->image)) {
             Storage::disk('public')->delete('kegiatan/' . $agenda->image);
         }

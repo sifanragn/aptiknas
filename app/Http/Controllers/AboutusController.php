@@ -47,7 +47,7 @@ class AboutusController extends Controller
                 'title' => 'required|string|max:255',
                 'category_aboutus_id' => 'required|exists:aboutus_categories,id',
                 'description' => 'required|string',
-                'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
                 'display_on_home' => 'sometimes|boolean',
             ]);
 
@@ -107,7 +107,7 @@ class AboutusController extends Controller
                 'title' => 'required|string|max:255',
                 'category_aboutus_id' => 'required|exists:aboutus_categories,id',
                 'description' => 'required|string',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
                 'display_on_home' => 'sometimes|boolean',
             ]);
 
