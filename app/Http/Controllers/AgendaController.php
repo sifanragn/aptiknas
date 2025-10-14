@@ -131,9 +131,10 @@ class AgendaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Agenda $agenda)
+    public function destroy($id)
     {
-        // Delete image if exists
+        $agenda = Agenda::findOrFail($id);
+
         if ($agenda->image && Storage::disk('public')->exists('kegiatan/' . $agenda->image)) {
             Storage::disk('public')->delete('kegiatan/' . $agenda->image);
         }
