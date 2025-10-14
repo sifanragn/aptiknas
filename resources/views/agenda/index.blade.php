@@ -80,6 +80,7 @@
                             </td>
                             <td class="px-4 py-2 text-center">
                                 <div class="flex items-center justify-center gap-2">
+                                    <!-- Edit -->
                                     <a href="{{ route('agenda.edit', $agenda->id) }}"
                                         class="flex items-center gap-1 px-3 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
@@ -92,11 +93,13 @@
                                         Edit
                                     </a>
 
+                                    <!-- Delete -->
                                     <form action="{{ route('agenda.destroy', $agenda->id) }}" method="POST"
                                         class="delete-form inline" id="delete-form-desktop-{{ $agenda->id }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="button" onclick="confirmDelete(event, 'desktop', {{ $agenda->id }})"
+                                        <button type="button"
+                                            onclick="confirmDelete(event, 'desktop', {{ $agenda->id }})"
                                             class="delete-btn flex items-center gap-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                                 fill="currentColor" viewBox="-3 -2 24 24">

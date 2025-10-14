@@ -36,7 +36,7 @@ class AgendaController extends Controller
             'description'    => 'required|string',
             'start_datetime' => 'required|date',
             'end_datetime'   => 'nullable|date|after_or_equal:start_datetime',
-            'event_organizer' => 'nullable|string|max:255',
+            'event_organizer'=> 'nullable|string|max:255',
             'location'       => 'required|string|max:255',
             'youtube_link'   => 'nullable|url',
             'type'           => 'nullable|string|max:100',
@@ -54,7 +54,7 @@ class AgendaController extends Controller
             'description'    => $request->description,
             'start_datetime' => $request->start_datetime,
             'end_datetime'   => $request->end_datetime,
-            'event_organizer' => $request->event_organizer,
+            'event_organizer'=> $request->event_organizer,
             'location'       => $request->location,
             'youtube_link'   => $request->youtube_link,
             'type'           => $request->type,
@@ -67,62 +67,70 @@ class AgendaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Agenda $agenda)
+    public function show($id)
     {
+        $agenda = Agenda::findOrFail($id);
         return view('agenda.show', compact('agenda'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Agenda $agenda)
+    public function edit($id)
     {
+        $agenda = Agenda::findOrFail($id);
         return view('agenda.edit', compact('agenda'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Agenda $agenda)
+    public function update(Request $request, $id)
     {
+        $agenda = Agenda::findOrFail($id);
+
         $validated = $request->validate([
             'title'          => 'required|string|max:255',
             'description'    => 'required|string',
             'start_datetime' => 'required|date',
             'end_datetime'   => 'nullable|date|after_or_equal:start_datetime',
-            'event_organizer' => 'nullable|string|max:255',
+            'event_organizer'=> 'nullable|string|max:255',
             'location'       => 'required|string|max:255',
             'youtube_link'   => 'nullable|url',
             'type'           => 'nullable|string|max:100',
             'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048'
         ]);
 
-        // Prepare data for update
         $data = [
             'title'          => $request->title,
             'description'    => $request->description,
             'start_datetime' => $request->start_datetime,
             'end_datetime'   => $request->end_datetime,
-            'event_organizer' => $request->event_organizer,
+            'event_organizer'=> $request->event_organizer,
             'location'       => $request->location,
             'youtube_link'   => $request->youtube_link,
             'type'           => $request->type,
         ];
 
-        // Handle image upload
+        // Jika hapus gambar
+        if ($request->has('remove_image') && $request->remove_image) {
+            if ($agenda->image && Storage::disk('public')->exists('kegiatan/' . $agenda->image)) {
+                Storage::disk('public')->delete('kegiatan/' . $agenda->image);
+            }
+            $data['image'] = null;
+        }
+
+        // Upload gambar baru
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($agenda->image && Storage::disk('public')->exists('kegiatan/' . $agenda->image)) {
                 Storage::disk('public')->delete('kegiatan/' . $agenda->image);
             }
 
-            // Upload new image
             $imageName = time() . '-' . Str::slug($request->title) . '.' . $request->image->getClientOriginalExtension();
             $request->image->storeAs('kegiatan', $imageName, 'public');
             $data['image'] = $imageName;
         }
 
-        // Update agenda
         $agenda->update($data);
 
         return redirect()->route('agenda.index')->with('success', 'Agenda berhasil diperbarui!');
