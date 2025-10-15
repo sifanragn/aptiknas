@@ -1,7 +1,7 @@
 <!-- components/ProfileCard.vue -->
 <template>
   <div
-    class="group relative w-sm rounded-2xl bg-white p-6 flex items-center gap-6 cursor-pointer transition-all duration-700 ease-out hover:-translate-y-4 hover:shadow-2xl hover:shadow-green-300/40"
+    class="group relative w-full max-w-sm rounded-2xl bg-white p-6 flex items-center gap-6 cursor-pointer transition-all duration-700 ease-out hover:-translate-y-4 hover:shadow-2xl hover:shadow-green-300/40"
   >
     <!-- Gradient border animasi -->
     <div
@@ -10,52 +10,59 @@
 
     <!-- Bagian Kiri -->
     <div
-      class="flex-1 relative z-10 transition-all duration-700 group-hover:translate-x-1"
+      class="flex-1 relative z-10 transition-all duration-700 group-hover:translate-x-1 min-w-0"
     >
       <h2
-        class="text-xl font-bold text-black group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-green-600 group-hover:to-emerald-400 transition-all duration-700"
+        class="text-xl font-bold text-black group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-green-600 group-hover:to-emerald-400 transition-all duration-700 line-clamp-2"
       >
         {{ name }}
       </h2>
       <p
-        class="text-gray-400 group-hover:text-gray-600 transition-colors duration-500"
+        class="text-gray-400 group-hover:text-gray-600 transition-colors duration-500 text-sm truncate"
       >
         {{ position }}
       </p>
       <p
-        class="text-gray-400 group-hover:text-gray-600 transition-colors duration-500"
+        class="text-gray-400 group-hover:text-gray-600 transition-colors duration-500 text-sm truncate"
       >
         {{ location }}
       </p>
 
       <!-- Social Icons -->
-      <div class="flex gap-4 mt-4">
+      <div class="flex gap-3 mt-4 flex-nowrap">
         <a
           v-for="(item, index) in social"
           :key="index"
           :href="item.url"
           target="_blank"
-          class="relative p-2 rounded-full border border-gray-300 text-gray-500 transition-all duration-500 hover:border-green-500 hover:text-green-600 hover:scale-125"
+          class="relative p-2 rounded-full border border-gray-300 text-gray-500 transition-all duration-500 hover:border-green-500 hover:text-green-600 hover:scale-125 flex-shrink-0"
         >
           <component
             :is="getSocialIcon(item.name || item.icon)"
-            class="w-5 h-5 transition-transform duration-500 group-hover:animate-bounce"
+            class="w-4 h-4 transition-transform duration-500 group-hover:animate-bounce"
           />
         </a>
       </div>
     </div>
 
     <!-- Bagian Kanan (Foto) -->
-    <div class="relative z-10">
-      <!-- Glow animasi -->
+    <div class="relative z-10 flex-shrink-0">
+      <!-- Glow animasi - diperbesar mengikuti ukuran gambar -->
       <div
         class="absolute inset-0 rounded-full bg-green-300 blur-2xl scale-125 opacity-60 transition-all duration-1000 group-hover:scale-150 group-hover:opacity-80 group-hover:animate-pulse"
+        :style="{ width: '180px', height: '180px', top: '50%', left: '50%', transform: 'translate(-50%, -50%) scale(1.25)' }"
       ></div>
-      <img
-        :src="image"
-        alt="profile"
-        class="relative size-40 object-cover rounded-full transition-transform duration-1000 ease-out group-hover:scale-110 group-hover:rotate-6"
-      />
+      
+      <!-- Container gambar dengan ukuran lebih besar -->
+      <div class="relative rounded-full overflow-hidden border-4 border-white shadow-lg">
+        <img
+          :src="currentImage()"
+          :alt="`Foto ${name}`"
+          class="w-32 h-32 object-cover transition-transform duration-1000 ease-out group-hover:scale-110 group-hover:rotate-6"
+          loading="lazy"
+          @error="handleImageError"
+        />
+      </div>
     </div>
 
     <!-- Shine effect -->
@@ -70,9 +77,9 @@
 </template>
 
 <script setup>
-import { h } from "vue";
+import { h, ref } from "vue";
 
-defineProps({
+const props = defineProps({
   name: { type: String, required: true },
   position: { type: String, default: "" },
   location: { type: String, default: "" },
@@ -81,7 +88,28 @@ defineProps({
     type: Array,
     default: () => [], // contoh: [{ name: 'twitter', url: '...' }]
   },
+  fallbackImage: {
+    type: String,
+    default: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128' viewBox='0 0 24 24'%3E%3Cpath fill='%239ca3af' d='M12 12q-1.65 0-2.825-1.175T8 8q0-1.65 1.175-2.825T12 4q1.65 0 2.825 1.175T16 8q0 1.65-1.175 2.825T12 12Zm-8 8v-2.8q0-.85.438-1.563T5.6 14.55q1.55-.775 3.15-1.163T12 13q1.65 0 3.25.388t3.15 1.162q.725.375 1.163 1.088T20 17.2V20H4Z'/%3E%3C/svg%3E"
+  }
 });
+
+// State untuk menangani error gambar
+const imageError = ref(false);
+
+// Fungsi untuk menangani error loading gambar
+const handleImageError = (event) => {
+  console.warn(`Gagal memuat gambar: ${props.image}`);
+  imageError.value = true;
+  if (props.fallbackImage) {
+    event.target.src = props.fallbackImage;
+  }
+};
+
+// Computed untuk menentukan gambar yang akan ditampilkan
+const currentImage = () => {
+  return imageError.value ? props.fallbackImage : props.image;
+};
 
 // --- Functional Components for Social Icons ---
 
@@ -121,11 +149,31 @@ const IconInstagram = {
     ]),
 };
 
+const IconYouTube = {
+  render: () =>
+    h("svg", { viewBox: "0 0 24 24", fill: "currentColor" }, [
+      h("path", {
+        d: "M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z",
+      }),
+    ]),
+};
+
+const IconTikTok = {
+  render: () =>
+    h("svg", { viewBox: "0 0 24 24", fill: "currentColor" }, [
+      h("path", {
+        d: "M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743l-.002-.001.002.001a2.895 2.895 0 0 1 3.183-4.51v-3.5a6.329 6.329 0 0 0-5.394 10.692 6.33 6.33 0 0 0 10.857-4.424V8.687a8.182 8.182 0 0 0 4.773 1.526V6.79a4.831 4.831 0 0 1-1.003-.104z",
+      }),
+    ]),
+};
+
 const socialIcons = {
   linkedin: IconLinkedin,
   twitter: IconTwitter,
   facebook: IconFacebook,
   instagram: IconInstagram,
+  youtube: IconYouTube,
+  tiktok: IconTikTok,
 };
 
 function getSocialIcon(icon) {
@@ -151,5 +199,10 @@ function getSocialIcon(icon) {
 .animate-gradient-x {
   background-size: 200% 200%;
   animation: gradient-x 4s ease infinite;
+}
+
+/* Memastikan konten tidak overflow */
+.min-w-0 {
+  min-width: 0;
 }
 </style>

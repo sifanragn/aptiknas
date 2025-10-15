@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://127.0.0.1:8000/api/", // ganti sesuai URL API Aptiknas
+  // Menggunakan environment variable untuk baseURL, dengan fallback ke URL lokal
+  baseURL: import.meta.env.VITE_API_URL || "https://cms-aptiknas.hexagon.co.id/api/",
   headers: {
     "Content-Type": "application/json",
   },

@@ -11,6 +11,15 @@ import DPDaerahView from "@/views/DPDaerahView.vue";
 import KegiatanView from "@/views/KegiatanView.vue";
 import DaftarView from "@/views/DaftarView.vue";
 import HubungiKamiView from "@/views/HubungiKamiView.vue";
+import Cobasean from "@/views/Cobasean.vue";
+import DetailCardProfile from "@/components/Layout/DetailCardProfile.vue";
+import LokerView from "@/views/LokerView.vue";
+import LokerDetail from "@/pages/LokerPages/LokerDetail.vue";
+import ContactUs from "@/pages/SupportPages/ContactUs.vue";
+import HelpSupport from "@/pages/SupportPages/HelpSupport.vue";
+import PrivacyPolicy from "@/pages/SupportPages/PrivacyPolicy.vue"; 
+import TermsConditions from "@/pages/SupportPages/TermsConditions.vue";
+import Partners from "@/pages/SupportPages/Partners.vue";
 
 const routes = [
   {
@@ -75,6 +84,54 @@ const routes = [
     name: "HubungiKami",
     component: HubungiKamiView, 
   }
+  ,
+  {
+    path: "/cobasean",
+    name: "Cobasean",
+    component: Cobasean,
+  },
+  {
+    path: "/detail-card-profile/:id",
+    name: "DetailCardProfile",
+    component: DetailCardProfile,
+  },
+
+  {
+    path: "/loker",
+    name: "Loker",
+    component: LokerView,
+  },
+  {
+    path: "/loker/:id",
+    name: "loker-detail",
+    component: LokerDetail,
+    props: true,
+  },
+  {
+    path: "/contact-us",
+    name: "ContactUs",
+    component: ContactUs,
+  },
+  {
+    path: "/help-support",
+    name: "HelpSupport",
+    component: HelpSupport,
+  },
+  {
+    path: "/privacy-policy",
+    name: "PrivacyPolicy",
+    component: PrivacyPolicy,
+  },
+  {
+    path: "/partners",
+    name: "Partners",
+    component: Partners,
+  },  
+  {
+    path: "/terms-conditions",
+    name: "TermsConditions",
+    component: TermsConditions,
+  },
 ];
 
 const router = createRouter({

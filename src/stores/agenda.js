@@ -49,7 +49,7 @@ export const useAgendaStore = defineStore("agenda", {
         }
         
       } catch (err) {
-        this.error = err.message;
+        this.error = err.message || "Gagal memuat data agenda";
         this.list = [];
         console.error("Error fetching agenda:", err);
       } finally {
@@ -65,7 +65,7 @@ export const useAgendaStore = defineStore("agenda", {
         const res = await axiosInstance.get(`/agenda/${id}`);
         this.detail = res.data;
       } catch (err) {
-        this.error = err.message;
+        this.error = err.message || "Gagal memuat detail agenda";
       } finally {
         this.loading = false;
       }

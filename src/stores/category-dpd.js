@@ -19,13 +19,21 @@ export const useCategoryDaftarStore = defineStore("categoryDaftar", {
       this.loading = true;
       this.error = null;
       try {
-        const response = await axiosInstance.get("/category-daftar");
-        // Berdasarkan struktur JSON yang Anda berikan: { success: true, data: [...] }
-        // Array kategori berada di dalam `response.data.data`
+        const response = await axiosInstance.get("/category-dpd");
+        // Menangani berbagai kemungkinan struktur response dari API
         if (response.data && Array.isArray(response.data.data)) {
+          // Struktur: { success: true, data: [...] }
           this.categories = response.data.data;
+        } else if (Array.isArray(response.data)) {
+          // Struktur: [...] (langsung array)
+          this.categories = response.data;
         } else {
+          // Fallback jika struktur tidak dikenali atau data kosong
           this.categories = response.data || [];
+          console.warn(
+            "Struktur data kategori DPD tidak dikenali atau kosong:",
+            response.data
+          );
         }
       } catch (error) {
         this.error = error;

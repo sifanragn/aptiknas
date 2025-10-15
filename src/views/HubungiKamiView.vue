@@ -4,7 +4,7 @@ import CardHubung from "@/pages/HubungiKamiPages.vue/CardHubung.vue";
 import Form from "@/pages/HubungiKamiPages.vue/Form.vue";
 </script>
 <template>
-  <div class="grid grid-cols-2 pt-30  flex-col items-center justify-center">
+  <div class="grid grid-cols-2 pt-30 ml-5 flex-col items-center justify-center">
     <div class="col-span-1">
       <Main />
       <CardHubung />

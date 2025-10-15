@@ -41,7 +41,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import ContributorSlider from './ContributorSlider.vue';
-// import Badge from '@/components/templates/Badge.vue';
+import Badge from '@/components/UI/Badge.vue';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 

@@ -1,42 +1,92 @@
 <template>
   <!-- Pagination -->
-  <div v-if="totalPages > 1" class="mt-10 flex justify-end items-center gap-2 text-sm">
-    <button
-      @click="prevPage"
-      :disabled="currentPage === 1"
-      class="px-3 py-1 rounded"
-      :class="{
-        'bg-gray-300 text-white cursor-not-allowed': currentPage === 1,
-        'bg-white border border-gray-300': currentPage !== 1
-      }"
-    >
-      &lt;
-    </button>
-    <template v-for="(page, index) in displayedPages" :key="index">
-      <span v-if="page === '...'" class="px-2">...</span>
+  <div v-if="totalPages > 1" class="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <!-- Info halaman -->
+    <!-- <div class="text-sm text-gray-600">
+      Menampilkan halaman {{ currentPage }} dari {{ totalPages }}
+    </div> -->
+    
+    <!-- Navigasi pagination -->
+    <div class="flex items-center gap-1">
+      <!-- Tombol Previous -->
       <button
-        v-else
-        @click="goToPage(page)"
-        class="px-3 py-1 rounded"
+        @click="prevPage"
+        :disabled="currentPage === 1"
+        class="flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200"
         :class="{
-          'border-green-600 border-2 bg-white text-green-700 font-bold': currentPage === page,
-          'bg-white border border-gray-300': currentPage !== page
+          'bg-gray-100 text-gray-400 cursor-not-allowed': currentPage === 1,
+          'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-gray-300 shadow-sm': currentPage !== 1
         }"
+        aria-label="Halaman sebelumnya"
       >
-        {{ page }}
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
       </button>
-    </template>
-    <button
-      @click="nextPage"
-      :disabled="currentPage === totalPages"
-      class="px-3 py-1 rounded"
-      :class="{
-        'bg-gray-300 text-white cursor-not-allowed': currentPage === totalPages,
-        'bg-white border border-gray-300': currentPage !== totalPages
-      }"
-    >
-      &gt;
-    </button>
+
+      <!-- Numbered Pages -->
+      <template v-for="(page, index) in displayedPages" :key="index">
+        <span 
+          v-if="page === '...'"
+          class="flex items-center justify-center w-10 h-10 text-gray-500"
+        >
+          ...
+        </span>
+        <button
+          v-else
+          @click="goToPage(page)"
+          class="flex items-center justify-center w-10 h-10 rounded-lg font-medium transition-all duration-200"
+          :class="{
+            'bg-green-600 text-white shadow-md scale-105': currentPage === page,
+            'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-gray-300': currentPage !== page
+          }"
+          :aria-current="currentPage === page ? 'page' : null"
+        >
+          {{ page }}
+        </button>
+      </template>
+
+      <!-- Tombol Next -->
+      <button
+        @click="nextPage"
+        :disabled="currentPage === totalPages"
+        class="flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200"
+        :class="{
+          'bg-gray-100 text-gray-400 cursor-not-allowed': currentPage === totalPages,
+          'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-gray-300 shadow-sm': currentPage !== totalPages
+        }"
+        aria-label="Halaman berikutnya"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Quick Navigation -->
+    <div class="flex items-center gap-2 text-sm">
+      <span class="text-gray-600">Lompat ke:</span>
+      <div class="relative">
+        <select
+          v-model="currentPage"
+          @change="handleSelectChange"
+          class="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+        >
+          <option
+            v-for="page in totalPages"
+            :key="page"
+            :value="page"
+          >
+            Halaman {{ page }}
+          </option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -83,15 +133,29 @@ function goToPage(page: number | string) {
     currentPage.value = page
   }
 }
+
 const prevPage = () => {
   if (currentPage.value > 1) currentPage.value--
 }
+
 const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++
+}
+
+const handleSelectChange = () => {
+  // Trigger the page change when select is used
+  emit('page-changed', currentPage.value)
 }
 
 // Emit page-changed setiap kali currentPage berubah
 watch(currentPage, (newVal) => {
   emit('page-changed', newVal)
+})
+
+// Watch for modelValue changes from parent
+watch(() => props.modelValue, (newVal) => {
+  if (newVal && newVal !== currentPage.value) {
+    currentPage.value = newVal
+  }
 })
 </script>

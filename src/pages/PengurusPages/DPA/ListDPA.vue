@@ -11,132 +11,142 @@
       </p>
     </div>
 
+    <!-- Loading State -->
+    <div v-if="pengurusStore.loading" class="text-center py-12">
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"
+      ></div>
+      <p class="text-gray-500">Memuat data pengurus...</p>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="pengurusStore.error" class="text-center py-12 text-red-500">
+      <p>Gagal memuat data pengurus.</p>
+      <p class="text-sm mb-4">{{ pengurusStore.error }}</p>
+      <button
+        @click="loadPengurusData"
+        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
+      >
+        Coba Lagi
+      </button>
+    </div>
+
     <!-- Content -->
-    <div class="max-w-6xl mx-auto">
+    <div v-else class="max-w-6xl mx-auto">
       <!-- Grid Layout - More compact -->
       <div
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 mb-8"
       >
-        <CardProfile
+        <router-link
           v-for="member in dpaMembers"
           :key="member.id"
-          :name="member.name"
-          :position="member.position"
-          :location="member.location"
-          :image="member.image"
-          :social="member.social"
-          class="scale-95 hover:scale-100 transition-transform duration-200"
-        />
+          :to="`/pengurus/${member.id}`"
+        >
+          <CardProfile
+            :name="member.name"
+            :position="member.position"
+            :location="member.location"
+            :image="member.image"
+            :social="member.social"
+            class="scale-95 hover:scale-100 transition-transform duration-200"
+          />
+        </router-link>
+      </div>
+
+      <!-- Empty State -->
+      <div
+        v-if="dpaMembers.length === 0"
+        class="text-center py-12 text-gray-500"
+      >
+        <i class="far fa-users text-4xl mb-4"></i>
+        <p>Tidak ada data Dewan Pengawas Asosiasi yang tersedia.</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { usePengurusStore } from "@/stores/pengurus";
 import CardProfile from "@/components/Layout/CardProfile.vue";
 
-// Data dummy untuk Dewan Pengawas APTIKNAS dengan foto tanpa background
-const dpaMembers = ref([
-  {
-    id: 1,
-    name: "Dr. Bambang Sutrisno",
-    position: "Ketua DPP",
-    location: "Jakarta",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-    social: [
-      { name: "linkedin", url: "#" },
-      { name: "twitter", url: "#" }
-    ]
-  },
-  {
-    id: 2,
-    name: "Ir. Suryo Handono, M.Sc.",
-    position: "Anggota DPP",
-    location: "Bandung",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-    social: [
-      { name: "linkedin", url: "#" }
-    ]
-  },
-  {
-    id: 3,
-    name: "Diana Pratiwi, S.Kom., M.T.I.",
-    position: "Anggota DPD",
-    location: "Surabaya",
-    image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-    social: [
-      { name: "linkedin", url: "#" },
-      { name: "instagram", url: "#" }
-    ]
-  },
-  {
-    id: 4,
-    name: "Prof. Ahmad Rizali, Ph.D.",
-    position: "Anggota Dewan Pengawas - Bidang Teknologi",
-    location: "Yogyakarta",
-    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-    social: [
-      { name: "linkedin", url: "#" },
-      { name: "twitter", url: "#" },
-      { name: "facebook", url: "#" }
-    ]
-  },
-  {
-    id: 5,
-    name: "Maria Magdalena, S.E., M.M.",
-    position: "Anggota Dewan Pengawas - Bidang Keuangan",
-    location: "Medan",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-    social: [
-      { name: "linkedin", url: "#" }
-    ]
-  },
-  {
-    id: 6,
-    name: "Dr. Rudi Hartono, S.T., M.Kom.",
-    position: "Anggota Dewan Pengawas - Bidang Pendidikan",
-    location: "Semarang",
-    image: "https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-    social: [
-      { name: "linkedin", url: "#" },
-      { name: "twitter", url: "#" }
-    ]
-  },
-  {
-    id: 7,
-    name: "Ir. Budi Santoso, M.Eng.",
-    position: "Anggota Dewan Pengawas - Bidang Riset",
-    location: "Makassar",
-    image: "https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-    social: [
-      { name: "linkedin", url: "#" },
-      { name: "researchgate", url: "#" }
-    ]
-  },
-  {
-    id: 8,
-    name: "Nina Wijaya, S.Kom., M.B.A.",
-    position: "Anggota Dewan Pengawas - Bidang Strategi",
-    location: "Denpasar",
-    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-    social: [
-      { name: "linkedin", url: "#" },
-      { name: "instagram", url: "#" }
-    ]
-  },
-  {
-    id: 9,
-    name: "Dr. Andi Rahman, S.T., M.Sc.",
-    position: "Anggota Dewan Pengawas - Bidang Inovasi",
-    location: "Palembang",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-    social: [
-      { name: "linkedin", url: "#" },
-      { name: "twitter", url: "#" }
-    ]
+// Gunakan pengurus store
+const pengurusStore = usePengurusStore();
+
+// Filter data hanya untuk Dewan Pengawas Asosiasi
+const dpaMembers = computed(() => {
+  const storeData = pengurusStore.list;
+  if (!storeData) return [];
+
+  // Handle struktur response yang berbeda
+  let dataArray = [];
+  if (Array.isArray(storeData)) {
+    dataArray = storeData;
+  } else if (storeData.data && Array.isArray(storeData.data.data)) {
+    // Format dengan pagination: { data: { data: [...] } }
+    dataArray = storeData.data.data;
+  } else if (storeData.data && Array.isArray(storeData.data)) {
+    // Format: { data: [...] }
+    dataArray = storeData.data;
   }
-]);
+
+  // Filter hanya data dengan kategori "Dewan Pengawas Asosiasi"
+  const filteredData = dataArray.filter((item) => {
+    return (
+      item.category_pengurus &&
+      item.category_pengurus.name &&
+      item.category_pengurus.name
+        .toLowerCase()
+        .includes("dewan pengawas asosiasi")
+    );
+  });
+
+  // Format data untuk komponen CardProfile
+  return filteredData.map((item) => {
+    // Format social media links
+    const social = [];
+    if (item.fb) social.push({ name: "facebook", url: item.fb });
+    if (item.ig) social.push({ name: "instagram", url: item.ig });
+    if (item.tiktok) social.push({ name: "tiktok", url: item.tiktok });
+    if (item.yt) social.push({ name: "youtube", url: item.yt });
+
+    return {
+      id: item.id,
+      name: item.title || "Nama tidak tersedia",
+      position: item.jabatan || item.category_pengurus?.name || "Anggota",
+      location: item.address || "Lokasi tidak tersedia",
+      image: getImageUrl(item),
+      social: social,
+    };
+  });
+});
+
+// Fungsi untuk mendapatkan URL gambar lengkap
+const getImageUrl = (item) => {
+  // Prioritaskan image_url dari API jika tersedia dan valid
+  if (item.image_url && item.image_url.startsWith("http")) {
+    return item.image_url;
+  }
+  // Fallback ke path gambar relatif
+  if (item.image) {
+    const baseUrl =
+      import.meta.env.VITE_STORAGE_URL || "https://cms-aptiknas.hexagon.co.id";
+    // Pastikan path tidak diawali dengan slash ganda
+    return `${baseUrl}/storage/${item.image.replace(/^\//, "")}`;
+  }
+  // Fallback ke placeholder jika tidak ada gambar
+  return "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80";
+};
+
+// Fungsi untuk memuat data
+const loadPengurusData = () => {
+  pengurusStore.fetchAll();
+};
+
+onMounted(() => {
+  // Load data pengurus saat komponen dimount
+  loadPengurusData();
+});
 </script>
 
 <style scoped>
@@ -166,5 +176,19 @@ const dpaMembers = ref([
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+/* Loading animation */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

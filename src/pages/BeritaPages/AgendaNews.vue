@@ -11,7 +11,7 @@
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="text-center text-gray-500 py-8">
+    <div v-if="agendaStore.loading" class="text-center text-gray-500 py-8">
       <div
         class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"
       ></div>
@@ -19,9 +19,9 @@
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="text-center text-red-500 py-8">
+    <div v-else-if="agendaStore.error" class="text-center text-red-500 py-8">
       <p>Gagal memuat agenda. Silakan coba lagi nanti.</p>
-      <p class="text-sm mb-4">{{ error }}</p>
+      <p class="text-sm mb-4">{{ agendaStore.error }}</p>
       <button
         @click="loadAgendaData"
         class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
@@ -46,87 +46,52 @@
       />
     </div>
 
-    <div v-else class="text-center text-gray-500 py-12">
+    <div
+      v-else-if="!agendaStore.loading"
+      class="text-center text-gray-500 py-12"
+    >
       <i class="far fa-calendar-alt text-4xl mb-4"></i>
       <p>Tidak ada agenda untuk ditampilkan.</p>
     </div>
 
     <!-- View All Button -->
     <div class="text-center mt-10" data-aos="fade-up" data-aos-delay="300">
-      <button
-        class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors duration-300 font-medium"
-        @click="viewAllAgenda"
-      >
-        Lihat Semua Agenda
-      </button>
+      <InteractiveHoverButton
+        text="Lihat Semua Agenda"
+        @click="$router.push('/agenda')"
+      />
     </div>
   </section>
 </template>
 
 <script setup>
 import { ref, onMounted, watch, computed } from "vue";
+import { useAgendaStore } from "@/stores/agenda";
 import AgendaCard from "./AgendaCardEXS.vue";
+import InteractiveHoverButton from "@/components/UI/interactive-hover-button/InteractiveHoverButton.vue";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-const loading = ref(false);
-const error = ref(null);
-
-// Data dummy untuk agenda
-const dummyAgendaData = ref([
-  {
-    id: 1,
-    title: "Webinar: AI dalam Industri Kreatif",
-    description:
-      "Jelajahi bagaimana Kecerdasan Buatan (AI) mengubah lanskap industri kreatif, dari desain grafis hingga produksi musik. Sesi ini akan menampilkan studi kasus nyata dan demo langsung.",
-    start_datetime: "2024-11-05T10:00:00",
-    end_datetime: "2024-11-05T12:00:00",
-    location: "Online via Zoom",
-    image:
-      "https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?auto=format&fit=crop&w=500&q=80",
-    youtube_link: "https://youtube.com",
-  },
-  {
-    id: 2,
-    title: "Workshop: Dasar-dasar Keamanan Siber untuk Startup",
-    description:
-      "Amankan startup Anda dari ancaman siber. Workshop praktis ini akan membahas teknik-teknik esensial untuk melindungi data, jaringan, dan aplikasi Anda sejak dini.",
-    start_datetime: "2024-11-18T09:00:00",
-    end_datetime: "2024-11-18T16:00:00",
-    location: "APTIKNAS Innovation Hub",
-    image:
-      "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&w=500&q=80",
-    youtube_link: null,
-  },
-  {
-    id: 3,
-    title: "Networking Night: Kolaborasi Teknologi Masa Depan",
-    description:
-      "Bertemu dan berjejaring dengan para pemimpin industri, investor, dan inovator teknologi dalam acara malam yang santai dan produktif. Temukan mitra strategis Anda berikutnya.",
-    start_datetime: "2024-11-29T19:00:00",
-    end_datetime: "2024-11-29T22:00:00",
-    location: "Rooftop Bar, Jakarta",
-    image:
-      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=500&q=80",
-    youtube_link: null,
-  },
-]);
-
-// Mengambil data dari store
-const agendaList = computed(() => {
-  return dummyAgendaData.value;
-});
+// Gunakan agenda store
+const agendaStore = useAgendaStore();
 
 const emit = defineEmits(["card-click"]);
 
+// Format data dari store untuk komponen
+const agendaList = computed(() => {
+  if (!agendaStore.list || agendaStore.list.length === 0) return [];
+
+  // Urutkan agenda berdasarkan tanggal mulai (terbaru dulu)
+  const sortedList = [...agendaStore.list].sort(
+    (a, b) => new Date(b.start_datetime) - new Date(a.start_datetime)
+  );
+  // Ambil hanya 3 data teratas
+  return sortedList.slice(0, 3);
+});
+
 // Fungsi untuk memuat data agenda
 const loadAgendaData = async () => {
-  loading.value = true;
-  error.value = null;
-  // Simulasi fetch data
-  setTimeout(() => {
-    loading.value = false;
-  }, 800);
+  await agendaStore.fetchAll();
 };
 
 // Format agenda item untuk komponen AgendaCard
@@ -140,40 +105,51 @@ const formatAgendaItem = (item) => {
     description: item.description
       ? stripHtmlTags(item.description)
       : "Tidak ada deskripsi",
-    image: getImageUrl(item.image),
+    image: getImageUrl(item),
     category: item.type || item.event_organizer || "Agenda",
     status: getStatus(item),
     youtube_link: item.youtube_link,
     start_datetime: item.start_datetime,
     end_datetime: item.end_datetime,
+    event_organizer: item.event_organizer,
   };
 };
 
 // Fungsi untuk mendapatkan URL gambar lengkap
-const getImageUrl = (imagePath) => {
-  if (!imagePath) {
-    return "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
+const getImageUrl = (item) => {
+  // Prioritaskan image_url dari API jika tersedia
+  if (item.image_url) {
+    return item.image_url;
   }
 
-  // Jika API mengembalikan URL lengkap (baik yang benar maupun yang salah)
-  if (imagePath.startsWith("http")) {
-    // Mengganti duplikasi seperti '.../agenda/agenda/...' menjadi '.../storage/agenda/...'
-    // Ini membuat URL konsisten dengan format yang benar.
-    return imagePath.replace(
-      /^(http:\/\/[^/]+)\/(agenda\/agenda\/)/,
-      "$1/storage/agenda/"
-    );
+  // Fallback ke image path
+  if (item.image) {
+    const baseUrl =
+      import.meta.env.VITE_STORAGE_URL || "https://cms-aptiknas.hexagon.co.id";
+
+    if (item.image.startsWith("http")) {
+      return item.image;
+    }
+
+    // Handle berbagai format path
+    if (item.image.startsWith("agenda/")) {
+      return `${baseUrl}/storage/${item.image}`;
+    }
+
+    if (item.image.startsWith("storage/agenda/")) {
+      return `${baseUrl}/${item.image}`;
+    }
+
+    if (item.image.startsWith("/")) {
+      return `${baseUrl}${item.image}`;
+    }
+
+    // Default: anggap sebagai nama file di folder agenda
+    return `${baseUrl}/storage/${item.image}`;
   }
 
-  // Jika API mengembalikan path relatif (contoh: 'agenda/image.jpg')
-  const baseUrl = "http://127.0.0.1:8000";
-
-  // Menghindari duplikasi jika `imagePath` sudah diawali dengan 'storage/'
-  if (imagePath.startsWith("storage/")) {
-    return `${baseUrl}/${imagePath}`;
-  }
-
-  return `${baseUrl}/storage/${imagePath.replace(/^agenda\//, "agenda/")}`;
+  // Fallback ke placeholder jika tidak ada gambar
+  return "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
 };
 
 // Hapus tag HTML dari deskripsi
@@ -253,12 +229,6 @@ const handleCardClick = (item) => {
     // Bisa diarahkan ke detail page jika diperlukan
     console.log("View agenda details:", item.id);
   }
-};
-
-const viewAllAgenda = () => {
-  // Navigasi ke halaman semua agenda
-  console.log("Navigate to all agenda page");
-  // window.location.href = '/agenda'; // Uncomment jika ada route untuk semua agenda
 };
 
 // Inisialisasi AOS

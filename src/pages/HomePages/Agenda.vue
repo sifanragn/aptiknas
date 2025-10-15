@@ -17,12 +17,12 @@
       class="space-y-4 sm:space-y-6 w-full sm:max-w-2xl md:max-w-3xl mx-auto"
     >
       <!-- Loading state -->
-      <div v-if="loading" class="text-center">
+      <div v-if="agendaStore.loading" class="text-center">
         <p>Memuat agenda...</p>
       </div>
 
       <!-- Error state -->
-      <div v-else-if="error" class="text-center text-red-500">
+      <div v-else-if="agendaStore.error" class="text-center text-red-500">
         <p>Gagal memuat agenda. Silakan coba lagi nanti.</p>
         <p class="text-sm">{{ agendaStore.error }}</p>
       </div>
@@ -43,7 +43,7 @@
       >
         <!-- Image - centered on mobile -->
         <img
-          :src="getImageUrl(agenda.image)"
+          :src="getImageUrl(agenda)"
           :alt="agenda.title"
           class="w-full sm:w-38 h-38 object-cover rounded-lg self-center flex-shrink-0"
           @error="(event) => handleImageError(event, agenda)"
@@ -95,92 +95,53 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
+import { useAgendaStore } from "@/stores/agenda";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import Badge from "@/components/UI/Badge.vue";
 
-const loading = ref(false);
-const error = ref(null);
-
-// Data dummy untuk agenda APTIKNAS
-const dummyAgendas = ref([
-  {
-    id: 1,
-    title: "Webinar Nasional: AI untuk Transformasi Bisnis",
-    description:
-      "Pelajari bagaimana kecerdasan buatan dapat merevolusi cara Anda berbisnis. Sesi ini akan dibawakan oleh praktisi AI terkemuka di Indonesia.",
-    start_datetime: "2024-10-25T09:00:00",
-    end_datetime: "2024-10-25T12:00:00",
-    location: "Online via Zoom",
-    image:
-      "https://images.unsplash.com/photo-1677442135703-178c33d748be?auto=format&fit=crop&w=400&q=80",
-    youtube_link: "https://youtube.com",
-  },
-  {
-    id: 2,
-    title: "APTIKNAS Tech Summit 2024",
-    description:
-      "Konferensi tahunan terbesar yang mempertemukan para pemimpin industri TIK, startup inovatif, dan pemerintah untuk membahas masa depan teknologi Indonesia.",
-    start_datetime: "2024-11-12T08:00:00",
-    end_datetime: "2024-11-13T17:00:00",
-    location: "Jakarta Convention Center",
-    image:
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80",
-    youtube_link: null,
-  },
-  {
-    id: 3,
-    title: "Workshop Keamanan Siber untuk UMKM",
-    description:
-      "Tingkatkan keamanan digital bisnis Anda dengan workshop praktis ini. Pelajari cara melindungi data pelanggan dan aset perusahaan dari serangan siber.",
-    start_datetime: "2024-11-20T10:00:00",
-    end_datetime: "2024-11-20T15:00:00",
-    location: "APTIKNAS Training Center, Bandung",
-    image:
-      "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&w=400&q=80",
-    youtube_link: null,
-  },
-]);
-
-// Mengambil data dari store dengan berbagai kemungkinan struktur
-const agendas = computed(() => {
-  return dummyAgendas.value;
-});
+// Gunakan agenda store
+const agendaStore = useAgendaStore();
 
 // Only show maximum 3 agenda items
 const displayedAgendas = computed(() => {
-  return agendas.value.slice(0, 3);
+  return agendaStore.list.slice(0, 3);
 });
 
 // Fungsi untuk mendapatkan URL gambar lengkap
-const getImageUrl = (imagePath) => {
-  if (!imagePath) {
-    return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80";
+const getImageUrl = (agenda) => {
+  // Prioritaskan image_url dari API jika tersedia
+  if (agenda.image_url) {
+    return agenda.image_url;
+  }
+  
+  // Fallback ke image path
+  if (agenda.image) {
+    const baseUrl = import.meta.env.VITE_STORAGE_URL || "https://cms-aptiknas.hexagon.co.id";
+    
+    if (agenda.image.startsWith("http")) {
+      return agenda.image;
+    }
+    
+    // Handle berbagai format path
+    if (agenda.image.startsWith("agenda/")) {
+      return `${baseUrl}/storage/${agenda.image}`;
+    }
+    
+    if (agenda.image.startsWith("storage/agenda/")) {
+      return `${baseUrl}/${agenda.image}`;
+    }
+    
+    if (agenda.image.startsWith("/")) {
+      return `${baseUrl}${agenda.image}`;
+    }
+    
+    // Default: anggap sebagai nama file di folder agenda
+    return `${baseUrl}/storage/${agenda.image}`;
   }
 
-  const baseUrl = "http://127.0.0.1:8000";
-
-  if (imagePath.startsWith("http")) {
-    return imagePath;
-  }
-
-  if (imagePath.startsWith("agenda/")) {
-    return `${baseUrl}/${imagePath}`;
-  }
-
-  if (imagePath.startsWith("storage/agenda/")) {
-    return `${baseUrl}/${imagePath.replace("storage/", "")}`;
-  }
-
-  if (imagePath.startsWith("/agenda/")) {
-    return `${baseUrl}${imagePath}`;
-  }
-
-  if (!imagePath.includes("/")) {
-    return `${baseUrl}/agenda/${imagePath}`;
-  }
-
-  return `${baseUrl}/agenda/${imagePath}`;
+  // Fallback ke placeholder jika tidak ada gambar
+  return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80";
 };
 
 // Handle error gambar
@@ -188,15 +149,7 @@ const handleImageError = (event, agenda) => {
   console.error("Gagal memuat gambar untuk agenda:", agenda?.title);
 
   // Fallback ke placeholder
-  event.target.src =
-    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80";
-
-  // Coba gunakan image_url jika tersedia
-  if (agenda?.image_url) {
-    setTimeout(() => {
-      event.target.src = agenda.image_url;
-    }, 1000);
-  }
+  event.target.src = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80";
 };
 
 // Format tanggal untuk ditampilkan
@@ -270,20 +223,26 @@ const handleAgendaClick = (agenda) => {
   const status = getStatusText(agenda);
   if (status === "Akan Datang") {
     console.log("Mendaftar agenda:", agenda.title);
+    // TODO: Implementasi logika pendaftaran
   } else if (status === "Berlangsung" && agenda.youtube_link) {
     window.open(agenda.youtube_link, "_blank");
   } else if (status === "Selesai") {
     console.log("Melihat materi agenda:", agenda.title);
+    // TODO: Implementasi logika melihat materi
   }
 };
 
 onMounted(async () => {
+  // Inisialisasi AOS
   AOS.init({
     once: true,
     duration: 600,
     easing: "ease-out-quad",
     offset: 20,
   });
+  
+  // Fetch data agenda dari store
+  await agendaStore.fetchAll();
 });
 </script>
 

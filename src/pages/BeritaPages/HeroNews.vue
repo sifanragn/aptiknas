@@ -1,6 +1,6 @@
 <template>
   <!-- Header -->
-  <div class="grid md:grid-cols-2 gap-8 items-center mb-16 mt-15">
+  <div class="grid md:grid-cols-2 gap-8 items-center mb-16 mt-30">
     <!-- Konten Teks -->
     <div data-aos="fade-right">
       <div
@@ -19,11 +19,11 @@
         data-aos="fade-up"
         data-aos-delay="200"
       >
-        Transformasi Peran Guru BK di Era Digital: Dari Konselor ke Fasilitator
-        Literasi Emosional
+        APTIKNAS Mendorong Inovasi dan Kolaborasi di Industri TIK Nasional
       </h1>
       <p class="text-gray-700 mb-6" data-aos="fade-up" data-aos-delay="300">
-        Dalam beberapa tahun terakhir, peran Guru Bimbingan dan Konseling
+        Ikuti berita terkini, analisis mendalam, dan kisah sukses dari para
+        pelaku industri teknologi informasi dan komunikasi di Indonesia.
       </p>
       <interactive-hover-button
         text="Jelajahi Blog"

@@ -16,10 +16,10 @@ export const usePodcastStore = defineStore("podcast", {
       try {
         // Coba berbagai endpoint yang mungkin
         const endpoints = [
-          "/podcasts",
-          "/podcasts",
-          "/api/podcasts",
-          "/api/podcasts",
+          "/podcast",
+          "/podcast",
+          "/api/podcast",
+          "/api/podcast",
         ];
 
         let response = null;

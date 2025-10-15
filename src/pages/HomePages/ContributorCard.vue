@@ -7,10 +7,20 @@
       <span class="text-xs mb-1 block">{{ contributor.job_type || 'Lowongan' }}</span>
       <h3 class="text-lg font-semibold">{{ contributor.position_title || 'Judul Posisi' }}</h3>
       <p class="text-sm text-white mt-2">{{ contributorDescription }}</p>
-      <div class="absolute right-4 bottom-4 bg-white/20 p-3 rounded-full">
-        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 12l-4-4h8l-4 4z" />
-        </svg>
+       <div class="absolute -bottom-10 -right-10 pointer-events-none">
+        <div
+          class="size-30 bg-white/15 backdrop-blur-md rounded-full flex items-center justify-center"
+        >
+          <div
+            class="size-25 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center"
+          >
+            <img
+              src=""
+              alt=""
+              class="size-10 mb-2 mr-2"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </div>

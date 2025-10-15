@@ -7,76 +7,64 @@ import {
   watch,
   nextTick,
 } from "vue";
+import { useAboutusStore } from "@/stores/aboutus";
 import { BookIcon, HandshakeIcon, TargetIcon } from "lucide-vue-next";
 import Badge from "@/components/UI/Badge.vue";
 import AOS from "aos";
 import "aos/dist/aos.css";
+
+// Gunakan aboutus store
+const aboutusStore = useAboutusStore();
 
 const selectedItemIndex = ref(0);
 const itemRefs = ref([]);
 const activeLineHeight = ref(0);
 let observer = null;
 
-// Data dummy untuk Visi, Misi, dan Sejarah
-const dummyAboutUsData = ref([
-  {
-    id: 1,
-    title: "Visi APTIKNAS",
-    description:
-      "<p>Menjadi organisasi profesional yang terdepan, inovatif, dan berkelanjutan dalam mendorong pertumbuhan industri Teknologi Informasi dan Komunikasi (TIK) nasional agar mampu berdaya saing di tingkat global. Kami bercita-cita untuk menciptakan ekosistem digital yang inklusif dan bermanfaat bagi seluruh masyarakat Indonesia.</p>",
-    image:
-      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    display_on_home: false,
-    category: {
-      name: "Visi",
-    },
-  },
-  {
-    id: 2,
-    title: "Misi APTIKNAS",
-    description:
-      "<ul><li>Mengembangkan kompetensi dan profesionalisme anggota melalui program pelatihan dan sertifikasi.</li><li>Mendorong kolaborasi strategis antara pelaku industri, pemerintah, dan akademisi untuk menciptakan sinergi.</li><li>Memfasilitasi akses pasar dan pembiayaan bagi anggota, terutama UMKM di bidang TIK.</li><li>Mengadvokasi kebijakan yang mendukung pertumbuhan ekosistem digital yang sehat dan kompetitif.</li></ul>",
-    image:
-      "https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    display_on_home: false,
-    category: {
-      name: "Misi",
-    },
-  },
-  {
-    id: 3,
-    title: "Sejarah APTIKNAS",
-    description:
-      "<p>APTIKNAS merupakan transformasi dari APKOMINDO yang didirikan pada tahun 1991, menjadikannya asosiasi TIK tertua di Indonesia. Dideklarasikan secara resmi pada 24 Februari 2017, APTIKNAS lahir dari semangat untuk menyatukan para pengusaha, praktisi, dan akademisi TIK dalam satu wadah yang solid untuk bersama-sama memajukan industri TIK nasional.</p>",
-    image:
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    display_on_home: false,
-    category: {
-      name: "Sejarah",
-    },
-  },
-]);
-
-// Mengambil data dari store
-const aboutusData = computed(() => {
-  return dummyAboutUsData.value;
-});
-
-// Filter data yang display_on_home = false
+// Filter data yang display_on_home = false dan hanya kategori Visi, Misi, Sejarah
 const filteredAboutus = computed(() => {
-  return aboutusData.value.filter((item) => item.display_on_home === false);
+  if (!aboutusStore.list || !aboutusStore.list.data) return [];
+
+  // Handle struktur response yang berbeda
+  let dataArray = [];
+
+  if (Array.isArray(aboutusStore.list.data)) {
+    // Response format: { success: true, data: [...] }
+    dataArray = aboutusStore.list.data;
+  } else if (
+    aboutusStore.list.data &&
+    Array.isArray(aboutusStore.list.data.data)
+  ) {
+    // Response format dengan pagination
+    dataArray = aboutusStore.list.data.data;
+  } else if (Array.isArray(aboutusStore.list)) {
+    // Response langsung array
+    dataArray = aboutusStore.list;
+  }
+
+  // Filter yang display_on_home = false dan hanya kategori Visi, Misi, Sejarah
+  const allowedCategories = ["visi", "misi", "sejarah"];
+
+  return dataArray
+    .filter(
+      (item) =>
+        item.display_on_home === false &&
+        item.category &&
+        allowedCategories.includes(item.category.name.toLowerCase())
+    )
+    .slice(0, 3); // Maksimal 3 data
 });
 
 // Format timeline items dari data API
 const timelineItems = computed(() => {
   if (filteredAboutus.value.length === 0) return [];
 
-  return filteredAboutus.value.map((item) => {
+  return filteredAboutus.value.map((item, index) => {
     // Tentukan icon berdasarkan kategori
     let icon = BookIcon; // default icon
     if (item.category && item.category.name) {
       const categoryName = item.category.name.toLowerCase();
-      if (categoryName.includes("visi")) icon = TargetIcon; // Visi
+      if (categoryName.includes("visi")) icon = TargetIcon;
       else if (categoryName.includes("misi")) icon = HandshakeIcon;
       else if (categoryName.includes("sejarah")) icon = BookIcon;
     }
@@ -91,6 +79,7 @@ const timelineItems = computed(() => {
       icon: icon,
       image: getImageUrl(item.image),
       category: item.category ? item.category.name : "Umum",
+      originalIndex: index,
     };
   });
 });
@@ -110,15 +99,24 @@ const getImageUrl = (imagePath) => {
   }
 
   // Jika gambar adalah path relatif, tambahkan base URL
-  const baseUrl = "http://127.0.0.1:8000";
-  return `${baseUrl}/${imagePath}`;
+  const baseUrl = "https://cms-aptiknas.hexagon.co.id";
+
+  // Jika path sudah mengandung 'storage/', langsung gabungkan. Jika tidak, tambahkan '/storage/'.
+  const imageFinalPath = imagePath.startsWith("storage/")
+    ? imagePath
+    : `storage/${imagePath}`;
+  return `${baseUrl}/${imageFinalPath.replace(/^\//, "")}`;
 };
 
 onMounted(async () => {
+  // Fetch data dari store
+  await aboutusStore.fetchAll();
+
   nextTick(() => {
     updateActiveLine();
     setupIntersectionObserver();
   });
+
   AOS.init({
     duration: 800,
     easing: "ease-out-quad",
@@ -185,13 +183,27 @@ onBeforeUnmount(() => {
     >
       <!-- Left Image and Title -->
       <div
-        class="md:w-1/2 flex flex-col items-start "
+        class="md:w-1/2 flex flex-col items-start"
         data-aos="fade-right"
         data-aos-delay="100"
       >
         <Badge text="Tentang Kami" customClass="text-sm" />
-        <Transition name="fade" mode="out-in">
-          <div :key="selectedItem?.id" class="w-full" v-if="selectedItem">
+
+        <!-- Loading State -->
+        <div v-if="aboutusStore.loading" class="w-full text-center py-10">
+          <p class="text-neutral-500 dark:text-neutral-400">Memuat data...</p>
+        </div>
+
+        <!-- Error State -->
+        <div v-else-if="aboutusStore.error" class="w-full text-center py-10">
+          <p class="text-red-500 dark:text-red-400">
+            Gagal memuat data: {{ aboutusStore.error }}
+          </p>
+        </div>
+
+        <!-- Content -->
+        <Transition name="fade" mode="out-in" v-else-if="selectedItem">
+          <div :key="selectedItem?.id" class="w-full">
             <!-- Responsive title -->
             <h2
               class="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-semibold mb-2 mt-3"
@@ -207,12 +219,21 @@ onBeforeUnmount(() => {
               :src="selectedItem.image"
               :alt="selectedItem.title"
               class="w-full h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[420px] 2xl:h-[480px] rounded-xl object-cover mb-4"
+              @error="
+                (event) => {
+                  event.target.src =
+                    'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
+                }
+              "
             />
           </div>
         </Transition>
 
         <!-- Empty state -->
-        <div v-if="timelineItems.length === 0" class="w-full text-center py-10">
+        <div
+          v-else-if="timelineItems.length === 0"
+          class="w-full text-center py-10"
+        >
           <p class="text-neutral-500 dark:text-neutral-400">
             Tidak ada data tentang kami yang tersedia.
           </p>
@@ -222,7 +243,11 @@ onBeforeUnmount(() => {
       <!-- Right Timeline -->
       <div
         class="md:w-1/2 relative"
-        v-if="timelineItems.length > 0"
+        v-if="
+          !aboutusStore.loading &&
+          !aboutusStore.error &&
+          timelineItems.length > 0
+        "
         data-aos="fade-left"
         data-aos-delay="200"
       >
@@ -238,7 +263,7 @@ onBeforeUnmount(() => {
 
         <!-- Timeline Items (max 3 items) -->
         <div
-          v-for="(item, index) in timelineItems.slice(0, 3)"
+          v-for="(item, index) in timelineItems"
           :key="item.id"
           class="relative flex items-start gap-8 mb-10 top-0 cursor-pointer"
           @click="selectItem(index)"

@@ -21,8 +21,28 @@
       </button>
     </div>
 
+    <!-- Loading State -->
+    <div v-if="agendaStore.loading" class="text-center py-8">
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"
+      ></div>
+      <p class="text-gray-500">Memuat kegiatan...</p>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="agendaStore.error" class="text-center py-8 text-red-500">
+      <p>Gagal memuat data kegiatan.</p>
+      <p class="text-sm mb-4">{{ agendaStore.error }}</p>
+      <button
+        @click="loadAgendaData"
+        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
+      >
+        Coba Lagi
+      </button>
+    </div>
+
     <!-- Image Grid with Natural Animations -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="(item, index) in filteredGallery"
         :key="item.id"
@@ -39,6 +59,7 @@
             :src="item.image"
             :alt="item.title"
             class="w-full h-full object-cover transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+            @error="handleImageError"
           />
 
           <!-- Overlay Gradient + Text -->
@@ -79,14 +100,17 @@
 
     <!-- Empty State -->
     <div
-      v-if="filteredGallery.length === 0"
+      v-if="!agendaStore.loading && filteredGallery.length === 0"
       class="text-center py-10 text-gray-500"
     >
       Tidak ada kegiatan yang tersedia
     </div>
 
     <!-- Load More Button -->
-    <div v-if="filteredGallery.length > 0" class="flex justify-center mt-10">
+    <div
+      v-if="filteredGallery.length > 0 && !agendaStore.loading"
+      class="flex justify-center mt-10"
+    >
       <ShimmerButton
         background="#16a34a"
         class="px-6 py-3"
@@ -100,67 +124,13 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { useAgendaStore } from "@/stores/agenda";
 import AOS from "aos";
 import ShimmerButton from "@/components/UI/shimmer-button/ShimmerButton.vue";
 import "aos/dist/aos.css";
 
-// Data dummy untuk kegiatan APTIKNAS
-const dummyKegiatan = ref([
-  {
-    id: 1,
-    title: "Seminar Digital Transformation 2024",
-    category: "Seminar",
-    image:
-      "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description:
-      "Seminar tentang transformasi digital untuk UMKM dengan pembicara ahli dari industri teknologi.",
-  },
-  {
-    id: 2,
-    title: "Workshop Cybersecurity",
-    category: "Workshop",
-    image:
-      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description:
-      "Workshop intensif tentang keamanan siber untuk melindungi data bisnis dari ancaman digital.",
-  },
-  {
-    id: 3,
-    title: "Networking Night 2024",
-    category: "Networking",
-    image:
-      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description:
-      "Acara networking eksklusif untuk anggota APTIKNAS dengan pelaku industri dan pemerintah.",
-  },
-  {
-    id: 4,
-    title: "Tech Training: Cloud Computing",
-    category: "Pelatihan",
-    image:
-      "https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description:
-      "Pelatihan fundamental cloud computing untuk pengusaha TIK yang ingin mengembangkan skill.",
-  },
-  {
-    id: 5,
-    title: "APTIKNAS Tech Awards 2024",
-    category: "Awards",
-    image:
-      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description:
-      "Penghargaan tahunan untuk inovator dan pengusaha teknologi yang berkontribusi bagi perkembangan TIK nasional.",
-  },
-  {
-    id: 6,
-    title: "Konferensi Industry 4.0",
-    category: "Konferensi",
-    image:
-      "https://images.unsplash.com/photo-1581092921461-eab62e97a780?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-    description:
-      "Konferensi membahas implementasi Industry 4.0 di berbagai sektor industri Indonesia.",
-  },
-]);
+// Gunakan agenda store
+const agendaStore = useAgendaStore();
 
 const filters = ref([
   "All",
@@ -173,6 +143,83 @@ const filters = ref([
 ]);
 const selectedFilter = ref("All");
 
+// Format data dari store untuk komponen
+const galleryData = computed(() => {
+  if (!agendaStore.list || agendaStore.list.length === 0) return [];
+
+  return agendaStore.list.map((item) => ({
+    id: item.id,
+    title: item.title,
+    category: item.type || "Kegiatan",
+    image: getImageUrl(item),
+    description: stripHtmlTags(item.description),
+    start_datetime: item.start_datetime,
+    location: item.location,
+    event_organizer: item.event_organizer,
+    youtube_link: item.youtube_link,
+  }));
+});
+
+// Computed property untuk data yang sudah difilter
+const filteredGallery = computed(() => {
+  if (selectedFilter.value === "All") {
+    return galleryData.value;
+  }
+  return galleryData.value.filter(
+    (item) => item.category === selectedFilter.value
+  );
+});
+
+// Fungsi untuk mendapatkan URL gambar lengkap
+const getImageUrl = (item) => {
+  // Prioritaskan image_url dari API jika tersedia
+  if (item.image_url) {
+    return item.image_url;
+  }
+
+  // Fallback ke image path
+  if (item.image) {
+    const baseUrl =
+      import.meta.env.VITE_STORAGE_URL || "https://cms-aptiknas.hexagon.co.id";
+
+    if (item.image.startsWith("http")) {
+      return item.image;
+    }
+
+    // Handle berbagai format path
+    if (item.image.startsWith("agenda/")) {
+      return `${baseUrl}/storage/${item.image}`;
+    }
+
+    if (item.image.startsWith("storage/agenda/")) {
+      return `${baseUrl}/${item.image}`;
+    }
+
+    if (item.image.startsWith("/")) {
+      return `${baseUrl}${item.image}`;
+    }
+
+    // Default: anggap sebagai nama file di folder agenda
+    return `${baseUrl}/storage/${item.image}`;
+  }
+
+  // Fallback ke placeholder jika tidak ada gambar
+  return "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
+};
+
+// Handle error gambar
+const handleImageError = (event) => {
+  console.error("Gagal memuat gambar");
+  event.target.src =
+    "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
+};
+
+// Hapus tag HTML dari deskripsi
+const stripHtmlTags = (html) => {
+  if (!html) return "Tidak ada deskripsi";
+  return html.replace(/<[^>]*>/g, "");
+};
+
 // Inisialisasi AOS dengan konfigurasi natural
 onMounted(() => {
   AOS.init({
@@ -182,55 +229,66 @@ onMounted(() => {
     offset: 50,
     delay: 50,
   });
+
+  // Load data agenda
+  loadAgendaData();
 });
+
+// Fungsi untuk memuat data
+const loadAgendaData = () => {
+  agendaStore.fetchAll();
+};
 
 // Fungsi filter
 const applyFilter = (filter) => {
   selectedFilter.value = filter;
 };
 
-// Computed property untuk data yang sudah difilter
-const filteredGallery = computed(() => {
-  if (selectedFilter.value === "All") {
-    return dummyKegiatan.value;
-  }
-  return dummyKegiatan.value.filter(
-    (item) => item.category === selectedFilter.value
-  );
-});
-
 // Fungsi untuk melihat detail
 const viewDetails = (item) => {
   console.log("View details:", item);
-  // Di sini bisa diarahkan ke halaman detail atau menampilkan modal
-  alert(`Detail: ${item.title}\n\n${item.description}`);
+
+  // Jika ada link YouTube, buka di tab baru
+  if (item.youtube_link) {
+    window.open(item.youtube_link, "_blank");
+  } else {
+    // Tampilkan detail dalam alert atau modal
+    const detailText = `
+Judul: ${item.title}
+Kategori: ${item.category}
+Lokasi: ${item.location || "Tidak tersedia"}
+Penyelenggara: ${item.event_organizer || "Tidak tersedia"}
+Tanggal: ${formatDate(item.start_datetime)}
+Deskripsi: ${item.description}
+    `.trim();
+
+    alert(detailText);
+  }
 };
 
-// Fungsi untuk load more (dummy function)
-const fetchMoreKegiatan = () => {
-  // Simulasi menambahkan data baru
-  const newItems = [
-    {
-      id: dummyKegiatan.value.length + 1,
-      title: "Webinar AI untuk Bisnis",
-      category: "Webinar",
-      image:
-        "https://images.unsplash.com/photo-1677442135135-416f8aa26a5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      description:
-        "Webinar tentang pemanfaatan AI dalam mengoptimalkan proses bisnis.",
-    },
-    {
-      id: dummyKegiatan.value.length + 2,
-      title: "Bootcamp Startup Digital",
-      category: "Bootcamp",
-      image:
-        "https://images.unsplash.com/photo-1551836022-d5d88e9218df?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      description:
-        "Bootcamp intensif untuk calon founder startup di bidang teknologi.",
-    },
-  ];
+// Format tanggal untuk ditampilkan
+const formatDate = (dateString) => {
+  if (!dateString) return "Tanggal tidak tersedia";
 
-  dummyKegiatan.value = [...dummyKegiatan.value, ...newItems];
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch (error) {
+    return "Format tanggal tidak valid";
+  }
+};
+
+// Fungsi untuk load more (dummy function - bisa diimplementasikan dengan pagination API)
+const fetchMoreKegiatan = () => {
+  // Untuk sekarang, kita reload data saja
+  // Di production, bisa implementasi pagination dengan API
+  loadAgendaData();
 };
 </script>
 
@@ -282,5 +340,19 @@ const fetchMoreKegiatan = () => {
   --tw-gradient-to: rgb(22 163 74 / 0);
   --tw-gradient-stops: var(--tw-gradient-from), rgb(22 163 74 / 0.4),
     var(--tw-gradient-to);
+}
+
+/* Loading animation */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

@@ -13,40 +13,45 @@ export const useGalleryStore = defineStore("gallery", {
     async fetchAll() {
       this.loading = true;
       this.error = null;
-
       try {
-        // Coba berbagai endpoint yang mungkin
-        const endpoints = [
-          "/gallery",
-          "/api/gallery",
-          "/news",
-          "/api/news",
-          "/articles",
-          "/api/articles",
-        ];
+        const res = await axiosInstance.get("/gallery");
+        console.log("Raw API response:", res.data);
 
-        let response = null;
-
-        for (const endpoint of endpoints) {
-          try {
-            response = await axiosInstance.get(endpoint);
-            if (response.data) {
-              console.log("Berhasil dari endpoint:", endpoint);
-              break;
-            }
-          } catch (e) {
-            console.log(`Endpoint ${endpoint} gagal:`, e.message);
-            continue;
+        // Handle berbagai struktur response
+        if (res.data && res.data.status !== undefined) {
+          // Response format: { status: true, message: "...", data: { data: [...] } }
+          if (
+            res.data.data &&
+            res.data.data.data &&
+            Array.isArray(res.data.data.data)
+          ) {
+            this.list = res.data.data.data;
+          }
+          // Fallback: jika data langsung array dalam data property
+          else if (res.data.data && Array.isArray(res.data.data)) {
+            this.list = res.data.data;
+          } else {
+            this.list = [];
+            console.warn(
+              "Struktur data tidak dikenali dalam response:",
+              res.data
+            );
           }
         }
-
-        if (response && response.data) {
-          this.list = response.data;
+        // Response langsung array
+        else if (Array.isArray(res.data)) {
+          this.list = res.data;
+        }
+        // Response Laravel pagination tanpa status flag
+        else if (res.data && Array.isArray(res.data.data)) {
+          this.list = res.data.data;
         } else {
-          throw new Error("Semua endpoint gallery gagal");
+          this.list = [];
+          console.warn("Struktur response tidak dikenali:", res.data);
         }
       } catch (err) {
-        this.error = err.message;
+        this.error = err.message || "Gagal memuat data gallery";
+        this.list = [];
         console.error("Error fetching gallery:", err);
       } finally {
         this.loading = false;
@@ -54,98 +59,41 @@ export const useGalleryStore = defineStore("gallery", {
     },
 
     async fetchById(id) {
+      this.loading = true;
+      this.error = null;
       try {
-        const endpoints = [
-          `/gallery/${id}`,
-          `/api/gallery/${id}`,
-          `/news/${id}`,
-          `/api/news/${id}`,
-        ];
-
-        let response = null;
-
-        for (const endpoint of endpoints) {
-          try {
-            response = await axiosInstance.get(endpoint);
-            if (response.data) {
-              break;
-            }
-          } catch (e) {
-            continue;
-          }
-        }
-
-        if (response && response.data) {
-          this.detail = response.data;
-        } else {
-          throw new Error("Gallery item tidak ditemukan");
-        }
+        const res = await axiosInstance.get(`/gallery/${id}`);
+        this.detail = res.data;
       } catch (err) {
-        this.error = err.message;
+        this.error = err.message || "Gagal memuat detail gallery";
+      } finally {
+        this.loading = false;
       }
     },
 
     async fetchHome() {
+      this.loading = true;
+      this.error = null;
       try {
-        const endpoints = [
-          "/gallery-home",
-          "/api/gallery-home",
-          "/news-home",
-          "/api/news-home",
-        ];
-
-        let response = null;
-
-        for (const endpoint of endpoints) {
-          try {
-            response = await axiosInstance.get(endpoint);
-            if (response.data) {
-              break;
-            }
-          } catch (e) {
-            continue;
-          }
-        }
-
-        if (response && response.data) {
-          this.home = response.data;
-        } else {
-          throw new Error("Gallery home tidak ditemukan");
-        }
+        const res = await axiosInstance.get("/gallery-home");
+        this.home = res.data;
       } catch (err) {
-        this.error = err.message;
+        this.error = err.message || "Gagal memuat gallery home";
+      } finally {
+        this.loading = false;
       }
     },
 
     async fetchByCategory(id) {
+      this.loading = true;
+      this.error = null;
       try {
-        const endpoints = [
-          `/gallery-category/${id}`,
-          `/api/gallery-category/${id}`,
-          `/news-category/${id}`,
-          `/api/news-category/${id}`,
-        ];
-
-        let response = null;
-
-        for (const endpoint of endpoints) {
-          try {
-            response = await axiosInstance.get(endpoint);
-            if (response.data) {
-              break;
-            }
-          } catch (e) {
-            continue;
-          }
-        }
-
-        if (response && response.data) {
-          this.detail = response.data;
-        } else {
-          throw new Error("Gallery category tidak ditemukan");
-        }
+        const res = await axiosInstance.get(`/gallery-category/${id}`);
+        this.detail = res.data;
       } catch (err) {
-        this.error = err.message;
+        this.error = err.message || "Gagal memuat gallery category";
+      } finally {
+        this.loading = false;
       }
     },
   },

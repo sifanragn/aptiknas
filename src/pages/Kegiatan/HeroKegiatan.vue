@@ -1,5 +1,15 @@
 <template>
-  <div class="hero-section -mt-10">
+  <div class="hero-section ">
+    <!-- WebGL Support Check -->
+    <div
+      v-if="!webglSupported"
+      class="h-[500px] w-screen flex items-center justify-center bg-gray-200 text-gray-600"
+    >
+      <p>
+        WebGL tidak didukung atau dinonaktifkan di browser Anda. Animasi galeri
+        tidak dapat ditampilkan.
+      </p>
+    </div>
     <!-- Hero -->
     <div class="text-center relative">
       <div class="relative">
@@ -10,18 +20,18 @@
         </h1>
 
         <div
-          class="absolute hidden xl:block bottom-0 left-1/2 -translate-x-1/2 h-28 w-[43rem] bg-gradient-to-r from-green-600/19 to-transparent z-0"
+          class="absolute hidden xl:block bottom-0 left-1/2 border-4 border-l-green-600 -translate-x-1/2 h-28 w-[43rem] bg-gradient-to-r from-green-600/19 to-transparent z-0"
         ></div>
-        <div
-          class="absolute hidden xl:block bottom-0 left-3/14 -translate-x-1/2 h-26 border-l-2 border-green-600 z-0"
-        ></div>
+        <!-- <div
+          class="absolute hidden xl:block bottom-0 left-4/17 -translate-x-1/2 h-26 border-l-2 border-green-600 z-0"
+        ></div> -->
       </div>
 
       <div
         class="h-[500px] w-screen overflow-hidden overflow-x-hidden relative left-1/2 -translate-x-1/2"
       >
         <BendingGallery
-          v-if="!loading && !error"
+          v-if="!loading && !error && webglSupported"
           :items="galleryItems"
           :bend="2"
         />
@@ -41,6 +51,21 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import BendingGallery from "@/components/UI/bending-gallery/BendingGallery.vue";
+
+// WebGL Support Check
+const webglSupported = ref(true);
+
+const checkWebGLSupport = () => {
+  try {
+    const canvas = document.createElement("canvas");
+    return !!(
+      window.WebGLRenderingContext &&
+      (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))
+    );
+  } catch (e) {
+    return false;
+  }
+};
 
 // Data dummy untuk kegiatan APTIKNAS
 const dummyAgenda = ref([
@@ -99,6 +124,7 @@ const error = ref(null);
 
 // Simulasi loading data
 onMounted(() => {
+  webglSupported.value = checkWebGLSupport();
   loading.value = true;
   setTimeout(() => {
     loading.value = false;

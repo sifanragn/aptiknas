@@ -25,7 +25,7 @@
           {{ activeSlide.title }}
         </h3>
         <div
-          class="text-gray-600 text-sm sm:text-base md:text-lg lg:text-xl mb-4 md:mb-6"
+          class="text-gray-600 line-clamp-6 text-sm sm:text-base md:text-lg lg:text-xl mb-4 md:mb-6"
           data-aos="fade-up"
           data-aos-delay="300"
           v-html="activeSlide.description"
@@ -58,11 +58,11 @@
             <div
               v-for="(item, index) in filteredData"
               :key="item.id"
-              class="swiper-slide !w-auto"
+              class="swiper-slide !w-auto mt-2"
             >
               <img
                 :src="getImageUrl(item.image)"
-                class="rounded-xl sm:rounded-2xl md:rounded-3xl mb-10 shadow-lg w-[10rem] h-[14rem] sm:w-[12rem] sm:h-[16rem] md:w-[14rem] md:h-[18rem] ml-4 mt-2 lg:w-[15rem] lg:h-[20rem] object-cover transition-transform duration-500 ease-in-out"
+                class="rounded-xl sm:rounded-2xl md:rounded-3xl mb-10 shadow-lg w-[10rem] h-[14rem] sm:w-[12rem] sm:h-[16rem] md:w-[14rem] md:h-[18rem] ml-4 lg:w-[15rem] lg:h-[20rem] object-cover transition-transform duration-500 ease-in-out"
                 :alt="item.title"
                 :class="{ 'scale-110 shadow-2xl': activeIndex === index }"
                 @error="handleImageError(item.id)"
@@ -93,23 +93,74 @@
   </section>
 
   <!-- Loading State -->
-  <div v-if="loading" class="py-12 text-center">
-    <p>Memuat data...</p>
+  <div v-if="aboutusStore.loading" class="py-12 text-center">
+    <div class="flex flex-col items-center">
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"
+      ></div>
+      <p class="text-gray-600">Memuat data tentang kami...</p>
+    </div>
   </div>
 
   <!-- Error State -->
-  <div v-if="error" class="py-12 text-center text-red-500">
-    <p>Gagal memuat data: {{ error }}</p>
+  <div v-if="aboutusStore.error" class="py-12 text-center">
+    <div class="max-w-md mx-auto bg-red-50 rounded-lg p-6">
+      <svg
+        class="w-12 h-12 text-red-400 mx-auto mb-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <h3 class="text-lg font-semibold text-red-900 mb-2">Gagal Memuat Data</h3>
+      <p class="text-red-700 mb-4">{{ aboutusStore.error }}</p>
+      <button
+        @click="aboutusStore.fetchAll()"
+        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+      >
+        Coba Lagi
+      </button>
+    </div>
   </div>
 
   <!-- Empty State -->
-  <div v-if="!loading && filteredData.length === 0" class="py-12 text-center">
-    <p>Tidak ada data tentang kami yang ditampilkan di beranda.</p>
+  <div
+    v-if="
+      !aboutusStore.loading && !aboutusStore.error && filteredData.length === 0
+    "
+    class="py-12 text-center"
+  >
+    <div class="max-w-md mx-auto bg-gray-50 rounded-lg p-6">
+      <svg
+        class="w-12 h-12 text-gray-400 mx-auto mb-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">Tidak Ada Data</h3>
+      <p class="text-gray-600">
+        Tidak ada data tentang kami yang ditampilkan di beranda.
+      </p>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch, onUnmounted, nextTick } from "vue";
+import { ref, onMounted, computed, onUnmounted, nextTick } from "vue";
+import { useAboutusStore } from "@/stores/aboutus";
 import Swiper from "swiper";
 import { Navigation, Pagination } from "swiper/modules";
 import AOS from "aos";
@@ -119,94 +170,92 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
+const aboutusStore = useAboutusStore();
+
 const activeIndex = ref(0);
 const swiperInstance = ref(null);
 const initializationError = ref(null);
-const loading = ref(false);
-const error = ref(null);
-
-// Data dummy untuk "Tentang Kami"
-const dummyTentangKamiData = ref([
-  {
-    id: 1,
-    title: "Visi & Misi APTIKNAS",
-    description:
-      "<p>Menjadi organisasi TIK terdepan yang inovatif dan berkelanjutan, serta mendorong pertumbuhan industri TIK nasional agar mampu berdaya saing di tingkat global. Kami berkomitmen untuk mengembangkan kompetensi anggota dan menciptakan ekosistem digital yang inklusif.</p>",
-    image:
-      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    display_on_home: true,
-    category: { name: "Visi & Misi" },
-  },
-  {
-    id: 2,
-    title: "Sejarah Singkat APTIKNAS",
-    description:
-      "<p>APTIKNAS merupakan transformasi dari APKOMINDO (didirikan 1991), menjadikannya asosiasi TIK tertua di Indonesia. Dideklarasikan secara resmi pada 24 Februari 2017, APTIKNAS lahir dari semangat untuk menyatukan para pengusaha, praktisi, dan akademisi TIK dalam satu wadah yang solid.</p>",
-    image:
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    display_on_home: true,
-    category: { name: "Sejarah" },
-  },
-  {
-    id: 3,
-    title: "Program Unggulan Kami",
-    description:
-      "<p>Kami fokus pada empat pilar utama: pengembangan kompetensi melalui pelatihan dan sertifikasi, mendorong kolaborasi strategis, memfasilitasi akses pasar bagi anggota, dan mengadvokasi kebijakan yang mendukung pertumbuhan ekosistem digital yang sehat dan kompetitif.</p>",
-    image:
-      "https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    display_on_home: true,
-    category: { name: "Program" },
-  },
-]);
 
 // Fungsi untuk mendapatkan URL gambar lengkap
 const getImageUrl = (imagePath) => {
-  if (!imagePath)
+  if (!imagePath) {
+    // Fallback jika tidak ada path gambar
     return "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80";
+  }
 
-  // Jika gambar sudah berupa URL lengkap, langsung kembalikan
   if (imagePath.startsWith("http")) {
     return imagePath;
   }
 
-  // Jika gambar adalah path relatif, tambahkan base URL
-  const baseUrl = "http://127.0.0.1:8000";
-  return `${baseUrl}/storage/${imagePath}`;
+  const baseUrl = "https://cms-aptiknas.hexagon.co.id";
+  // Pastikan path diawali dengan /storage/
+  const imageFinalPath = imagePath.startsWith("storage/")
+    ? imagePath
+    : `storage/${imagePath}`;
+  return `${baseUrl}/${imageFinalPath.replace(/^\//, "")}`;
 };
 
 const handleImageError = (itemId) => {
   console.error("Gagal memuat gambar untuk item ID:", itemId);
   // Ganti dengan placeholder image jika gambar gagal dimuat
   const itemIndex = filteredData.value.findIndex((item) => item.id === itemId);
-  if (itemIndex !== -1) {
-    filteredData.value[itemIndex].image =
-      "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80";
-
+  if (itemIndex !== -1 && swiperInstance.value) {
+    // Anda bisa mengganti src di sini jika filteredData adalah ref,
+    // tapi karena ini computed, lebih baik tangani di template atau state lain.
     if (swiperInstance.value) {
       swiperInstance.value.update();
     }
   }
 };
 
-// Filter data dengan null check - hanya tampilkan yang display_on_home = true
+// Filter data dengan null check - hanya tampilkan yang display_on_home = true dan maksimal 7 data
 const filteredData = computed(() => {
-  // Menggunakan data dummy lokal
-  return dummyTentangKamiData.value.filter(
-    (item) => item.display_on_home === true
-  );
+  // Handle berbagai struktur response dari store
+  let dataArray = [];
+  const storeList = aboutusStore.list;
+
+  if (Array.isArray(storeList)) {
+    dataArray = storeList;
+  } else if (storeList && Array.isArray(storeList.data)) {
+    // Untuk format { success: true, data: [...] }
+    dataArray = storeList.data;
+  } else if (
+    storeList &&
+    storeList.data &&
+    Array.isArray(storeList.data.data)
+  ) {
+    // Untuk format dengan pagination { data: { data: [...] } }
+    dataArray = storeList.data.data;
+  }
+
+  return dataArray.filter((item) => item.display_on_home === true).slice(0, 7);
 });
 
 // Initialize swiper dengan error handling
 const initSwiper = () => {
   try {
-    if (!document.querySelector(".mySwiper") || filteredData.value.length === 0)
+    if (
+      !document.querySelector(".mySwiper") ||
+      filteredData.value.length === 0
+    ) {
+      console.log(
+        "⏸️ Swiper tidak diinisialisasi: container tidak ditemukan atau data kosong"
+      );
       return;
+    }
+
+    console.log("🔄 Menginisialisasi Swiper...");
+
+    // Destroy existing swiper instance jika ada
+    if (swiperInstance.value) {
+      swiperInstance.value.destroy(true, true);
+    }
 
     swiperInstance.value = new Swiper(".mySwiper", {
       modules: [Navigation, Pagination],
       slidesPerView: "auto",
-      spaceBetween: 30,
-      loop: true,
+      spaceBetween: 20,
+      loop: filteredData.value.length > 3,
       centeredSlides: true,
       navigation: {
         prevEl: ".swiper-button-prev",
@@ -221,32 +270,22 @@ const initSwiper = () => {
       },
       on: {
         init(swiper) {
+          console.log("✅ Swiper berhasil diinisialisasi");
           activeIndex.value = swiper.realIndex;
         },
         slideChange(swiper) {
           activeIndex.value = swiper.realIndex;
+          console.log("🔄 Slide berubah ke index:", swiper.realIndex);
         },
       },
     });
+
+    initializationError.value = null;
   } catch (err) {
-    console.error("Swiper initialization error:", err);
+    console.error("❌ Swiper initialization error:", err);
     initializationError.value = err.message;
   }
 };
-
-// Watch for data changes
-watch(
-  filteredData,
-  (newVal) => {
-    if (newVal.length > 0) {
-      nextTick(() => {
-        initSwiper();
-        AOS.refresh();
-      });
-    }
-  },
-  { immediate: true }
-);
 
 // Lifecycle hooks
 onMounted(async () => {
@@ -256,10 +295,18 @@ onMounted(async () => {
     easing: "ease-out-cubic",
   });
 
+  // Fetch data jika belum ada di store
+  if (
+    !aboutusStore.list ||
+    (Array.isArray(aboutusStore.list) && aboutusStore.list.length === 0) ||
+    (aboutusStore.list.data && aboutusStore.list.data.length === 0)
+  ) {
+    await aboutusStore.fetchAll();
+  }
+
   if (filteredData.value.length > 0) {
     await nextTick();
     initSwiper();
-    AOS.refresh();
   }
 });
 
@@ -272,11 +319,10 @@ onUnmounted(() => {
 
 // Computed properties
 const activeSlide = computed(() => {
-  if (!filteredData.value.length) return { title: "", description: "" };
-  const slide =
-    filteredData.value[activeIndex.value % filteredData.value.length] || {};
-
-  return slide;
+  if (!filteredData.value || filteredData.value.length === 0) {
+    return { title: "", description: "" };
+  }
+  return filteredData.value[activeIndex.value] || {};
 });
 </script>
 
@@ -310,5 +356,15 @@ const activeSlide = computed(() => {
   opacity: 1;
   width: 20px;
   border-radius: 4px;
+}
+
+/* Custom styling untuk gambar error */
+img[src*="placeholder"] {
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 0.875rem;
 }
 </style>

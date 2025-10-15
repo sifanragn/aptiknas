@@ -21,8 +21,18 @@
       </p>
     </div>
 
+    <!-- Loading State -->
+    <div v-if="agendaStore.loading" class="text-center py-10">
+      <p>Memuat kegiatan...</p>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="agendaStore.error" class="text-center py-10 text-red-500">
+      <p>Gagal memuat data: {{ agendaStore.error }}</p>
+    </div>
+
     <!-- Swiper Container -->
-    <div class="relative px-4 container mx-auto" v-if="kegiatanData.length > 0">
+    <div v-else-if="kegiatanData.length > 0" class="relative px-4 container mx-auto">
       <div
         class="swiper kegiatan-swiper"
         @mouseenter="pauseSwiper"
@@ -33,11 +43,11 @@
         <div class="swiper-wrapper">
           <div
             v-for="(item, index) in kegiatanData"
-            :key="index"
+            :key="item.id"
             class="swiper-slide"
           >
             <div
-              class="relative group cursor-pointer h-96 overflow-hidden rounded-2xl"
+              class="relative group cursor-pointer h-96 w-full overflow-hidden rounded-2xl"
             >
               <!-- Text Description (Above Image) -->
               <div
@@ -61,6 +71,7 @@
                   :src="item.image"
                   :alt="item.title"
                   class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  @error="handleImageError"
                 />
                 <div
                   class="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-500"
@@ -132,9 +143,9 @@
       </div>
     </div>
 
-    <!-- Data Dummy Loading -->
-    <div v-if="kegiatanData.length === 0" class="text-center py-10">
-      <p>Memuat kegiatan...</p>
+    <!-- Empty State -->
+    <div v-else-if="!agendaStore.loading && kegiatanData.length === 0" class="text-center py-10">
+      <p>Tidak ada kegiatan yang tersedia.</p>
     </div>
 
     <div
@@ -154,6 +165,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, nextTick } from "vue";
+import { useAgendaStore } from "@/stores/agenda";
 import Swiper from "swiper";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import AOS from "aos";
@@ -163,111 +175,79 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import InteractiveHoverButton from "@/components/UI/interactive-hover-button/InteractiveHoverButton.vue";
 
-// Data dummy untuk kegiatan APTIKNAS
-const dummyKegiatanData = ref([
-  {
-    id: 1,
-    title: "Seminar Nasional Digital Transformation 2024",
-    description:
-      "<p>Seminar akbar yang membahas tren terbaru transformasi digital, AI, dan IoT untuk mendorong daya saing bisnis di Indonesia. Dihadiri oleh para pakar industri dan pemerintah.</p>",
-    start_datetime: "2024-10-20T09:00:00",
-    image:
-      "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 2,
-    title: "Workshop Cybersecurity untuk UMKM",
-    description:
-      "<p>Pelatihan praktis bagi pelaku UMKM untuk mengamankan aset digital mereka dari serangan siber. Peserta akan belajar teknik dasar proteksi data dan jaringan.</p>",
-    start_datetime: "2024-11-05T10:00:00",
-    image:
-      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 3,
-    title: "APTIKNAS Tech Innovators Networking Night",
-    description:
-      "<p>Acara networking eksklusif yang mempertemukan para inovator, startup, investor, dan pengambil kebijakan di industri TIK untuk berkolaborasi dan menciptakan sinergi.</p>",
-    start_datetime: "2024-11-15T19:00:00",
-    image:
-      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 4,
-    title: "Pelatihan Cloud Computing Fundamental",
-    description:
-      "<p>Program pelatihan intensif untuk memahami konsep dasar dan implementasi cloud computing menggunakan platform terkemuka seperti AWS, Google Cloud, dan Azure.</p>",
-    start_datetime: "2024-11-25T09:00:00",
-    image:
-      "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 5,
-    title: "Konferensi Industri 4.0 & Smart City",
-    description:
-      "<p>Konferensi yang membahas implementasi teknologi Industri 4.0 dalam pengembangan kota pintar (Smart City) di Indonesia, mencakup studi kasus dan solusi inovatif.</p>",
-    start_datetime: "2024-12-02T09:00:00",
-    image:
-      "https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 6,
-    title: "Diskusi Panel: Regulasi TIK Terbaru",
-    description:
-      "<p>Mengupas tuntas dampak regulasi TIK terbaru terhadap industri dan bagaimana para pengusaha dapat beradaptasi.</p>",
-    start_datetime: "2024-12-10T14:00:00",
-    image:
-      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 7,
-    title: "Hackathon Nasional APTIKNAS 2024",
-    description:
-      "<p>Ajang kompetisi bagi para developer muda untuk menciptakan solusi inovatif berbasis teknologi untuk tantangan nasional.</p>",
-    start_datetime: "2024-12-18T08:00:00",
-    image:
-      "https://images.unsplash.com/photo-1556740758-90de374c12ad?auto=format&fit=crop&w=500&q=80",
-  },
-  {
-    id: 8,
-    title: "Gala Dinner & Awarding Night",
-    description:
-      "<p>Malam penghargaan bagi para anggota dan mitra APTIKNAS yang telah memberikan kontribusi luar biasa bagi industri TIK.</p>",
-    start_datetime: "2024-12-20T19:00:00",
-    image:
-      "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=500&q=80",
-  },
-]);
+// Gunakan agenda store
+const agendaStore = useAgendaStore();
+
 const swiperInstance = ref(null);
 
+// Format data dari store untuk komponen
 const kegiatanData = computed(() => {
-  return dummyKegiatanData.value.map((item) => ({
+  if (!agendaStore.list || agendaStore.list.length === 0) return [];
+  
+  return agendaStore.list.map((item) => ({
     id: item.id,
     title: item.title,
     description: stripHtmlTags(item.description),
     date: formatDate(item.start_datetime),
-    image: getImageUrl(item.image),
+    image: getImageUrl(item),
   }));
 });
 
 // Fungsi untuk mendapatkan URL gambar lengkap
-const getImageUrl = (imagePath) => {
-  if (!imagePath)
-    return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80";
-  if (imagePath.startsWith("http")) return imagePath;
-  const baseUrl = "http://127.0.0.1:8000";
-  return `${baseUrl}/storage/${imagePath}`;
+const getImageUrl = (item) => {
+  // Prioritaskan image_url dari API jika tersedia
+  if (item.image_url) {
+    return item.image_url;
+  }
+  
+  // Fallback ke image path
+  if (item.image) {
+    const baseUrl = import.meta.env.VITE_STORAGE_URL || "https://cms-aptiknas.hexagon.co.id";
+    
+    if (item.image.startsWith("http")) {
+      return item.image;
+    }
+    
+    // Handle berbagai format path
+    if (item.image.startsWith("agenda/")) {
+      return `${baseUrl}/storage/${item.image}`;
+    }
+    
+    if (item.image.startsWith("storage/agenda/")) {
+      return `${baseUrl}/${item.image}`;
+    }
+    
+    if (item.image.startsWith("/")) {
+      return `${baseUrl}${item.image}`;
+    }
+    
+    // Default: anggap sebagai nama file di folder agenda
+    return `${baseUrl}/storage/agenda/${item.image}`;
+  }
+
+  // Fallback ke placeholder jika tidak ada gambar
+  return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80";
+};
+
+// Handle error gambar
+const handleImageError = (event) => {
+  console.error("Gagal memuat gambar");
+  event.target.src = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80";
 };
 
 // Format tanggal untuk ditampilkan
 const formatDate = (dateString) => {
   if (!dateString) return "Tanggal tidak tersedia";
-  const date = new Date(dateString);
-  return date.toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  } catch (error) {
+    return "Format tanggal tidak valid";
+  }
 };
 
 // Hapus tag HTML dari deskripsi
@@ -284,6 +264,9 @@ onMounted(async () => {
     duration: 800,
   });
 
+  // Fetch data dari store
+  await agendaStore.fetchAll();
+
   // Initialize Swiper after data is loaded and DOM is updated
   await nextTick();
   if (kegiatanData.value.length > 0) {
@@ -296,7 +279,7 @@ const initSwiper = () => {
     modules: [Navigation, Pagination, Autoplay],
     slidesPerView: 1,
     spaceBetween: 20,
-    loop: true,
+    loop: kegiatanData.value.length > 1,
     autoplay: {
       delay: 3000,
       disableOnInteraction: false,

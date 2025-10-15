@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { usePengurusStore } from "@/stores/pengurus";
 import CardProfile from "@/components/Layout/CardProfile.vue";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { members as allMembers } from "@/pages/DPDPages/data.ts";
 
 const props = defineProps({
   daerah: {
@@ -11,6 +11,9 @@ const props = defineProps({
     required: true,
   },
 });
+
+// Gunakan pengurus store
+const pengurusStore = usePengurusStore();
 
 const generateSlug = (name) => {
   if (!name) return "";
@@ -20,32 +23,75 @@ const generateSlug = (name) => {
     .replace(/ +/g, "-");
 };
 
-const members = ref(allMembers);
-
-const dpdMembers = computed(() => {
-  return members.value.filter((member) => member.type === "dpd");
-});
+const getImageUrl = (item) => {
+  const imagePath = item.image_url || item.image;
+  if (!imagePath) {
+    return "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80";
+  }
+  if (imagePath.startsWith("http")) {
+    return imagePath;
+  }
+  const baseUrl =
+    import.meta.env.VITE_STORAGE_URL || "https://cms-aptiknas.hexagon.co.id";
+  if (imagePath.startsWith("storage/")) {
+    return `${baseUrl}/${imagePath}`;
+  }
+  return `${baseUrl}/storage/${imagePath}`;
+};
 
 const filteredMembers = computed(() => {
   if (!props.daerah) return [];
-  return dpdMembers.value.filter((member) => {
-    return generateSlug(member.region) === props.daerah;
-  });
+  if (!pengurusStore.list) return [];
+
+  let dataArray = [];
+  if (Array.isArray(pengurusStore.list.data)) {
+    dataArray = pengurusStore.list.data;
+  } else if (
+    pengurusStore.list.data &&
+    Array.isArray(pengurusStore.list.data.data)
+  ) {
+    dataArray = pengurusStore.list.data.data;
+  } else if (Array.isArray(pengurusStore.list)) {
+    dataArray = pengurusStore.list;
+  }
+
+  return dataArray
+    .filter((member) => {
+      const categoryDaftarName = member.category_daftar?.name || "";
+      return generateSlug(categoryDaftarName) === props.daerah;
+    })
+    .map((item) => {
+      const social = [];
+      if (item.fb) social.push({ name: "facebook", url: item.fb });
+      if (item.ig) social.push({ name: "instagram", url: item.ig });
+      if (item.tiktok) social.push({ name: "tiktok", url: item.tiktok });
+      if (item.yt) social.push({ name: "youtube", url: item.yt });
+
+      return {
+        id: item.id,
+        name: item.title || "Nama tidak tersedia",
+        position: item.jabatan || item.category_pengurus?.name || "Anggota",
+        location: item.address || "Lokasi tidak tersedia",
+        image: getImageUrl(item),
+        social: social,
+      };
+    });
 });
 
 const namaDaerah = computed(() => {
-  const member = filteredMembers.value[0];
-  return member
-    ? member.region
-    : props.daerah.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+  const member = pengurusStore.list?.data?.data?.find(
+    (m) => generateSlug(m.category_daftar?.name) === props.daerah
+  );
+  return (
+    member?.category_daftar?.name ||
+    props.daerah.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())
+  );
 });
 
-const loading = ref(false);
 onMounted(() => {
-  loading.value = true;
-  setTimeout(() => {
-    loading.value = false;
-  }, 500);
+  if (!pengurusStore.list || pengurusStore.list.length === 0) {
+    pengurusStore.fetchAll();
+  }
   AOS.init({
     duration: 600,
     easing: "ease-out-quad",
@@ -70,7 +116,7 @@ onMounted(() => {
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="text-center py-8">
+    <div v-if="pengurusStore.loading" class="text-center py-8">
       <div
         class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto"
       ></div>

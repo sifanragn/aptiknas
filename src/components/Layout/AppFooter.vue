@@ -55,11 +55,11 @@
       <div>
         <h4 class="font-semibold text-gray-800 mb-4">Legal & Support</h4>
         <ul class="space-y-2">
-          <li class="hover:text-green-600 transition-colors cursor-pointer">Kebijakan Privasi</li>
-          <li class="hover:text-green-600 transition-colors cursor-pointer">Syarat & Ketentuan</li>
+          <li class="hover:text-green-600 transition-colors cursor-pointer"><a href="/privacy-policy">Kebijakan Privasi</a></li>
+          <li class="hover:text-green-600 transition-colors cursor-pointer"><a href="/terms-conditions"></a>Syarat & Ketentuan</li>
           <li class="hover:text-green-600 transition-colors cursor-pointer"><a href="/hubungi-kami">Hubungi Kami</a></li>
-          <li class="hover:text-green-600 transition-colors cursor-pointer">Bantuan</li>
-          <li class="hover:text-green-600 transition-colors cursor-pointer">Partner</li>
+          <li class="hover:text-green-600 transition-colors cursor-pointer"><a href="/help-support">Bantuan</a></li>
+          <li class="hover:text-green-600 transition-colors cursor-pointer"> <a href="partners">Partner</a></li>
         </ul>
       </div>
     </div>

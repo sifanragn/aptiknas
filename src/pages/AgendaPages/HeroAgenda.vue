@@ -1,6 +1,6 @@
 <template>
   <!-- Header -->
-  <div class="grid md:grid-cols-2 gap-8 items-center mb-16 mt-15">
+  <div class="grid md:grid-cols-2 gap-8 items-center mb-16 mt-30">
     <!-- Gambar (pindah ke kiri) -->
     <div class="relative" data-aos="fade-right">
       <!-- Tambahkan relative pada parent div -->
@@ -41,7 +41,7 @@
         data-aos-delay="200"
         class="text-3xl md:text-5xl font-bold leading-snug text-gray-900 mb-4"
       >
-        Forum diskusi Komunitas Guru BK Wilayah
+        Forum diskusi Komunitas Aptiknas di Seluruh Indonesia
       </h1>
       <interactive-hover-button
         text="Jelajahi Blog"

@@ -1,47 +1,39 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
+import { useAgendaStore } from "@/stores/agenda";
 import Pagination from "@/components/Layout/Pagination.vue";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
+// Gunakan agenda store
+const agendaStore = useAgendaStore();
+
 const currentPage = ref(1);
-const itemsPerPage = 6; // Menampilkan lebih banyak item per halaman
-const loading = ref(false);
-const error = ref(null);
+const itemsPerPage = 2; // Menampilkan lebih banyak item per halaman
 
-// Data dummy untuk agenda APTIKNAS
-const dummyAgendaData = ref([
-  {
-    id: 1,
-    title: "APTIKNAS Tech Summit 2024",
-    description:
-      "Konferensi tahunan terbesar yang mempertemukan para pemimpin industri TIK, startup inovatif, dan pemerintah untuk membahas masa depan teknologi Indonesia.",
-    start_datetime: "2024-11-12T08:00:00",
-    end_datetime: "2024-11-13T17:00:00",
-    location: "Jakarta Convention Center",
-    image:
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=500&q=80",
-    youtube_link: null,
-  },
-  {
-    id: 2,
-    title: "Webinar Nasional: AI untuk Transformasi Bisnis",
-    description:
-      "Pelajari bagaimana kecerdasan buatan dapat merevolusi cara Anda berbisnis. Sesi ini akan dibawakan oleh praktisi AI terkemuka di Indonesia.",
-    start_datetime: "2024-10-25T09:00:00",
-    end_datetime: "2024-10-25T12:00:00",
-    location: "Online via Zoom",
-    image:
-      "https://images.unsplash.com/photo-1677442135703-178c33d748be?auto=format&fit=crop&w=500&q=80",
-    youtube_link: "https://youtube.com/watch?v=example",
-  },
-  // ... (item lainnya akan ditambahkan di sini)
-]);
+// Format data dari store untuk komponen
+const agendaList = computed(() => {
+  if (!agendaStore.list || agendaStore.list.length === 0) {
+    return [];
+  }
 
-// Mengambil data dari store dengan penanganan struktur yang benar
-const agendaData = computed(() => {
-  // Menggunakan data dummy lokal
-  return dummyAgendaData.value;
+  return agendaStore.list.map((agenda) => ({
+    id: agenda.id,
+    title: agenda.title,
+    date: formatDate(agenda.start_datetime),
+    location: agenda.location || "Lokasi tidak tersedia",
+    description: agenda.description
+      ? stripHtmlTags(agenda.description)
+      : "Tidak ada deskripsi",
+    imageUrl: getImageUrl(agenda),
+    altText: agenda.title,
+    status: getStatusText(agenda),
+    start_datetime: agenda.start_datetime,
+    end_datetime: agenda.end_datetime,
+    youtube_link: agenda.youtube_link,
+    event_organizer: agenda.event_organizer,
+    type: agenda.type,
+  }));
 });
 
 // Inisialisasi AOS
@@ -53,62 +45,50 @@ onMounted(async () => {
     offset: 20,
   });
 
-  // Load data agenda
+  // Load data agenda dari store
   await loadAgendaData();
 });
 
 // Fungsi untuk memuat data agenda
 const loadAgendaData = async () => {
-  loading.value = true;
-  error.value = null;
-  try {
-    // Simulasi fetch data
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    // Di sini Anda bisa menambahkan lebih banyak data dummy jika diperlukan
-  } catch (e) {
-    error.value = "Gagal memuat data dummy.";
-  } finally {
-    loading.value = false;
-  }
+  await agendaStore.fetchAll();
 };
 
-const agendaList = computed(() => {
-  if (!agendaData.value || agendaData.value.length === 0) {
-    return [];
-  }
-
-  return agendaData.value.map((agenda) => ({
-    id: agenda.id,
-    title: agenda.title,
-    date: formatDate(agenda.start_datetime),
-    location: agenda.location || "Lokasi tidak tersedia",
-    description: agenda.description
-      ? stripHtmlTags(agenda.description)
-      : "Tidak ada deskripsi",
-    imageUrl: getImageUrl(agenda.image_url || agenda.image),
-    altText: agenda.title,
-    status: getStatusText(agenda),
-    start_datetime: agenda.start_datetime,
-    end_datetime: agenda.end_datetime,
-    youtube_link: agenda.youtube_link,
-  }));
-});
-
 // Fungsi untuk mendapatkan URL gambar lengkap
-const getImageUrl = (imagePath) => {
-  if (!imagePath)
-    return "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
-
-  // Jika gambar sudah berupa URL lengkap, langsung kembalikan
-  if (imagePath.startsWith("http")) {
-    // Perbaiki URL ganda dari API
-    return imagePath.replace("/agenda/agenda/", "/agenda/");
+const getImageUrl = (item) => {
+  // Prioritaskan image_url dari API jika tersedia
+  if (item.image_url) {
+    return item.image_url;
   }
 
-  return `http://127.0.0.1:8000/agenda/${imagePath.replace(
-    /^(storage|agenda)\//,
-    ""
-  )}`;
+  // Fallback ke image path
+  if (item.image) {
+    const baseUrl =
+      import.meta.env.VITE_STORAGE_URL || "https://cms-aptiknas.hexagon.co.id";
+
+    if (item.image.startsWith("http")) {
+      return item.image;
+    }
+
+    // Handle berbagai format path
+    if (item.image.startsWith("agenda/")) {
+      return `${baseUrl}/storage/${item.image}`;
+    }
+
+    if (item.image.startsWith("storage/agenda/")) {
+      return `${baseUrl}/${item.image}`;
+    }
+
+    if (item.image.startsWith("/")) {
+      return `${baseUrl}${item.image}`;
+    }
+
+    // Default: anggap sebagai nama file di folder agenda
+    return `${baseUrl}/storage/${item.image}`;
+  }
+
+  // Fallback ke placeholder jika tidak ada gambar
+  return "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
 };
 
 // Format tanggal untuk ditampilkan
@@ -208,20 +188,20 @@ const handleAgendaClick = (agenda) => {
       </p>
     </div>
 
-    <div v-if="loading" class="text-center text-gray-500 py-12">
+    <!-- Loading State -->
+    <div v-if="agendaStore.loading" class="text-center text-gray-500 py-12">
       <div
         class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#511378] mx-auto mb-4"
       ></div>
-      _
       <p>Memuat agenda...</p>
     </div>
 
-    <div v-else-if="error" class="text-center text-red-500 py-12">
+    <!-- Error State -->
+    <div v-else-if="agendaStore.error" class="text-center text-red-500 py-12">
       <p>Gagal memuat agenda. Silakan coba lagi nanti.</p>
-      <p class="text-sm mb-4">{{ error }}</p>
+      <p class="text-sm mb-4">{{ agendaStore.error }}</p>
       <button
         @click="loadAgendaData"
-        _
         class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
       >
         Coba Lagi
@@ -304,11 +284,16 @@ const handleAgendaClick = (agenda) => {
       </div>
     </div>
 
-    <div v-else class="text-center text-gray-500 py-12">
+    <!-- Empty State -->
+    <div
+      v-else-if="!agendaStore.loading"
+      class="text-center text-gray-500 py-12"
+    >
       <i class="far fa-calendar-times text-4xl mb-4"></i>
       <p>Tidak ada agenda untuk ditampilkan.</p>
     </div>
 
+    <!-- Pagination -->
     <Pagination
       v-if="agendaList.length > itemsPerPage"
       :total-items="agendaList.length"
