@@ -208,4 +208,16 @@ class SliderController extends Controller
         $sliders = Slider::where('display_on_home', true)->latest()->get();
         return view('slider', compact('sliders'));
     }
+
+    public function toggle($id)
+{
+    $slider = \App\Models\Slider::findOrFail($id);
+
+    // Balikkan nilai (true → false, false → true)
+    $slider->display_on_home = !$slider->display_on_home;
+    $slider->save();
+
+    return back()->with('success', 'Status slider berhasil diubah!');
+}
+
 }

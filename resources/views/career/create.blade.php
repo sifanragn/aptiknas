@@ -73,22 +73,79 @@
                         <p class="text-red-600 text-sm">{{ $message }}</p>
                     @enderror
                 </div>
-                <div class="space-y-1">
-                    <label class="block text-sm font-medium text-gray-700">Jam Kerja</label>
-                    <input type="text" name="jam_kerja" value="{{ old('jam_kerja') }}"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
-                    @error('jam_kerja')
-                        <p class="text-red-600 text-sm">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div class="space-y-1">
-                    <label class="block text-sm font-medium text-gray-700">Hari Kerja</label>
-                    <input type="text" name="hari_kerja" value="{{ old('hari_kerja') }}"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
-                    @error('hari_kerja')
-                        <p class="text-red-600 text-sm">{{ $message }}</p>
-                    @enderror
-                </div>
+                <!-- Jam Kerja (Timepicker) -->
+<div class="space-y-1">
+    <label class="block text-sm font-medium text-gray-700">Jam Kerja</label>
+    <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-1">
+            <label class="text-xs text-gray-500">Jam Masuk</label>
+            <input type="time" name="jam_masuk" value="{{ old('jam_masuk') }}"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 
+                focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
+        </div>
+        <div class="space-y-1">
+            <label class="text-xs text-gray-500">Jam Pulang</label>
+            <input type="time" name="jam_pulang" value="{{ old('jam_pulang') }}"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2
+                focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
+        </div>
+    </div>
+    @error('jam_masuk') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+    @error('jam_pulang') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+</div>
+
+<!-- Hari Kerja (Checklist Dropdown) -->
+<div class="space-y-1 relative">
+    <label class="block text-sm font-medium text-gray-700">Hari Kerja</label>
+
+    <!-- Trigger Dropdown -->
+    <button type="button"
+        onclick="toggleHariKerjaDropdown()"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 flex justify-between items-center text-left
+               focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-white">
+
+        <span id="hari-kerja-label" class="text-gray-700">
+            Pilih Hari
+        </span>
+
+        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 9l-7 7-7-7" />
+        </svg>
+    </button>
+
+    <!-- Dropdown -->
+    <div id="hari-kerja-dropdown"
+        class="absolute z-30 bg-white border border-gray-200 rounded-lg shadow-lg w-full mt-1 p-3 hidden">
+
+        <!-- Check All -->
+        <label class="flex items-center space-x-2 mb-2">
+            <input type="checkbox" id="check-all-hari" onchange="toggleAllHariKerja()"
+                class="h-4 w-4 text-emerald-600 rounded">
+            <span class="text-gray-700 font-medium">Pilih Semua</span>
+        </label>
+
+        <hr class="my-2">
+
+        <!-- Hari List -->
+        @php
+            $days = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
+        @endphp
+
+        @foreach($days as $day)
+            <label class="flex items-center space-x-2 py-1">
+                <input type="checkbox" name="hari_kerja[]" value="{{ $day }}"
+                    class="hari-kerja-checkbox h-4 w-4 text-emerald-600 rounded"
+                    {{ (is_array(old('hari_kerja')) && in_array($day, old('hari_kerja'))) ? 'checked' : '' }}>
+
+                <span class="text-gray-700">{{ $day }}</span>
+            </label>
+        @endforeach
+    </div>
+
+    @error('hari_kerja') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+</div>
+
             </div>
 
             <!-- Ringkasan -->
@@ -172,4 +229,53 @@
                 console.error(error);
             });
     </script>
+
+    <script>
+    function toggleHariKerjaDropdown() {
+        const dropdown = document.getElementById('hari-kerja-dropdown');
+        dropdown.classList.toggle('hidden');
+    }
+
+    function toggleAllHariKerja() {
+        const checkAll = document.getElementById('check-all-hari');
+        const checkboxes = document.querySelectorAll('.hari-kerja-checkbox');
+
+        checkboxes.forEach(cb => cb.checked = checkAll.checked);
+
+        updateHariKerjaLabel();
+    }
+
+    const checkboxes = document.querySelectorAll('.hari-kerja-checkbox');
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', updateHariKerjaLabel);
+    });
+
+    function updateHariKerjaLabel() {
+        const selected = Array.from(document.querySelectorAll('.hari-kerja-checkbox:checked'))
+            .map(cb => cb.value);
+
+        const label = document.getElementById('hari-kerja-label');
+
+        if (selected.length === 0) {
+            label.textContent = "Pilih Hari";
+        } else if (selected.length === 7) {
+            label.textContent = "Semua Hari";
+            document.getElementById('check-all-hari').checked = true;
+        } else {
+            label.textContent = selected.join(', ');
+            document.getElementById('check-all-hari').checked = false;
+        }
+    }
+
+    // Klik di luar dropdown untuk menutup
+    document.addEventListener("click", function (e) {
+        const dropdown = document.getElementById("hari-kerja-dropdown");
+        const trigger = e.target.closest("button");
+
+        if (!dropdown.contains(e.target) && !trigger) {
+            dropdown.classList.add("hidden");
+        }
+    });
+</script>
+
 @endsection

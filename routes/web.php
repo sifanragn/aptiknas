@@ -207,6 +207,7 @@ Route::prefix('slider')->name('slider.')->group(function () {
     Route::get('/edit/{id}', [SliderController::class, 'edit'])->name('edit');
     Route::put('/{id}', [SliderController::class, 'update'])->name('update');
     Route::delete('/{id}', [SliderController::class, 'destroy'])->name('destroy');
+    Route::put('/{id}/toggle', [SliderController::class, 'toggle'])->name('toggle');
 });
 
 Route::prefix('about')->name('about.')->group(function () {

@@ -20,8 +20,9 @@ class Career extends Model
 
     protected $casts = [
         'klasifikasi' => 'array',
-        'deskripsi' => 'array',
+        'deskripsi'  => 'array',
     ];
+
 
     public function applications()
     {

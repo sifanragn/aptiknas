@@ -41,8 +41,9 @@ class CareerController extends Controller
             'lokasi' => 'required|string',
             'ringkasan' => 'required|string',
             'pengalaman' => 'required|string',
-            'jam_kerja' => 'required|string',
-            'hari_kerja' => 'required|string',
+            'jam_masuk' => 'required',
+            'jam_pulang' => 'required',
+            'hari_kerja' => 'required|array',
             'klasifikasi' => 'required|array',
             'klasifikasi.*' => 'required|string',
             'deskripsi' => 'required|array',
@@ -54,8 +55,8 @@ class CareerController extends Controller
         $career->position_title = $request->position_title;
         $career->lokasi = $request->lokasi;
         $career->pengalaman = $request->pengalaman;
-        $career->jam_kerja = $request->jam_kerja;
-        $career->hari_kerja = $request->hari_kerja;
+        $career->jam_kerja = $request->jam_masuk . ' - ' . $request->jam_pulang;
+        $career->hari_kerja = implode(', ', $request->hari_kerja);
         $career->ringkasan = $request->ringkasan;
         $career->klasifikasi = $request->klasifikasi;
         $career->deskripsi = $request->deskripsi;
@@ -77,7 +78,9 @@ class CareerController extends Controller
             'position_title' => 'required|string',
             'lokasi' => 'required|string',
             'pengalaman' => 'required|string',
-            'jam_kerja' => 'required|string',
+            'jam_masuk' => 'required',
+        'jam_pulang' => 'required',
+        'hari_kerja' => 'required|array',
             'hari_kerja' => 'required|string',
             'ringkasan' => 'required|string',
             'klasifikasi' => 'required|array',
@@ -91,8 +94,8 @@ class CareerController extends Controller
         $career->position_title = $request->position_title;
         $career->lokasi = $request->lokasi;
         $career->pengalaman = $request->pengalaman;
-        $career->jam_kerja = $request->jam_kerja;
-        $career->hari_kerja = $request->hari_kerja;
+        $career->jam_kerja = $request->jam_masuk . ' - ' . $request->jam_pulang;
+        $career->hari_kerja = implode(', ', $request->hari_kerja);
         $career->ringkasan = $request->ringkasan;
         $career->klasifikasi = $request->klasifikasi;
         $career->deskripsi = $request->deskripsi;

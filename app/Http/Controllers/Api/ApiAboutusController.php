@@ -15,7 +15,13 @@ class ApiAboutusController extends Controller
         try {
             $aboutus = Aboutus::with('category')
                 ->orderBy('created_at', 'desc')
-                ->get();
+                ->get()
+                ->map(function ($item) {
+                    $item->image_url = $item->image
+                        ? asset('storage/' . $item->image)
+                        : null;
+                    return $item;
+                });
 
             return response()->json([
                 'success' => true,
@@ -27,21 +33,29 @@ class ApiAboutusController extends Controller
         }
     }
 
+
     // GET aboutus berdasarkan category_id
     public function getByCategory($categoryId)
-    {
-        try {
-            $aboutus = Aboutus::with('category')
-                ->where('category_aboutus_id', $categoryId)
-                ->latest()
-                ->get();
+{
+    try {
+        $aboutus = Aboutus::with('category')
+            ->where('category_aboutus_id', $categoryId)
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                $item->image_url = $item->image
+                    ? asset('storage/' . $item->image)
+                    : null;
+                return $item;
+            });
 
-            return response()->json(['success' => true, 'data' => $aboutus]);
-        } catch (\Exception $e) {
-            Log::error('API Aboutus@getByCategory: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Gagal mengambil data'], 500);
-        }
+        return response()->json(['success' => true, 'data' => $aboutus]);
+    } catch (\Exception $e) {
+        Log::error('API Aboutus@getByCategory: ' . $e->getMessage());
+        return response()->json(['success' => false, 'message' => 'Gagal mengambil data'], 500);
     }
+}
+
 
     // GET aboutus berdasarkan nama kategori
     public function getByCategoryName($categoryName)
@@ -67,17 +81,24 @@ class ApiAboutusController extends Controller
 
     // GET aboutus yang tampil di homepage
     public function getDisplayOnHome()
-    {
-        try {
-            $aboutus = Aboutus::with('category')
-                ->where('display_on_home', true)
-                ->latest()
-                ->get();
+{
+    try {
+        $aboutus = Aboutus::with('category')
+            ->where('display_on_home', true)
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                $item->image_url = $item->image
+                    ? asset('storage/' . $item->image)
+                    : null;
+                return $item;
+            });
 
-            return response()->json(['success' => true, 'data' => $aboutus]);
-        } catch (\Exception $e) {
-            Log::error('API Aboutus@getDisplayOnHome: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Gagal mengambil data'], 500);
-        }
+        return response()->json(['success' => true, 'data' => $aboutus]);
+    } catch (\Exception $e) {
+        Log::error('API Aboutus@getDisplayOnHome: ' . $e->getMessage());
+        return response()->json(['success' => false, 'message' => 'Gagal mengambil data'], 500);
     }
+}
+
 }

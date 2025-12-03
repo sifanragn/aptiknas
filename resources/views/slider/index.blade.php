@@ -81,6 +81,18 @@
                                             Hapus
                                         </button>
                                     </form>
+                                    <form action="{{ route('slider.toggle', $slider->id) }}" method="POST">
+                                        @csrf
+                                        @method('PUT')
+
+                                        <button type="submit" class="relative inline-flex items-center h-6 w-11 rounded-full transition 
+                                            {{ $slider->display_on_home ? 'bg-emerald-600' : 'bg-gray-300' }}">
+                                            
+                                            <span class="absolute left-0 inline-block h-5 w-5 transform rounded-full bg-white shadow transition
+                                                {{ $slider->display_on_home ? 'translate-x-5' : 'translate-x-1' }}">
+                                            </span>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
