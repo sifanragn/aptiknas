@@ -30,7 +30,7 @@ interface CircularGalleryProps {
 
 const props = withDefaults(defineProps<CircularGalleryProps>(), {
   bend: 3,
-  textColor: "#ffffff",
+  textColor: "#545050",
   borderRadius: 0.05,
   font: "bold 30px DM Sans",
 });
