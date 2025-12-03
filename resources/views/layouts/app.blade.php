@@ -5,15 +5,22 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title ?? config('app.name') }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.0/dist/tailwind.min.css" rel="stylesheet">
+
+    {{-- Vite: Tailwind + JS --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Fonts --}}
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
+
+    {{-- Libraries --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+    {{-- CKEditor --}}
     <script src="https://cdn.ckeditor.com/ckeditor5/37.0.1/classic/ckeditor.js"></script>
 
-    <link href="{{ asset('css/output.css') }}" rel="stylesheet">
     <style>
         :root {
             --primary-green: #10b981;
@@ -467,7 +474,7 @@
                             Dashboard
                         </a>
 
-                        <!-- Mobile dropdowns would be implemented with additional x-data for each section -->
+                        <!-- Mobile Category -->
                         <div x-data="{ categoryOpen: false }">
                             <button @click="categoryOpen = !categoryOpen"
                                 class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100 rounded-lg transition-colors">

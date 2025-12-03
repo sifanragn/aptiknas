@@ -35,6 +35,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\TestimonyController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\ApiLandingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -74,6 +75,8 @@ Route::post('/', [ApiReportController::class, 'store']);
 Route::get('/category-dpd', [ApiCategoryDaftarDPDController::class, 'index']);
 Route::get('/category-dpd/{id}', [ApiCategoryDaftarDPDController::class, 'show']);
 Route::get('/category-dpd/name/{categoryName}', [ApiCategoryDaftarDPDController::class, 'getByCategoryName']);
+Route::get('/landing', [ApiLandingController::class, 'index']);
+
 
 
 
